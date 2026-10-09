@@ -1,0 +1,85 @@
+body {
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+}
+
+.font-mono {
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* Light & Dark Adaptive Glass Panels */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.dark .glass-panel {
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(56, 189, 248, 0.15);
+}
+
+.glass-panel-accent {
+    background: rgba(240, 249, 255, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(186, 230, 253, 0.8);
+}
+
+.dark .glass-panel-accent {
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid rgba(14, 165, 233, 0.25);
+}
+
+/* Adaptive Glow Effects */
+.soft-glow-sky {
+    box-shadow: 0 10px 30px -10px rgba(14, 165, 233, 0.15);
+}
+
+.dark .soft-glow-sky {
+    box-shadow: 0 0 25px rgba(14, 165, 233, 0.2);
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+    background: #1e293b;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #0284c7;
+}
+
+/* Şəkildəki xüsusi tünd fon və çərçivə stil dizaynı */
+.feature-card {
+    background-color: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+}
+
+.dark .feature-card {
+    background-color: rgba(11, 15, 25, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.feature-card:hover {
+    border-color: rgba(2, 132, 199, 0.4);
+    transform: translateY(-2px);
+}
+
+.dark .feature-card:hover {
+    border-color: rgba(255, 255, 255, 0.18);
+}
