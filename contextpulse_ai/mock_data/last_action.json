@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0",
+  "source": "ide_events+pr_metadata",
+  "privacy": {
+    "screen_capture": false,
+    "keystroke_logging": false,
+    "clipboard_access": false,
+    "file_contents_stored": false
+  },
+  "developer": {
+    "alias": "Aysel M.",
+    "role": "Backend Developer"
+  },
+  "session": {
+    "ide": "VS Code 1.95",
+    "workspace": "payments-service",
+    "branch": "feature/PAY-482-webhook-retry",
+    "idle_started_at": "2026-10-09T10:41:00+04:00",
+    "idle_duration_minutes": 47
+  },
+  "last_meaningful_action": {
+    "type": "FILE_EDIT",
+    "file": "src/webhooks/retry_handler.py",
+    "function": "schedule_retry",
+    "line_range": [58, 91],
+    "lines_added": 24,
+    "lines_removed": 6,
+    "timestamp": "2026-10-09T10:40:12+04:00"
+  },
+  "last_test_run": {
+    "command": "pytest tests/test_retry_handler.py",
+    "result": "FAILED",
+    "passed": 7,
+    "failed": 1,
+    "failed_tests": ["test_exponential_backoff_caps_at_five_retries"],
+    "error_type": "AssertionError",
+    "error_summary": "expected 5 retries, got 4",
+    "timestamp": "2026-10-09T10:39:40+04:00"
+  },
+  "open_pr": {
+    "number": 482,
+    "title": "Add exponential backoff to webhook retries",
+    "state": "CHANGES_REQUESTED",
+    "unresolved_comments": 2,
+    "last_review_comment_summary": "Reviewer asks for an idempotency key check before each retry"
+  },
+  "todo_markers": [
+    "TODO: idempotency key collision handling"
+  ]
+}

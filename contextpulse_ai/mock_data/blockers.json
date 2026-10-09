@@ -1,0 +1,67 @@
+{
+  "schema_version": "1.0",
+  "team": {
+    "team_id": "team_platform",
+    "team_size": 18,
+    "period": "2026-10-03 – 2026-10-09"
+  },
+  "privacy": {
+    "k_anonymity_threshold": 5,
+    "individual_data_exposed": false
+  },
+  "blockers": [
+    {
+      "category": "Flaky CI testləri",
+      "area": "payments-service / CI pipeline",
+      "affected_developers": 9,
+      "avg_stall_minutes": 38,
+      "trend": "+22%",
+      "suggested_action": "Qeyri-sabit testləri karantinə alın və CI üçün retry siyasəti təyin edin."
+    },
+    {
+      "category": "Code review gözləmə",
+      "area": "PR review queue",
+      "affected_developers": 7,
+      "avg_stall_minutes": 52,
+      "trend": "+11%",
+      "suggested_action": "24 saatlıq review SLA və gündəlik 15 dəqiqəlik review slotu tətbiq edin."
+    },
+    {
+      "category": "Qeyri-aydın API sənədləri",
+      "area": "internal-gateway API",
+      "affected_developers": 6,
+      "avg_stall_minutes": 29,
+      "trend": "-5%",
+      "suggested_action": "Gateway endpoint-ləri üçün nümunəli sorğu/cavab sənədləşməsi əlavə edin."
+    },
+    {
+      "category": "Lokal mühit qurulumu",
+      "area": "dev environment / Docker",
+      "affected_developers": 5,
+      "avg_stall_minutes": 44,
+      "trend": "+3%",
+      "suggested_action": "Bir əmrlə qurulan standart dev-container təqdim edin."
+    },
+    {
+      "category": "Legacy billing modulu",
+      "area": "legacy-billing",
+      "affected_developers": 3,
+      "avg_stall_minutes": 61,
+      "trend": "+8%",
+      "suggested_action": "Bu qrup k həddindən kiçikdir, məlumat gizlədilir."
+    },
+    {
+      "category": "Lisenziya yoxlama xətası",
+      "area": "build tooling",
+      "affected_developers": 2,
+      "avg_stall_minutes": 25,
+      "trend": "0%",
+      "suggested_action": "Bu qrup k həddindən kiçikdir, məlumat gizlədilir."
+    }
+  ],
+  "reengagement_stats": {
+    "baseline_minutes": 23.0,
+    "with_contextpulse_minutes": 4.0,
+    "note": "Demo üçün simulyasiya olunmuş göstəricilər"
+  }
+}
