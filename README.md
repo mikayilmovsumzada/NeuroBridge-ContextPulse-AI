@@ -13,7 +13,7 @@ ContextPulse AI iki problemi birlikdə həll edir:
 Menecer üçün: komanda səviyyəsində tıxanmalar K-anonimlik qaydası ilə göstərilir. Fərdi işçi məlumatı menecer panelində yoxdur.
 Əsas xüsusiyyətlər
 Zero Spyware. Ekran qeydi və keylogger yoxdur. Sistem yalnız metadata telemetriyası qəbul edir. API `privacy` sahələrindən biri `true` olarsa və ya sxemdə olmayan əlavə sahə (məsələn `source\_code`) gələrsə hadisəni `422` ilə rədd edir.
-0 saniyəlik geri dönüş. İşçi boş vəziyyətdən qayıdanda AI konteksti dərhal bərpa edir. Xatırlatma Gemini ilə yazılır, cavab proqramla doğrulanır: uydurma fayl, funksiya, xəta kodu və ya PR nömrəsi varsa hazır mətnə (fallback) keçilir.
+Saniyələr içində geri dönüş. İşçi boş vəziyyətdən qayıdanda AI konteksti bir neçə saniyəyə bərpa edir. Xatırlatma Gemini ilə yazılır, cavab proqramla doğrulanır: uydurma fayl, funksiya, xəta kodu və ya PR nömrəsi varsa hazır mətnə (fallback) keçilir.
 K-anonimlik. Menecer panelində qrup yalnız ən azı K = 5 cavab toplayanda görünür. Daha az olan qruplar "gizlədilib" kimi göstərilir.
 İki dil. Sayt Azərbaycan və İngilis dillərini dəstəkləyir. AI xatırlatması da seçilmiş dildə gəlir.
 Canlı yenilənmə. İşçi cavab verəndə menecer paneli Server-Sent Events (SSE) ilə eyni anda yenilənir.
@@ -77,12 +77,12 @@ DB\_PATH=contextpulse.db
 ```
 Dəyişən	Məcburidir?	Təsvir	Standart
 `GEMINI\_API\_KEY`	Xeyr	Gemini açarı. Yoxdursa hazır mətn (fallback) istifadə olunur	yoxdur
-`GEMINI\_MODEL`	Xeyr	İstifadə olunan Gemini modeli	`gemini-3.5-flash`
+`GEMINI\_MODEL`	Xeyr	Gemini modeli. Ehtiyat üçün vergüllə bir neçə ad yazın; biri 503 və ya xəta verərsə növbətisi sınanır	`gemini-3.5-flash,gemini-2.5-flash`
 `DB\_PATH`	Xeyr	SQLite faylının yolu	`contextpulse.db`
 `PORT`	Xeyr	Yalnız Docker-də: server portu	`8000`
 > \*\*Diqqət:\*\* `.env` faylını heç vaxt Git-ə əlavə etməyin və başqaları ilə paylaşmayın. `.gitignore` onu artıq istisna edir. Açarı səhvən paylaşmısınızsa, Google AI Studio-da yenisini yaradın.
 >
-> Uvicorn `.env` faylını avtomatik oxumur. Dəyişənləri terminalda təyin edin (məsələn PowerShell: `$env:GEMINI\_API\_KEY="..."`, Linux/macOS: `export GEMINI\_API\_KEY=...`) və ya VS Code-dakı hazır `ContextPulse: API server` konfiqurasiyasından istifadə edin, o `.env`-i yükləyir.
+> Server `.env` faylını `cp4/.env` yolundan özü oxuyur (terminalda əvvəlcədən təyin edilmiş dəyişən üstündən yazılmır). Render/GitLab kimi hostlarda açarı panelin Environment bölməsində təyin edin.
 3. Serveri başlat
 ```bash
 uvicorn app.main:app --reload --port 8000

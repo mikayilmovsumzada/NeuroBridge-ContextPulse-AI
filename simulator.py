@@ -3,6 +3,7 @@
   python simulator.py events  [--url URL] [--interval 5]   # hadisə axını (işçi paneli canlı yenilənir)
   python simulator.py answer MEETING_LOAD [--url URL]      # menecer panelinə 1 anonim cavab
   python simulator.py reset   [--url URL]                  # demo məlumatını sıfırla
+  python simulator.py warm    [--url URL]                  # AZ+EN Gemini cavablarını əvvəlcədən hazırla
 """
 import argparse
 import copy
@@ -38,6 +39,13 @@ def post(url, path, body=None):
         return f"{e.code} {e.read().decode()[:200]}"
 
 
+def post_json(url, path, body):
+    req = urllib.request.Request(url + path, data=json.dumps(body).encode(), method="POST",
+                                 headers={"Content-Type": "application/json"})
+    with urllib.request.urlopen(req, timeout=60) as r:
+        return json.loads(r.read().decode())
+
+
 def make_event():
     ev = copy.deepcopy(BASE)
     now = datetime.now(timezone(timedelta(hours=4)))
@@ -53,13 +61,22 @@ def make_event():
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("cmd", choices=["events", "answer", "reset"])
+    p.add_argument("cmd", choices=["events", "answer", "reset", "warm"])
     p.add_argument("category", nargs="?", default="MEETING_LOAD")
     p.add_argument("--url", default="http://localhost:8000")
     p.add_argument("--interval", type=float, default=5)
     a = p.parse_args()
     if a.cmd == "reset":
         print("reset:", post(a.url, "/api/demo/reset"))
+    elif a.cmd == "warm":
+        # Demodan əvvəl: AZ və EN Gemini cavablarını yaddaşa yazır (əvvəlcə reset edin!)
+        for lang in ("az", "en"):
+            try:
+                r = post_json(a.url, "/api/reminder", {"developer_ref": "dev_a91f", "lang": lang})
+                ok = r.get("source") == "gemini"
+                print(lang, "->", r.get("source"), "| model:", r.get("model", "-"), "| OK, keşləndi" if ok else "| Gemini cavab vermədi, bir az sonra təkrar edin")
+            except Exception as e:
+                print(lang, "-> xəta:", e)
     elif a.cmd == "answer":
         print("answer:", post(a.url, "/api/survey", {"developer_ref": "sim_" + uuid.uuid4().hex[:6],
                                                       "reason_id": "sim", "category": a.category}))

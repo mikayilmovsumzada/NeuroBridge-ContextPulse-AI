@@ -11,3 +11,6 @@ env/
 .idea/
 .vscode/
 .pytest_cache/
+
+# SQLite
+*.db

@@ -3,6 +3,23 @@ import json
 import logging
 import time
 from pathlib import Path
+import os
+
+
+def _load_env():
+    """cp4/.env faylını oxuyub os.environ-a yazır (terminalda artıq təyin olunmuş dəyişənin üstündən yazmır)."""
+    f = Path(__file__).resolve().parent.parent / ".env"
+    if not f.exists():
+        return
+    for line in f.read_text(encoding="utf-8-sig").splitlines():
+        line = line.strip()
+        if line and not line.startswith("#") and "=" in line:
+            k, v = line.split("=", 1)
+            if k.strip() not in os.environ:
+                os.environ[k.strip()] = v.strip().strip('"').strip("'")
+
+
+_load_env()  # core və ai_engine import olunmazdan ƏVVƏL çağırılmalıdır
 
 from contextlib import asynccontextmanager
 
@@ -108,7 +125,7 @@ async def reminder(body: ReminderIn):
     if key in _reminder_cache:
         return _reminder_cache[key]
     try:
-        res = await asyncio.wait_for(asyncio.to_thread(generate_reminder, ev, body.lang), timeout=10)
+        res = await asyncio.wait_for(asyncio.to_thread(generate_reminder, ev, body.lang), timeout=25)
     except asyncio.TimeoutError:
         res = {"text": fallback_text(ev, body.lang), "source": "fallback", "code": "timeout", "validated": True,
                "badge": "fallback (AI timeout)", "reason": "timeout"}
