@@ -29,7 +29,7 @@ from fastapi.staticfiles import StaticFiles
 
 from . import core
 from .ai_engine import fallback_text, generate_reminder
-from .schemas import IdeEvent, ReminderIn, SurveyIn
+from .schemas import ActionIn, IdeEvent, MessageIn, ReminderIn, SurveyIn
 
 STATIC = Path(__file__).resolve().parent.parent / "static"
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(message)s", datefmt="%H:%M:%S")
@@ -94,7 +94,7 @@ async def health():
 @app.get("/api/bootstrap")
 async def bootstrap(developer_ref: str = "dev_a91f"):
     ev = core.latest_event(developer_ref) or core.BASE_EVENT
-    return {"event": ev, "team": core.team_payload()}
+    return {"event": ev, "team": core.team_payload(), "announcements": core.latest_messages()}
 
 
 @app.post("/api/events", status_code=202)
@@ -152,12 +152,44 @@ async def team():
     return core.team_payload()
 
 
+@app.put("/api/team/blockers/{category}/action")
+async def set_blocker_action(category: str, body: ActionIn):
+    """Menecer görünən tıxanmaya status, məsul və qeyd yazır. K həddindən aşağı (gizli) qrup üçün rədd edilir."""
+    if category not in core.META:
+        return JSONResponse({"detail": "naməlum kateqoriya"}, status_code=404)
+    if category not in core.visible_categories():
+        return JSONResponse({"detail": "qrup K həddindən azdır, üzərində tədbir qeydi aça bilməzsiniz"}, status_code=409)
+    core.set_action(category, body.status, body.note, body.owner)
+    payload = core.team_payload()
+    await publish("team", payload)
+    log.info("[ACTION] category=%s status=%s owner=%s note_uzunluq=%d -> brauzer=%d", category, body.status,
+             body.owner or "-", len(body.note), len(subscribers))
+    return {"saved": True}
+
+
+@app.post("/api/team/messages", status_code=201)
+async def post_team_message(body: MessageIn):
+    """Menecerin bütün komandaya elanı (fərdi işçiyə ünvanlanmır). Mövzu seçilibsə, qrup görünən olmalıdır."""
+    if body.category and body.category not in core.visible_categories():
+        return JSONResponse({"detail": "qrup K həddindən azdır"}, status_code=409)
+    msg = core.add_message(body.category, body.text)
+    await publish("announcement", msg)
+    log.info("[MESSAGE] category=%s uzunluq=%d -> brauzer=%d", body.category or "-", len(body.text), len(subscribers))
+    return msg
+
+
+@app.get("/api/announcements")
+async def announcements():
+    return core.latest_messages()
+
+
 @app.post("/api/demo/reset")
 async def reset():
     core.reset_demo()
     _reminder_cache.clear()
     await publish("team", core.team_payload())
     await publish("event", core.BASE_EVENT)
+    await publish("announcement_reset", {})
     return {"reset": True}
 
 

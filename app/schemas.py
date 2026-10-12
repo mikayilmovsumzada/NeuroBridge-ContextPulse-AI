@@ -1,6 +1,6 @@
-from typing import Literal, Optional
+from typing import Annotated, Literal, Optional
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 
 Category = Literal["PR_REVIEW_WAIT", "CI_FLAKY", "MEETING_LOAD", "UNCLEAR_REQUIREMENTS", "TOOLING"]
 
@@ -92,3 +92,19 @@ class SurveyIn(Strict):
 class ReminderIn(Strict):
     developer_ref: str = Field(min_length=3, max_length=64)
     lang: Literal["az", "en"] = "az"
+
+
+ActionStatus = Literal["investigating", "planned", "resolved"]
+
+
+class ActionIn(Strict):
+    """Menecerin görünən tıxanma üzrə tədbir qeydi (komanda səviyyəsində, işçi adı yoxdur)."""
+    status: ActionStatus
+    note: Annotated[str, StringConstraints(strip_whitespace=True, max_length=200)] = ""
+    owner: Annotated[str, StringConstraints(strip_whitespace=True, max_length=40)] = ""
+
+
+class MessageIn(Strict):
+    """Menecerin bütün komandaya elanı. İstəyə görə görünən bir tıxanma mövzusuna bağlana bilər."""
+    text: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=280)]
+    category: Optional[Category] = None

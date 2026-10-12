@@ -54,6 +54,11 @@ def _db():
             CREATE TABLE IF NOT EXISTS survey_responses(
               id INTEGER PRIMARY KEY AUTOINCREMENT, developer_ref TEXT NOT NULL,
               reason_id TEXT NOT NULL, category TEXT, created_at TEXT NOT NULL);
+            CREATE TABLE IF NOT EXISTS blocker_actions(
+              category TEXT PRIMARY KEY, status TEXT NOT NULL, note TEXT NOT NULL DEFAULT '',
+              owner TEXT NOT NULL DEFAULT '', updated_at TEXT NOT NULL);
+            CREATE TABLE IF NOT EXISTS team_messages(
+              id INTEGER PRIMARY KEY AUTOINCREMENT, category TEXT, text TEXT NOT NULL, created_at TEXT NOT NULL);
             """
         )
     return _conn
@@ -105,6 +110,8 @@ def reset_demo():
         c = _db()
         c.execute("DELETE FROM events")
         c.execute("DELETE FROM survey_responses")
+        c.execute("DELETE FROM blocker_actions")
+        c.execute("DELETE FROM team_messages")
         c.commit()
     add_event(BASE_EVENT)
     for cat, n in SEED_COUNTS.items():
@@ -119,9 +126,49 @@ def init_db():
         reset_demo()
 
 
+def set_action(category: str, status: str, note: str, owner: str):
+    with _lock:
+        c = _db()
+        c.execute(
+            "INSERT INTO blocker_actions(category, status, note, owner, updated_at) VALUES (?,?,?,?,?) "
+            "ON CONFLICT(category) DO UPDATE SET status=excluded.status, note=excluded.note, "
+            "owner=excluded.owner, updated_at=excluded.updated_at",
+            (category, status, note, owner, _now()),
+        )
+        c.commit()
+
+
+def get_actions() -> dict:
+    with _lock:
+        rows = _db().execute("SELECT category, status, note, owner, updated_at FROM blocker_actions").fetchall()
+    return {r[0]: {"status": r[1], "note": r[2], "owner": r[3], "updated_at": r[4]} for r in rows}
+
+
+def add_message(category, text: str) -> dict:
+    created = _now()
+    with _lock:
+        c = _db()
+        cur = c.execute("INSERT INTO team_messages(category, text, created_at) VALUES (?,?,?)", (category, text, created))
+        c.commit()
+        mid = cur.lastrowid
+    return {"id": mid, "category": category, "text": text, "created_at": created}
+
+
+def latest_messages(limit: int = 5) -> list:
+    with _lock:
+        rows = _db().execute("SELECT id, category, text, created_at FROM team_messages ORDER BY id DESC LIMIT ?", (limit,)).fetchall()
+    return [{"id": r[0], "category": r[1], "text": r[2], "created_at": r[3]} for r in rows]
+
+
+def visible_categories() -> set:
+    """K həddini keçib menecerə görünən kateqoriyalar. Tədbir və elan yalnız bunlara aid ola bilər."""
+    return {b["category"] for b in team_payload()["blockers"] if not b["suppressed"]}
+
+
 def team_payload() -> dict:
     """K-anonim menecer məlumatı. Burada fərdi identifikator və xam say gizlədilmiş qruplar üçün yoxdur."""
     cnt, respondents = counts()
+    actions = get_actions()
     insufficient = respondents < K  # cavab verən sayı özü k-dan azdırsa heç nə göstərilmir
     shown, hidden = [], 0
     for cat, m in META.items():
@@ -132,7 +179,7 @@ def team_payload() -> dict:
         shown.append({
             "category": cat, "label": m["label"], "affected_count": n,
             "share": round(n / respondents, 2), "avg_stall_minutes": m["avg"],
-            "trend_7d": m["trend"], "signal": m["signal"], "suppressed": False,
+            "trend_7d": m["trend"], "signal": m["signal"], "suppressed": False, "action": actions.get(cat),
         })
     shown.sort(key=lambda b: -b["affected_count"])
     blockers = shown + [{"group": f"suppressed_{i + 1}", "suppressed": True, "reason": "n<k"} for i in range(hidden)]

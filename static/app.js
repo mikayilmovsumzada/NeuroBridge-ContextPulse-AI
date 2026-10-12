@@ -63,6 +63,16 @@ const I18N = {
         notFoundTitle: 'Səhifə Tapılmadı və ya Giriş Qadağandır',
         notFoundText: 'Axtardığınız keçid mövcud deyil və ya bu rol üçün icazə verilmir. İşçi və menecer panelləri bir-birindən tam ayrılıb.',
         backHome: 'Ana Səhifəyə Qayıt', themeAria: 'Temanı dəyiş', langAria: 'Dil',
+        status_none: 'Status yoxdur', status_investigating: 'Araşdırılır', status_planned: 'Tədbir planlanıb', status_resolved: 'Həll olunub',
+        actionTitle: 'Tədbir izləmə', statusLabel: 'Status', ownerLabel: 'Məsul komanda / şəxs', ownerPh: 'məs. DevOps komandası',
+        noteLabel: 'Qeyd', notePh: 'Görüləcək tədbir haqqında qısa qeyd', saveAction: 'Yadda saxla', ownerShort: 'Məsul', updatedAt: 'Yenilənib',
+        actionSaved: 'Tədbir qeydi saxlanıldı.', actionFailed: 'Tədbir qeydi saxlanılmadı: qrup K həddindən aşağı düşüb və ya server cavab vermədi.',
+        announceTitle: 'Komandaya elan', announceSub: 'Elan bütün işçilərin panelində canlı görünür. Fərdi işçiyə ünvanlanmır.',
+        announcePh: 'məs. PR review üçün 24 saatlıq qayda təyin edirik', announceTo: 'Mövzu', announceAll: 'Ümumi (mövzusuz)',
+        announceSend: 'Elanı göndər', announceSent: 'Elan komandaya göndərildi.', announceFail: 'Elan göndərilmədi.',
+        announceHistory: 'Göndərilmiş elanlar', noAnnouncements: 'Hələ elan yoxdur.',
+        wsAnnouncements: 'Komanda elanları', wsStatusTitle: 'Tıxanmalar üzrə tədbirlər', wsNoStatus: 'Hələ tədbir qeydi yoxdur.',
+        newAnnouncementToast: 'Menecerdən yeni komanda elanı var.',
         featSpyTitle: 'Sıfır Casus Proqram', featSpyText: 'Ekran qeydi və ya keylogger yoxdur. Yalnız təmiz metadata telemetriya axını.',
         featReTitle: '0 Saniyəlik Geri Dönüş', featReText: 'Boş vəziyyətdən qayıdan kimi süni intellekt konteksti dərhal bərpa edir.',
         featKTitle: 'K-Anonimlik Prinsipləri', featKText: 'Şəxsi məlumatlar maskalanır, komanda səviyyəli maneələr isə ağıllı şəkildə həll olunur.'
@@ -122,6 +132,16 @@ const I18N = {
         notFoundTitle: 'Page Not Found or Access Denied',
         notFoundText: 'The page does not exist or is not allowed for this role. The employee and manager panels are fully separated.',
         backHome: 'Back to Home', themeAria: 'Toggle theme', langAria: 'Language',
+        status_none: 'No status', status_investigating: 'Investigating', status_planned: 'Action planned', status_resolved: 'Resolved',
+        actionTitle: 'Action tracking', statusLabel: 'Status', ownerLabel: 'Owner team / person', ownerPh: 'e.g. DevOps team',
+        noteLabel: 'Note', notePh: 'Short note about the planned action', saveAction: 'Save', ownerShort: 'Owner', updatedAt: 'Updated',
+        actionSaved: 'Action note saved.', actionFailed: 'Action note was not saved: the group dropped below K or the server did not respond.',
+        announceTitle: 'Team announcement', announceSub: 'The announcement appears live on every employee panel. It is not addressed to an individual.',
+        announcePh: 'e.g. We are introducing a 24-hour PR review rule', announceTo: 'Topic', announceAll: 'General (no topic)',
+        announceSend: 'Send announcement', announceSent: 'Announcement sent to the team.', announceFail: 'Announcement was not sent.',
+        announceHistory: 'Sent announcements', noAnnouncements: 'No announcements yet.',
+        wsAnnouncements: 'Team announcements', wsStatusTitle: 'Actions on team blockers', wsNoStatus: 'No action notes yet.',
+        newAnnouncementToast: 'New team announcement from your manager.',
         featSpyTitle: 'Zero Spyware', featSpyText: 'No screen recording or keyloggers. Pure metadata telemetry stream.',
         featReTitle: '0-Second Re-engagement', featReText: 'Instant context restoration by AI immediately upon returning from idle state.',
         featKTitle: 'K-Anonymity Principles', featKText: 'Personal data is masked while team-level blockers are intelligently resolved.'
@@ -168,7 +188,7 @@ function localTeam(st) {
         const n = st.counts[cat] || 0;
         if (insufficient || n < K_ANON) { hidden += 1; return; }
         const m = BLOCKER_META[cat];
-        shown.push({ category: cat, affected_count: n, share: Math.round(n / st.respondents * 100) / 100, avg_stall_minutes: m.avg, trend_7d: m.trend, suppressed: false });
+        shown.push({ category: cat, affected_count: n, share: Math.round(n / st.respondents * 100) / 100, avg_stall_minutes: m.avg, trend_7d: m.trend, suppressed: false, action: (st.actions && st.actions[cat]) || null });
     });
     shown.sort((a, b) => b.affected_count - a.affected_count);
     const blockers = shown.concat(Array.from({ length: hidden }, (_, i) => ({ group: 'suppressed_' + (i + 1), suppressed: true })));
@@ -281,10 +301,13 @@ function App() {
     const [offline, setOffline] = useState(false);
     const [reminder, setReminder] = useState(null);
     const [bumps, setBumps] = useState({});
+    const [announcements, setAnnouncements] = useState([]);
     const teamRef = useRef(null);
     const langRef = useRef(lang);
     langRef.current = lang;
-    const offlineState = useRef({ counts: { PR_REVIEW_WAIT: 8, CI_FLAKY: 6, MEETING_LOAD: 5, UNCLEAR_REQUIREMENTS: 5, TOOLING: 2 }, respondents: 26 });
+    const roleRef = useRef(null);
+    roleRef.current = userRole;
+    const offlineState = useRef({ counts: { PR_REVIEW_WAIT: 8, CI_FLAKY: 6, MEETING_LOAD: 5, UNCLEAR_REQUIREMENTS: 5, TOOLING: 2 }, respondents: 26, actions: {} });
 
     const t = (key, ...args) => translate(lang, key, ...args);
     const ctx = { lang, t };
@@ -322,10 +345,16 @@ function App() {
         if (fresh) showToast(translate(langRef.current, 'kReached', p.k_threshold, translate(langRef.current, 'cat_' + fresh.category)));
     };
 
+    // Elanı siyahıya əlavə edir (eyni id təkrarlanmır); işçiyə bildiriş göstərir
+    const addAnnouncement = (a, notify) => {
+        setAnnouncements((cur) => (cur.some((x) => x.id === a.id) ? cur : [a].concat(cur).slice(0, 5)));
+        if (notify && roleRef.current === 'employee') showToast(translate(langRef.current, 'newAnnouncementToast'));
+    };
+
     useEffect(() => {
         let es = null;
         api('/api/bootstrap')
-            .then((d) => { setIdeEvent(d.event); teamRef.current = d.team; setTeam(d.team); })
+            .then((d) => { setIdeEvent(d.event); teamRef.current = d.team; setTeam(d.team); setAnnouncements(d.announcements || []); })
             .catch(() => {
                 setOffline(true);
                 setIdeEvent(SEED_EVENT);
@@ -338,6 +367,8 @@ function App() {
             es.onopen = () => setLive(true);
             es.onerror = () => setLive(false);
             es.addEventListener('team', (m) => applyTeam(JSON.parse(m.data)));
+            es.addEventListener('announcement', (m) => addAnnouncement(JSON.parse(m.data), true));
+            es.addEventListener('announcement_reset', () => setAnnouncements([]));
             es.addEventListener('event', (m) => {
                 const e = JSON.parse(m.data);
                 setIdeEvent((prev) => (!prev || e.developer_ref === prev.developer_ref) ? e : prev);
@@ -345,6 +376,29 @@ function App() {
         }
         return () => { if (es) es.close(); };
     }, []);
+
+    // ---- Menecer əməliyyatları: tədbir qeydi və komandaya elan ----
+    const saveAction = (category, data) => {
+        if (offline) {
+            offlineState.current.actions[category] = Object.assign({}, data, { updated_at: new Date().toISOString() });
+            applyTeam(localTeam(offlineState.current));
+            showToast(t('actionSaved'));
+            return Promise.resolve(true);
+        }
+        return api('/api/team/blockers/' + category + '/action', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+            .then(() => { showToast(t('actionSaved')); return true; })
+            .catch(() => { showToast(t('actionFailed')); return false; });
+    };
+    const sendAnnouncement = (data) => {
+        if (offline) {
+            addAnnouncement({ id: Date.now(), text: data.text, category: data.category || null, created_at: new Date().toISOString() }, false);
+            showToast(t('announceSent'));
+            return Promise.resolve(true);
+        }
+        return postJson('/api/team/messages', data)
+            .then(() => { showToast(t('announceSent')); return true; })
+            .catch(() => { showToast(t('announceFail')); return false; });
+    };
 
     // ---- AI xatırlatması (seçilmiş dildə) ----
     const loadReminder = (l) => {
@@ -440,8 +494,8 @@ function App() {
 
             <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {currentRoute === 'home' && <HomeView userRole={userRole} onOpenLogin={(ty) => { setLoginModalType(ty); setLoginError(false); }} onNavigate={navigateTo} />}
-                {currentRoute === 'dev-portal' && <DevPortalView awayHistory={awayHistory} event={ideEvent} live={live} offline={offline} onTriggerIdle={openIdle} />}
-                {currentRoute === 'manager-portal' && <ManagerPortalView team={team} bumps={bumps} live={live} offline={offline} />}
+                {currentRoute === 'dev-portal' && <DevPortalView awayHistory={awayHistory} event={ideEvent} live={live} offline={offline} team={team} announcements={announcements} onTriggerIdle={openIdle} />}
+                {currentRoute === 'manager-portal' && <ManagerPortalView team={team} bumps={bumps} live={live} offline={offline} announcements={announcements} onSaveAction={saveAction} onSend={sendAnnouncement} />}
                 {currentRoute === 'privacy' && <LegalPage title={t('privacyTitle')} paras={[t('privacyP1'), t('privacyP2')]} />}
                 {currentRoute === 'terms' && <LegalPage title={t('termsTitle')} paras={[t('termsP1')]} />}
                 {currentRoute === 'cookies' && <LegalPage title={t('cookiePolTitle')} paras={[t('cookiePolP1')]} />}
@@ -612,7 +666,7 @@ function HomeView({ userRole, onOpenLogin, onNavigate }) {
 }
 
 // ============ İŞÇİ PANELİ ============
-function DevPortalView({ awayHistory, event, live, offline, onTriggerIdle }) {
+function DevPortalView({ awayHistory, event, live, offline, team, announcements, onTriggerIdle }) {
     const { t, lang } = useT();
     const loc = lang === 'az' ? 'az-AZ' : 'en-GB';
     const a = event && event.last_meaningful_action;
@@ -644,6 +698,8 @@ function DevPortalView({ awayHistory, event, live, offline, onTriggerIdle }) {
                 <p className="text-[10px] font-mono text-slate-400 mt-3">developer_ref: {event ? event.developer_ref : '-'} · {t('privacyLine')}</p>
             </div>
 
+            <TeamNews team={team} announcements={announcements} />
+
             <div className="glass-panel p-6 rounded-3xl">
                 <h3 className="text-base font-bold text-slate-900 dark:text-white mb-4 flex items-center space-x-2">
                     <IconClock className="w-5 h-5 text-sky-500" /><span>{t('historyTitle')}</span>
@@ -666,8 +722,167 @@ function DevPortalView({ awayHistory, event, live, offline, onTriggerIdle }) {
     );
 }
 
-// ============ MENECER PANELİ (yalnız serverin K-anonim məlumatı, işçi məlumatı yoxdur) ============
-function ManagerPortalView({ team, bumps, live, offline }) {
+// ============ MENECER PANELİ (K-anonim məlumat + tədbir izləmə + komandaya elan) ============
+const ACTION_STATUSES = ['investigating', 'planned', 'resolved'];
+const fmtTime = (iso, lang) => { try { return new Date(iso).toLocaleTimeString(lang === 'az' ? 'az-AZ' : 'en-GB', { hour: '2-digit', minute: '2-digit' }); } catch (e) { return ''; } };
+const inputCls = 'w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-sky-500';
+
+function StatusBadge({ status }) {
+    const { t } = useT();
+    const cls = {
+        investigating: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
+        planned: 'bg-sky-500/10 text-sky-600 dark:text-sky-400',
+        resolved: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+    }[status] || 'bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400';
+    return <span className={'px-2.5 py-1 rounded-full text-[10px] font-mono font-semibold ' + cls}>{t('status_' + (status || 'none'))}</span>;
+}
+
+// Görünən (K həddini keçmiş) tıxanma kartı + menecerin tədbir qeydi
+function BlockerCard({ b, max, bump, onSave }) {
+    const { t, lang } = useT();
+    const saved = b.action;
+    const [status, setStatus] = useState(saved ? saved.status : 'investigating');
+    const [owner, setOwner] = useState(saved ? saved.owner : '');
+    const [note, setNote] = useState(saved ? saved.note : '');
+    const [busy, setBusy] = useState(false);
+    const save = () => { setBusy(true); onSave(b.category, { status, owner: owner.trim(), note: note.trim() }).then(() => setBusy(false)); };
+    return (
+        <div className="p-4 bg-slate-50 dark:bg-slate-900/80 rounded-2xl border border-slate-200 dark:border-slate-800">
+            <div className="flex items-center justify-between gap-3">
+                <div>
+                    <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200">{t('cat_' + b.category)}</h4>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">{t('sig_' + b.category)}</p>
+                </div>
+                <div className="text-right shrink-0">
+                    <span className="px-3 py-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-mono rounded-full">
+                        {b.affected_count} {t('employees')} · {Math.round(b.share * 100)}%
+                    </span>
+                    {bump ? <span className="ml-2 px-1.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[10px] font-mono animate-pulse">+{bump}</span> : null}
+                    <p className="text-[10px] font-mono text-slate-400 mt-1">{t('avgStall')} {b.avg_stall_minutes} {t('min')} · {b.trend_7d}</p>
+                </div>
+            </div>
+            <div className="h-2 mt-3 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
+                <div className="h-full bg-sky-500 transition-all duration-700" style={{ width: Math.round(b.affected_count / max * 100) + '%' }}></div>
+            </div>
+
+            <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800 space-y-3">
+                <div className="flex items-center justify-between gap-3">
+                    <span className="text-[10px] uppercase font-mono text-slate-400">{t('actionTitle')}</span>
+                    <StatusBadge status={saved ? saved.status : null} />
+                </div>
+                {saved && (saved.owner || saved.note) && (
+                    <p className="text-[11px] text-slate-600 dark:text-slate-300 break-words">
+                        {saved.owner ? <b>{t('ownerShort')}: {saved.owner}. </b> : null}{saved.note}
+                        <span className="text-slate-400 font-mono"> · {t('updatedAt')} {fmtTime(saved.updated_at, lang)}</span>
+                    </p>
+                )}
+                <div className="flex flex-wrap gap-2" role="group" aria-label={t('statusLabel')}>
+                    {ACTION_STATUSES.map((st) => (
+                        <button key={st} type="button" onClick={() => setStatus(st)} aria-pressed={status === st}
+                            className={'px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all ' + (status === st ? 'bg-sky-600 text-white' : 'bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700')}>
+                            {t('status_' + st)}
+                        </button>
+                    ))}
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <input value={owner} maxLength={40} onChange={(e) => setOwner(e.target.value)} placeholder={t('ownerPh')} aria-label={t('ownerLabel')} className={inputCls} />
+                    <input value={note} maxLength={200} onChange={(e) => setNote(e.target.value)} placeholder={t('notePh')} aria-label={t('noteLabel')} className={inputCls + ' sm:col-span-2'} />
+                </div>
+                <div className="flex justify-end">
+                    <button type="button" onClick={save} disabled={busy} className="px-4 py-2 bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white rounded-xl text-xs font-bold">{t('saveAction')}</button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// Komandaya elan (yalnız menecer göndərir; bütün işçilərin panelində canlı görünür)
+function AnnounceBox({ visible, announcements, onSend }) {
+    const { t, lang } = useT();
+    const [text, setText] = useState('');
+    const [category, setCategory] = useState('');
+    const [busy, setBusy] = useState(false);
+    const send = () => {
+        if (!text.trim()) return;
+        setBusy(true);
+        onSend({ text: text.trim(), category: category || null }).then((ok) => { setBusy(false); if (ok) setText(''); });
+    };
+    return (
+        <div className="glass-panel p-6 rounded-3xl">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">{t('announceTitle')}</h3>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 mb-4">{t('announceSub')}</p>
+            <textarea value={text} maxLength={280} rows={2} onChange={(e) => setText(e.target.value)} placeholder={t('announcePh')} aria-label={t('announceTitle')} className={inputCls} />
+            <div className="flex flex-wrap items-center justify-between gap-3 mt-2">
+                <label className="flex items-center gap-2 text-[11px] text-slate-500 dark:text-slate-400">
+                    {t('announceTo')}:
+                    <select value={category} onChange={(e) => setCategory(e.target.value)} className={inputCls + ' w-auto'}>
+                        <option value="">{t('announceAll')}</option>
+                        {visible.map((b) => (<option key={b.category} value={b.category}>{t('cat_' + b.category)}</option>))}
+                    </select>
+                </label>
+                <div className="flex items-center gap-3">
+                    <span className="text-[10px] font-mono text-slate-400">{text.length}/280</span>
+                    <button type="button" onClick={send} disabled={busy || !text.trim()} className="px-4 py-2 bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white rounded-xl text-xs font-bold">{t('announceSend')}</button>
+                </div>
+            </div>
+            <p className="text-[10px] uppercase font-mono text-slate-400 mt-5 mb-2">{t('announceHistory')}</p>
+            {announcements.length === 0 ? <p className="text-xs text-slate-500 dark:text-slate-400">{t('noAnnouncements')}</p> : (
+                <ul className="space-y-2">
+                    {announcements.map((a) => (
+                        <li key={a.id} className="text-xs text-slate-700 dark:text-slate-300 break-words">
+                            <span className="font-mono text-slate-400">{fmtTime(a.created_at, lang)}</span>
+                            {a.category ? <span className="ml-2 px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-600 dark:text-sky-400 text-[10px]">{t('cat_' + a.category)}</span> : null}
+                            <span className="ml-2">{a.text}</span>
+                        </li>
+                    ))}
+                </ul>
+            )}
+        </div>
+    );
+}
+
+// İşçi panelində: menecerin elanları və tıxanmalar üzrə görülən tədbirlər (komanda səviyyəsində)
+function TeamNews({ team, announcements }) {
+    const { t, lang } = useT();
+    const acted = team ? team.blockers.filter((b) => !b.suppressed && b.action) : [];
+    return (
+        <div className="glass-panel p-6 rounded-3xl space-y-5">
+            <div>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white mb-3">{t('wsAnnouncements')}</h3>
+                {announcements.length === 0 ? <p className="text-xs text-slate-500 dark:text-slate-400">{t('noAnnouncements')}</p> : (
+                    <ul className="space-y-2">
+                        {announcements.map((a) => (
+                            <li key={a.id} className="p-3 bg-slate-50 dark:bg-slate-900/80 rounded-2xl border border-slate-200 dark:border-slate-800 text-sm text-slate-800 dark:text-slate-200 break-words">
+                                <span className="font-mono text-[10px] text-slate-400">{fmtTime(a.created_at, lang)}</span>
+                                {a.category ? <span className="ml-2 px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-600 dark:text-sky-400 text-[10px]">{t('cat_' + a.category)}</span> : null}
+                                <p className="mt-1">{a.text}</p>
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </div>
+            <div>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white mb-3">{t('wsStatusTitle')}</h3>
+                {acted.length === 0 ? <p className="text-xs text-slate-500 dark:text-slate-400">{t('wsNoStatus')}</p> : (
+                    <ul className="space-y-2">
+                        {acted.map((b) => (
+                            <li key={b.category} className="p-3 bg-slate-50 dark:bg-slate-900/80 rounded-2xl border border-slate-200 dark:border-slate-800 flex items-start justify-between gap-3">
+                                <div className="text-xs text-slate-700 dark:text-slate-300 break-words">
+                                    <b>{t('cat_' + b.category)}</b>
+                                    {b.action.owner ? <span className="text-slate-500 dark:text-slate-400"> · {t('ownerShort')}: {b.action.owner}</span> : null}
+                                    {b.action.note ? <p className="mt-0.5">{b.action.note}</p> : null}
+                                </div>
+                                <StatusBadge status={b.action.status} />
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </div>
+        </div>
+    );
+}
+
+function ManagerPortalView({ team, bumps, live, offline, announcements, onSaveAction, onSend }) {
     const { t } = useT();
     const shown = team ? team.blockers.filter((b) => !b.suppressed) : [];
     const hidden = team ? team.blockers.filter((b) => b.suppressed) : [];
@@ -693,26 +908,7 @@ function ManagerPortalView({ team, bumps, live, offline }) {
                         <h3 className="text-base font-bold text-slate-900 dark:text-white mb-4">{t('analyticsTitle')}</h3>
                         {team.insufficient_data && <p className="text-xs text-amber-600 dark:text-amber-400 mb-4">{t('insufficient')}</p>}
                         <div className="space-y-3">
-                            {shown.map((b) => (
-                                <div key={b.category} className="p-4 bg-slate-50 dark:bg-slate-900/80 rounded-2xl border border-slate-200 dark:border-slate-800">
-                                    <div className="flex items-center justify-between gap-3">
-                                        <div>
-                                            <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200">{t('cat_' + b.category)}</h4>
-                                            <p className="text-[11px] text-slate-500 dark:text-slate-400">{t('sig_' + b.category)}</p>
-                                        </div>
-                                        <div className="text-right shrink-0">
-                                            <span className="px-3 py-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-mono rounded-full">
-                                                {b.affected_count} {t('employees')} · {Math.round(b.share * 100)}%
-                                            </span>
-                                            {bumps[b.category] ? <span className="ml-2 px-1.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[10px] font-mono animate-pulse">+{bumps[b.category]}</span> : null}
-                                            <p className="text-[10px] font-mono text-slate-400 mt-1">{t('avgStall')} {b.avg_stall_minutes} {t('min')} · {b.trend_7d}</p>
-                                        </div>
-                                    </div>
-                                    <div className="h-2 mt-3 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
-                                        <div className="h-full bg-sky-500 transition-all duration-700" style={{ width: Math.round(b.affected_count / max * 100) + '%' }}></div>
-                                    </div>
-                                </div>
-                            ))}
+                            {shown.map((b) => (<BlockerCard key={b.category} b={b} max={max} bump={bumps[b.category]} onSave={onSaveAction} />))}
                             {hidden.map((b) => (
                                 <div key={b.group} className="p-4 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 flex items-center space-x-3 text-slate-500 dark:text-slate-400">
                                     <IconLock className="w-4 h-4" /><span className="text-xs font-mono">{t('hiddenRow', team.k_threshold)}</span>
@@ -720,6 +916,7 @@ function ManagerPortalView({ team, bumps, live, offline }) {
                             ))}
                         </div>
                     </div>
+                    <AnnounceBox visible={shown} announcements={announcements} onSend={onSend} />
                 </>
             )}
         </div>
