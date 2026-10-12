@@ -4,7 +4,7 @@
 >
 > ContextPulse AI proqramçı fasilədən qayıdanda kontekst itkisini azaldan və komanda rəhbərinə tıxanmaları işçini izləmədən göstərən platformadır. Sistem yalnız IDE və Pull Request metadatası ilə işləyir: ekran çəkilmir, klaviatura izlənmir, kod məzmunu oxunmur.
 
-**Komanda:** Mikayıl Məvsumzadə · Elgün Hüseynli · Nuran Əliyev
+**Komanda:** Mikayıl Mövsümzadə · Elgün Hüseynli · Nuran Əliyev
 
 ## Problem və həll
 
