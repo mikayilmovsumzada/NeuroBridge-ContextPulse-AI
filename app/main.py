@@ -1,6 +1,9 @@
 import asyncio
+import hashlib
+import hmac
 import json
 import logging
+import secrets
 import time
 from pathlib import Path
 import os
@@ -23,19 +26,68 @@ _load_env()  # core və ai_engine import olunmazdan ƏVVƏL çağırılmalıdır
 
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
-from fastapi.responses import StreamingResponse, JSONResponse
+from fastapi import FastAPI, Request, Response
+from fastapi.responses import FileResponse, StreamingResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from . import core
 from .ai_engine import fallback_text, generate_reminder
-from .schemas import ActionIn, IdeEvent, MessageIn, ReminderIn, SurveyIn
+from .schemas import ActionIn, IdeEvent, LoginIn, MessageIn, ReminderIn, SurveyIn
 
 STATIC = Path(__file__).resolve().parent.parent / "static"
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(message)s", datefmt="%H:%M:%S")
 log = logging.getLogger("contextpulse")
 subscribers: set = set()
 _reminder_cache: dict = {}
+_sessions: dict[str, dict] = {}
+
+# Demo hesablar (README-də sənədləşdirilmiş demo giriş məlumatları; real parol müqayisəsi hmac.compare_digest ilə aparılır)
+DEMO_ACCOUNTS = {
+    "dev@company.com": {
+        "password_hash": hashlib.sha256(b"emp123").hexdigest(),
+        "role": "employee",
+        "developer_ref": "dev_a91f",
+        "name": "Developer (dev_a91f)",
+    },
+    "manager@company.com": {
+        "password_hash": hashlib.sha256(b"admin123").hexdigest(),
+        "role": "manager",
+        "developer_ref": None,
+        "name": "Engineering Manager",
+    },
+}
+
+
+def _resolve_session(request: Request) -> dict | None:
+    """Sorğudan sessiyanı (Bearer token və ya HttpOnly cookie) yoxlayır."""
+    token = None
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Bearer "):
+        token = auth_header[7:].strip()
+    if not token:
+        token = request.cookies.get("cp_session")
+    if not token:
+        return None
+    sess = _sessions.get(token)
+    if not sess:
+        return None
+    if sess.get("expires_at", 0) < time.time():
+        _sessions.pop(token, None)
+        return None
+    return sess
+
+
+def _check_role(request: Request, required_role: str) -> JSONResponse | None:
+    """Əgər sorğuda sessiya və ya X-CP-Auth-Enforce başlığı varsa, rolu server tərəfdə məcburi yoxlayır."""
+    sess = _resolve_session(request)
+    enforce = request.headers.get("X-CP-Auth-Enforce") == "1"
+    if sess is not None:
+        if sess["role"] != required_role:
+            return JSONResponse({"detail": "Bu əməliyyat üçün icazəniz yoxdur (rol uyğunsuzluğu)."}, status_code=403)
+        return None
+    if enforce:
+        return JSONResponse({"detail": "Autentifikasiya tələb olunur."}, status_code=401)
+    return None
 
 
 @asynccontextmanager
@@ -47,8 +99,6 @@ async def lifespan(app: FastAPI):
     log.info("Database hazırdır")
 
     # 2. AI mühərrikinin konfiqurasiyasını yoxla
-    import os
-
     if os.getenv("GEMINI_API_KEY"):
         log.info("AI engine: Gemini konfiqurasiya olunub")
     else:
@@ -91,6 +141,66 @@ async def health():
     return {"status": "ok", "subscribers": len(subscribers)}
 
 
+@app.post("/api/auth/login")
+async def auth_login(body: LoginIn, response: Response):
+    email = body.email.lower().strip()
+    acct = DEMO_ACCOUNTS.get(email)
+    given_hash = hashlib.sha256(body.password.encode("utf-8")).hexdigest()
+    if not acct or not hmac.compare_digest(acct["password_hash"], given_hash):
+        return JSONResponse({"detail": "Səhv e-poçt və ya parol"}, status_code=401)
+    if body.role and acct["role"] != body.role:
+        return JSONResponse({"detail": "Bu giriş pəncərəsi yalnız müvafiq rol üçündür"}, status_code=403)
+    token = secrets.token_urlsafe(32)
+    sess = {
+        "token": token,
+        "email": email,
+        "role": acct["role"],
+        "developer_ref": acct["developer_ref"],
+        "name": acct["name"],
+        "expires_at": time.time() + 86400,
+    }
+    _sessions[token] = sess
+    response.set_cookie(
+        key="cp_session",
+        value=token,
+        httponly=True,
+        samesite="lax",
+        max_age=86400,
+        path="/",
+    )
+    return {
+        "authenticated": True,
+        "role": acct["role"],
+        "email": email,
+        "name": acct["name"],
+        "developer_ref": acct["developer_ref"],
+        "token": token,
+    }
+
+
+@app.post("/api/auth/logout")
+async def auth_logout(request: Request, response: Response):
+    sess = _resolve_session(request)
+    if sess:
+        _sessions.pop(sess["token"], None)
+    response.delete_cookie(key="cp_session", path="/")
+    return {"logged_out": True}
+
+
+@app.get("/api/auth/session")
+async def auth_session(request: Request):
+    sess = _resolve_session(request)
+    if not sess:
+        return {"authenticated": False, "role": None}
+    return {
+        "authenticated": True,
+        "role": sess["role"],
+        "email": sess["email"],
+        "name": sess["name"],
+        "developer_ref": sess["developer_ref"],
+    }
+
+
 @app.get("/api/bootstrap")
 async def bootstrap(developer_ref: str = "dev_a91f"):
     ev = core.latest_event(developer_ref) or core.BASE_EVENT
@@ -109,7 +219,10 @@ async def ingest(event: IdeEvent):
 
 
 @app.get("/api/snapshot/{developer_ref}")
-async def snapshot(developer_ref: str):
+async def snapshot(developer_ref: str, request: Request):
+    err = _check_role(request, "employee")
+    if err:
+        return err
     ev = core.latest_event(developer_ref)
     if not ev:
         return JSONResponse({"detail": "hadisə tapılmadı"}, status_code=404)
@@ -117,7 +230,10 @@ async def snapshot(developer_ref: str):
 
 
 @app.post("/api/reminder")
-async def reminder(body: ReminderIn):
+async def reminder(body: ReminderIn, request: Request):
+    err = _check_role(request, "employee")
+    if err:
+        return err
     ev = core.latest_event(body.developer_ref)
     if not ev:
         return JSONResponse({"detail": "hadisə tapılmadı"}, status_code=404)
@@ -137,7 +253,10 @@ async def reminder(body: ReminderIn):
 
 
 @app.post("/api/survey", status_code=201)
-async def survey(body: SurveyIn):
+async def survey(body: SurveyIn, request: Request):
+    err = _check_role(request, "employee")
+    if err:
+        return err
     core.add_survey(body.developer_ref, body.reason_id, body.category)
     payload = core.team_payload()
     await publish("team", payload)
@@ -148,13 +267,19 @@ async def survey(body: SurveyIn):
 
 
 @app.get("/api/team/blockers")
-async def team():
+async def team(request: Request):
+    err = _check_role(request, "manager")
+    if err:
+        return err
     return core.team_payload()
 
 
 @app.put("/api/team/blockers/{category}/action")
-async def set_blocker_action(category: str, body: ActionIn):
+async def set_blocker_action(category: str, body: ActionIn, request: Request):
     """Menecer görünən tıxanmaya status, məsul və qeyd yazır. K həddindən aşağı (gizli) qrup üçün rədd edilir."""
+    err = _check_role(request, "manager")
+    if err:
+        return err
     if category not in core.META:
         return JSONResponse({"detail": "naməlum kateqoriya"}, status_code=404)
     if category not in core.visible_categories():
@@ -168,8 +293,11 @@ async def set_blocker_action(category: str, body: ActionIn):
 
 
 @app.post("/api/team/messages", status_code=201)
-async def post_team_message(body: MessageIn):
+async def post_team_message(body: MessageIn, request: Request):
     """Menecerin bütün komandaya elanı (fərdi işçiyə ünvanlanmır). Mövzu seçilibsə, qrup görünən olmalıdır."""
+    err = _check_role(request, "manager")
+    if err:
+        return err
     if body.category and body.category not in core.visible_categories():
         return JSONResponse({"detail": "qrup K həddindən azdır"}, status_code=409)
     msg = core.add_message(body.category, body.text)
@@ -213,5 +341,48 @@ async def stream():
                              headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
 
 
-# API marşrutlarından SONRA qoşulur: /, /app.js, /styles.css
+SPA_ROUTES = {
+    "/portal",
+    "/login",
+    "/login/developer",
+    "/login/manager",
+    "/developer",
+    "/dev-portal",
+    "/manager",
+    "/manager-portal",
+    "/privacy-policy",
+    "/terms-and-conditions",
+    "/cookie-policy",
+    "/privacy",
+    "/terms",
+    "/cookies",
+}
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon_ico():
+    ico_path = STATIC / "favicon.ico"
+    if ico_path.exists():
+        return FileResponse(ico_path, media_type="image/x-icon")
+    return Response(status_code=404)
+
+
+@app.get("/favicon.svg", include_in_schema=False)
+async def favicon_svg():
+    svg_path = STATIC / "favicon.svg"
+    if svg_path.exists():
+        return FileResponse(svg_path, media_type="image/svg+xml")
+    return Response(status_code=404)
+
+
+for _route in SPA_ROUTES:
+    app.add_api_route(
+        _route,
+        endpoint=lambda: FileResponse(STATIC / "index.html", media_type="text/html"),
+        methods=["GET"],
+        include_in_schema=False,
+    )
+
+# API və SPA marşrutlarından SONRA qoşulur: /, /app.js, /styles.css
 app.mount("/", StaticFiles(directory=STATIC, html=True), name="static")
+

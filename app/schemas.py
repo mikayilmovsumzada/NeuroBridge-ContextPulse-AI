@@ -108,3 +108,11 @@ class MessageIn(Strict):
     """Menecerin bütün komandaya elanı. İstəyə görə görünən bir tıxanma mövzusuna bağlana bilər."""
     text: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=280)]
     category: Optional[Category] = None
+
+
+class LoginIn(Strict):
+    """Rol əsaslı giriş sorğusu."""
+    email: Annotated[str, StringConstraints(strip_whitespace=True, min_length=3, max_length=120)]
+    password: Annotated[str, StringConstraints(min_length=1, max_length=120)]
+    role: Optional[Literal["employee", "manager"]] = None
+
