@@ -28,6 +28,7 @@ pages:
   script:
     - mkdir -p public
     - cp -r static/* public/
+    - cp static/index.html public/404.html   # alt yola birbaşa keçidlər (məs. /privacy-policy) üçün
   artifacts:
     paths: [public]
   rules:

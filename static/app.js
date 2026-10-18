@@ -6,490 +6,159 @@ function sanitizeInput(str) {
     return str.replace(/[&<>"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
 }
 
-// ============ DİL (AZ / EN) — README və faktiki koda tam uyğunlaşdırılıb ============
+// ============ DİL (AZ / EN) ============
 const I18N = {
     az: {
-        brandSub: 'Privacy-First Context & Blocker Platform',
-        navHome: 'Məhsul',
-        navArchitecture: 'Arxitektura',
-        navPrivacy: 'Məxfilik',
-        navPortal: 'Giriş Portalı',
-        devPanel: 'İşçi Paneli',
-        mgrPanel: 'Menecer Paneli',
-        logout: 'Çıxış',
-        live: 'Canlı SSE',
-        connecting: 'Qoşulur…',
-        offlineDemo: 'Oflayn demo',
-        loading: 'Yüklənir...',
-
-        // Hero & Public Landing Page (Grounded in README.md)
-        homeBadge: 'Yalnız IDE və PR Metadatası • K-Anonimlik (K = 5)',
-        homeTitle: 'Fasilədən Sonra Kontekst İtkisini Azaldan və Tıxanmaları İzləmədən Göstərən Platforma',
-        homeSub: 'ContextPulse AI proqramçı fasilədən qayıdanda son işi qısa xatırlatma ilə bərpa edir və komanda rəhbərinə tıxanmaları fərdi işçini izləmədən, K-anonimlik (K = 5) qaydası ilə təqdim edir. Ekran çəkilmir, klaviatura izlənmir, kod məzmunu oxunmur.',
-        heroCtaPrimary: 'Arxitektura və Axını İzlə',
-        heroCtaPortal: ' İdarəetmə Portalına Keçid',
-        heroMeta1Label: 'Məxfilik Yoxlaması',
-        heroMeta1Val: 'Pydantic Strict (422 Rədd)',
-        heroMeta2Label: 'Anonimlik Həddi',
-        heroMeta2Val: 'K = 5 Minimum Qrup',
-        heroMeta3Label: 'AI Doğrulama',
-        heroMeta3Val: 'Fakt Yoxlaması + Fallback',
-        heroMeta4Label: 'Canlı Yenilənmə',
-        heroMeta4Val: 'Server-Sent Events (SSE)',
-
-        // 3 Core Features (Corrected from README)
-        featSectionTag: 'ƏSAS XÜSUSİYYƏTLƏR VƏ MEXANİZMLƏR',
-        featSectionTitle: 'Məxfiliklə Mühəndislik Görünürlüyünü Birləşdirən İkiqat Dövrə',
-        featSectionSub: 'Sistem yalnız doğrulanmış IDE və Pull Request metadatası üzərində işləyir — fərdi nəzarət olmadan həm proqramçını, həm də komanda rəhbərini dəstəkləyir.',
-
-        featSpyTitle: 'Yalnız Metadata Telemetriyası (Casus Proqram Yoxdur)',
-        featSpyBadge: 'HTTP 422 Sxem Mühafizəsi',
-        featSpyText: 'Ekran qeydi (screen_capture) və klaviatura izləmə (keystroke_content) yoxdur. API-də privacy sahələrindən hər hansı biri true olarsa və ya sxemdə nəzərdə tutulmayan sahə (məsələn source_code) göndərilərsə, sorğu dərhal HTTP 422 ilə rədd edilir.',
-
-        featReTitle: 'Saniyələr İçində Kontekst Bərpası',
-        featReBadge: 'Gemini + Deterministik Doğrulama',
-        featReText: 'Fasilədən qayıdanda xatırlatma Google Gemini ilə hazırlanır və proqramla giriş JSON-una qarşı doğrulanır: uydurma fayl, funksiya, xəta kodu və ya PR nömrəsi aşkarlanarsa avtomatik hazır mətnə (fallback) keçilir. İlk Gemini sorğusu bir neçə saniyə çəkə bilər, eyni hadisə üçün sonrakı sorğular yaddaşdan (keşdən) gəlir.',
-
-        featKTitle: 'K-Anonimlik (K = 5) Qrup Aqreqasiyası',
-        featKBadge: 'K = 5 Hədd Qorunması',
-        featKText: 'Menecer panelində fərdi identifikator yoxdur. Tıxanma kateqoriyası yalnız ən azı K = 5 cavab topladıqda görünür. Daha az cavabı olan qruplar "gizlədilib" (n < K) kimi göstərilir, dəqiq sayı açıqlanmır və onlar üzərində tədbir açmaq serverdə 409 ilə rədd edilir.',
-
-        // Closed-loop architecture section
-        loopTag: 'QAPALI DÖVRƏ AXINI',
-        loopTitle: 'Üç Addımda Komanda Koordinasiyası',
-        loopStep1Title: '1. İşçi üçün Kontekst Bərpası',
-        loopStep1Text: 'Fasilədən qayıdan kimi AI son dəyişdirilən funksiyanı, açıq xətanı (məs. TS2345), uğursuz testi və PR-dəki həll olunmamış şərhləri qısa xatırlatma ilə göstərir.',
-        loopStep2Title: '2. Menecer üçün K-Anonim Analitika',
-        loopStep2Text: 'İşçinin seçdiyi fasilə səbəbi anonim olaraq qruplaşdırılır. K = 5 həddini keçən tıxanmalar üzrə menecer status (Araşdırılır, Tədbir planlanıb, Həll olunub), məsul komanda və qeyd təyin edir.',
-        loopStep3Title: '3. Dövrə Qapanır (Canlı SSE)',
-        loopStep3Text: 'Menecerin tıxanmalar üzrə tədbir qeydləri və komanda elanları Server-Sent Events (SSE) vasitəsilə bütün işçilərin panelində səhifə yenilənmədən canlı görünür.',
-
-        // Schema & Limitations transparency section
-        schemaTag: 'TEXNİKİ ŞƏFFAFLIQ VƏ MƏHDUDİYYƏTLƏR',
-        schemaTitle: 'Doğrulanmış Hadisə Sxemi və Məlum Məhdudiyyətlər',
-        schemaSub: 'README sənədləşməsinə uyğun olaraq sistemin qəbul etdiyi metadata strukturu və cari memarlıq məhdudiyyətləri açıq şəkildə təqdim edilir.',
-        schemaBoxTitle: 'Qəbul Edilən IDE Hadisə Sxemi (contextpulse.ide_event.v1)',
-        limitsBoxTitle: 'Məlum Məhdudiyyətlər və Yol Xəritəsi',
-        limit1: 'IDE hadisələri hazırda simulyatordan (simulator.py) və ya API-dən gəlir; birbaşa VS Code extension və GitHub PR inteqrasiyası növbəti mərhələdədir.',
-        limit2: 'K-anonimlik (K = 5) kiçik qrupları gizlədir, lakin zamana görə ardıcıl müşahidə hücumlarından tam qorumur.',
-        limit3: 'SQLite verilənlər bazası və yaddaşdaxili (in-memory) sessiya/keş saxlama demo üçündür; istehsal mühiti üçün PostgreSQL planlaşdırılır.',
-        limit4: 'Oflayn demo rejimində (məs. GitLab Pages) backend olmadıqda eyni K-anonimlik və hazır mətn (fallback) məntiqi brauzerdə işlədilir.',
-
-        // Portal & Login Views
-        portalBadge: 'ROL ƏSASLI GİRİŞ PORTALI',
-        portalTitle: 'ContextPulse AI İdarəetmə Portalı',
-        portalSub: 'İşçi və menecer panelləri məxfilik və səlahiyyət prinsiplərinə uyğun olaraq tam ayrılmışdır. Davam etmək üçün rolunuzu seçin.',
-        devCardTitle: 'İşçi Paneli (Developer View)',
-        devCardText: 'Canlı IDE metadata axını, AI ilə kontekst bərpası, fasilə səbəbinin anonim qeydi, komanda elanları və tıxanma tədbirləri.',
-        goDev: 'İşçi Panelinə Keçid',
-        loginDev: 'İşçi Kimi Daxil Ol',
-        mgrCardTitle: 'Menecer Paneli (K-Anonim Analitika)',
-        mgrCardText: 'K = 5 həddi ilə qorunan komanda səviyyəli tıxanma analitikası, tədbir izləmə (status/məsul/qeyd) və komandaya canlı elan göndərilməsi.',
-        goMgr: 'Menecer Panelinə Keçid',
-        loginMgr: 'Menecer Kimi Daxil Ol',
-        loginTitleDev: 'İşçi Panelinə Giriş',
-        loginTitleMgr: 'Menecer Panelinə Giriş',
-        loginSub: 'Rolunuza uyğun şirkət e-poçtu və parolunuzu daxil edin',
-        email: 'Şirkət E-poçtu',
-        password: 'Parol',
-        demoCreds: 'Demo Giriş Məlumatları (README):',
-        fillDemoBtn: 'Demo məlumatlarını doldur',
-        cancel: 'Geri Qayıt',
-        submit: 'Daxil Ol',
-        loginErr: 'Səhv e-poçt, parol və ya rol uyğunsuzluğu!',
-        loginOkDev: 'İşçi Panelinə uğurla daxil oldunuz!',
-        loginOkMgr: 'Menecer Panelinə təhlükəsiz giriş edildi!',
-        logoutToast: 'Sistemdən çıxış edildi.',
-        switchRoleHint: 'Başqa rol ilə daxil olmaq üçün əvvəlcə cari sessiyadan çıxış edin.',
-
-        // Developer Dashboard
-        devTitle: 'İşçi Paneli (Developer Workspace)',
-        devSub: 'Canlı IDE və PR metadata siqnalı, AI kontekst bərpası və komanda yenilikləri',
-        simBtn: 'Fasilə / Uzaqlaşmanı Simulyasiya Et',
-        liveTitle: 'Canlı IDE və PR Siqnalı (yalnız doğrulanmış metadata)',
-        workspaceLabel: ' Workspace / Repo',
-        sessionLabel: 'Sessiya Vəziyyəti',
-        idleSecLabel: 'Son fəaliyyətdən keçən vaxt',
-        file: 'Son Dəyişdirilən Fayl',
-        firstErr: 'Diaqnostika (İlk Xəta)',
-        tests: 'Test Vəziyyəti',
-        pr: 'Pull Request Statusu',
-        line: 'sətir',
-        linesRange: 'sətir aralığı',
-        errorsWord: 'xəta',
-        warningsWord: 'xəbərdarlıq',
-        passed: 'uğurlu',
-        failed: 'uğursuz',
-        unresolved: 'həll olunmamış şərh',
-        privacyLine: 'screen_capture: false · keystroke_content: false · source_code_content: false',
-        historyTitle: 'Uzaqda Olma və Fasilə Tarixçəniz',
-        historySub: 'Seçdiyiniz fasilə səbəbləri fərdi identifikator olmadan menecer aqreqasiyasına göndərilir',
-        duration: 'Müddət',
-        min: 'dəq',
-        simSuffix: '(Simulyasiya)',
-        idleTitle: 'Fasilədən Qayıdış və Kontekst Bərpası',
-        idleText: 'Sistem son aktivlikdən sonra fasilə qeydə aldı. AI son kontekstinizi bərpa etdi — fasilə səbəbini seçərək komanda analitikasına anonim töhfə verin:',
-        whereLeft: 'Harada qalmışdın (AI Kontekst Xülasəsi)',
-        aiReading: 'AI son IDE və PR metadatanızı oxuyur...',
-        pickReason: 'Fasilə Səbəbini Seçin (K-Anonim sorğu):',
-        selectPh: '-- Səbəb seçin --',
-        close: 'Bağla',
-        record: 'Tarixçəyə Qeyd Et',
-        recorded: 'Səbəbiniz tarixçəyə əlavə edildi və menecer panelinə anonim göndərildi.',
+        brandSub: 'Enterprise Context Platform', devPanel: 'İşçi Paneli', mgrPanel: 'Menecer Paneli', logout: 'Çıxış',
+        live: 'Canlı', connecting: 'Qoşulur…', offlineDemo: 'Oflayn demo', loading: 'Yüklənir...',
+        homeBadge: 'Yalnız metadata · K-anonim qruplaşdırma (K=5)',
+        homeTitle: 'Fasilədən sonra kontekst bərpası, komanda üçün görünən tıxanmalar',
+        homeSub: 'Platforma IDE və Pull Request metadatasını qəbul edir: işçi qayıdanda qısa xatırlatma alır, menecer isə tıxanmaları yalnız komanda səviyyəsində görür.',
+        devCardTitle: 'İşçi Paneli (Dev View)', devCardText: 'Canlı IDE telemeteriya baxışı, uzaqda olma tarixçəsi və şəxsi kontekst bərpa vasitələri.',
+        goDev: 'İşçi Panelinə Keçid', loginDev: 'İşçi Kimi Giriş Et (Parol ilə)',
+        mgrCardTitle: 'Menecer Paneli', mgrCardText: 'Komanda səviyyəsində tıxanmaların canlı görünüşü, tədbir qeydləri və elanlar. Qruplar K=5 həddinə görə göstərilir.',
+        goMgr: 'Menecer Panelinə Keçid', loginMgr: 'Menecer Kimi Giriş Et (Parol ilə)',
+        loginTitleDev: 'İşçi Panelinə Giriş', loginTitleMgr: 'Menecer Panelinə Giriş', loginSub: 'Şirkət e-poçtu və parolunuzu daxil edin',
+        email: 'Şirkət E-poçtu', password: 'Parol', demoCreds: 'Demo Giriş Məlumatları:', cancel: 'İmtina', submit: 'Daxil Ol',
+        loginErr: 'Səhv e-poçt və ya parol!', loginOkDev: 'İşçi Panelinə uğurla daxil oldunuz!',
+        loginOkMgr: 'Menecer Panelinə təhlükəsiz giriş edildi!', logoutToast: 'Sistemdən çıxış edildi.', cookieSaved: 'Kuki seçimləriniz yadda saxlanıldı.',
+        devTitle: 'İşçi Paneli (Developer View)', devSub: 'Canlı IDE metadata axını və fərdi re-engagement göstəriciləri',
+        simBtn: 'Fasilə / Uzaqlaşmanı Simulyasiya Et', liveTitle: 'Canlı IDE Siqnalı (yalnız metadata)',
+        file: 'Fayl', firstErr: 'İlk xəta', tests: 'Testlər', pr: 'Pull Request', line: 'sətir', errorsWord: 'xəta',
+        passed: 'uğurlu', failed: 'uğursuz', unresolved: 'həll olunmamış şərh',
+        privacyLine: 'hadisə bəyanatı: ekran qeydi yox · klaviatura məzmunu yox · mənbə kodu yox',
+        historyTitle: 'Uzaqda Olma və Fasilə Tarixçəniz', duration: 'Müddət', min: 'dəq', simSuffix: '(Simulyasiya)',
+        idleTitle: 'Fasilə və Ya Uzaqlaşma Diagnostikası', idleText: 'Sistem son aktivlikdən sonra fasilə qeydə aldı. Səbəbi seçin:',
+        whereLeft: 'Harada qalmışdın', aiReading: 'AI son kontekstinizi oxuyur...', pickReason: 'Səbəbi Seçin:', selectPh: '-- Səbəb seçin --',
+        close: 'Bağla', record: 'Tarixçəyə Qeyd Et', recorded: 'Səbəbiniz tarixçəyə əlavə edildi və menecer panelinə qrup sayının bir hissəsi kimi daxil oldu.',
         serverFail: 'Server cavab vermədi, cavab qeyd olunmadı.',
-        badge_gemini: 'Gemini · faktlara qarşı doğrulanıb',
-        badge_no_key: 'hazır mətn (API açarı yoxdur)',
-        badge_invalid: 'hazır mətn (AI cavabı doğrulamadan keçmədi)',
-        badge_error: 'hazır mətn (AI əlçatmaz)',
-        badge_timeout: 'hazır mətn (AI gec cavab verdi)',
-        badge_offline: 'oflayn demo · hazır mətn',
-        badge_srvfail: 'hazır mətn (server cavab vermədi)',
-
-        // Manager Dashboard
+        badge_gemini: 'Gemini · faktlara qarşı doğrulanıb', badge_no_key: 'hazır mətn (API açarı yoxdur)',
+        badge_invalid: 'hazır mətn (AI cavabı doğrulamadan keçmədi)', badge_error: 'hazır mətn (AI əlçatmaz)',
+        badge_timeout: 'hazır mətn (AI gec cavab verdi)', badge_offline: 'oflayn demo · hazır mətn', badge_srvfail: 'hazır mətn (server cavab vermədi)',
         mgrTitle: 'Menecer Analitika Paneli',
-        mgrSub: (k) => `K-Anonimlik (K=${k}) çərçivəsində komanda səviyyəsində tıxanmalar. Fərdi işçi identifikatoru bu paneldə yoxdur.`,
-        orgUnitLabel: 'Təşkilati vahid',
-        teamSize: 'Komanda ölçüsü',
-        last7: 'son 7 gün',
-        responses: 'Cavablar',
-        anonAnswers: 'anonim cavablar',
-        kLabel: 'K həddi',
-        minGroup: 'minimum qrup ölçüsü',
-        hiddenGroups: 'Gizlədilən qruplar',
-        analyticsTitle: 'K-Anonimləşdirilmiş Tıxanma (Blocker) Analitikası',
-        filterAll: 'Hamısı',
-        filterVisible: 'Görünən (n ≥ K)',
-        filterActed: 'Tədbir görülənlər',
-        filterHidden: 'Gizlədilən (n < K)',
-        insufficient: 'Cavabların ümumi sayı K həddindən azdır, məxfilik üçün heç bir qrup göstərilmir.',
-        employees: 'cavab',
-        avgStall: 'orta dayanma',
-        hiddenRow: (k) => `Gizlədilib: qrup ölçüsü K=${k} həddindən azdır (dəqiq say açıqlanmır, tədbir açmaq qadağandır)`,
+        mgrSub: (k) => `K-Anonimlik (K=${k}) çərçivəsində komanda səviyyəsində tıxanmalar. Fərdi işçi məlumatı bu paneldə yoxdur.`,
+        teamSize: 'Komanda ölçüsü', last7: 'son 7 gün', responses: 'Cavablar', anonAnswers: 'qeydə alınmış cavablar',
+        kLabel: 'K həddi', minGroup: 'minimum qrup ölçüsü', hiddenGroups: 'Gizlədilən qruplar',
+        analyticsTitle: 'Komanda səviyyəsində tıxanmalar (K-həddi tətbiq olunur)',
+        insufficient: 'Cavabların sayı K həddindən azdır, heç bir qrup göstərilmir.', employees: 'işçi', avgStall: 'orta dayanma',
+        hiddenRow: (k) => `Gizlədilib: qrup ölçüsü K=${k} həddindən azdır`,
         kReached: (k, l) => `K=${k} həddinə çatdı, qrup göründü: ${l}`,
-        cat_PR_REVIEW_WAIT: 'PR review gözləməsi',
-        sig_PR_REVIEW_WAIT: 'Median PR gözləməsi 26,4 saat',
-        cat_CI_FLAKY: 'Qeyri-sabit CI testləri',
-        sig_CI_FLAKY: '7 flaky test, 3 pipeline təkrar işə düşüb',
-        cat_MEETING_LOAD: 'Görüşlər arası parçalanma',
-        sig_MEETING_LOAD: 'Gündə orta 3,1 görüş',
-        cat_UNCLEAR_REQUIREMENTS: 'Aydın olmayan tələb',
-        sig_UNCLEAR_REQUIREMENTS: '2 task açıq sualla bağlanıb',
-        cat_TOOLING: 'Mühit / alət problemləri',
-        sig_TOOLING: 'Lokal mühit qurulumu və asılılıq xətaları',
-        reason_pr: 'PR review gözləməsi',
-        reason_ci: 'Qeyri-sabit CI / test problemi',
-        reason_meet: 'Görüşlər arası parçalanma',
-        reason_req: 'Aydın olmayan tələb',
-        reason_tool: 'Mühit / alət problemi',
-        reason_break: 'Şəxsi fasilə (çay / istirahət)',
-
-        // Action tracking & Announcements
-        status_none: 'Status yoxdur',
-        status_investigating: 'Araşdırılır',
-        status_planned: 'Tədbir planlanıb',
-        status_resolved: 'Həll olunub',
-        actionTitle: 'Tədbir izləmə',
-        statusLabel: 'Status',
-        ownerLabel: 'Məsul komanda / şəxs',
-        ownerPh: 'məs. DevOps komandası',
-        noteLabel: 'Qeyd',
-        notePh: 'Görüləcək tədbir haqqında qısa qeyd',
-        saveAction: 'Yadda saxla',
-        ownerShort: 'Məsul',
-        updatedAt: 'Yenilənib',
-        actionSaved: 'Tədbir qeydi saxlanıldı.',
-        actionFailed: 'Tədbir qeydi saxlanılmadı: qrup K həddindən aşağı düşüb və ya server cavab vermədi.',
-        announceTitle: 'Komandaya elan',
-        announceSub: 'Elan bütün işçilərin panelində canlı görünür. Fərdi işçiyə ünvanlanmır; mövzu yalnız görünən (n ≥ K) qrupa bağlana bilər.',
-        announcePh: 'məs. PR review üçün 24 saatlıq qayda təyin edirik',
-        announceTo: 'Mövzu',
-        announceAll: 'Ümumi (mövzusuz)',
-        announceSend: 'Elanı göndər',
-        announceSent: 'Elan komandaya göndərildi.',
-        announceFail: 'Elan göndərilmədi.',
-        announceHistory: 'Göndərilmiş elanlar',
-        noAnnouncements: 'Hələ elan yoxdur.',
-        wsAnnouncements: 'Komanda elanları',
-        wsStatusTitle: 'Tıxanmalar üzrə tədbirlər',
-        wsNoStatus: 'Hələ tədbir qeydi yoxdur.',
+        cat_PR_REVIEW_WAIT: 'PR review gözləməsi', sig_PR_REVIEW_WAIT: 'Median PR gözləməsi 26,4 saat',
+        cat_CI_FLAKY: 'Qeyri-sabit CI testləri', sig_CI_FLAKY: '7 flaky test, 3 pipeline təkrar işə düşüb',
+        cat_MEETING_LOAD: 'Görüşlər arası parçalanma', sig_MEETING_LOAD: 'Gündə orta 3,1 görüş',
+        cat_UNCLEAR_REQUIREMENTS: 'Aydın olmayan tələb', sig_UNCLEAR_REQUIREMENTS: '2 task açıq sualla bağlanıb',
+        cat_TOOLING: 'Mühit / alət problemləri', sig_TOOLING: 'Lokal mühit qurulumu və asılılıq xətaları',
+        reason_pr: 'PR review gözləməsi', reason_ci: 'Qeyri-sabit CI / test problemi', reason_meet: 'Görüşlər arası parçalanma',
+        reason_req: 'Aydın olmayan tələb', reason_tool: 'Mühit / alət problemi', reason_break: 'Şəxsi fasilə (çay / istirahət)',
+        footerCopy: '© 2026 ContextPulse AI. Bütün hüquqlar qorunur.', privacyLink: 'Məxfilik Siyasəti', termsLink: 'İstifadə Şərtləri', cookiesLink: 'Kuki Siyasəti',
+        cookieTitle: 'Brauzer yaddaşı haqqında', cookieText: 'Bu sayt HTTP cookie qoymur. Dil və tema seçimlərinizi yalnız siz dəyişəndə brauzerin yerli yaddaşında saxlayırıq. Analitika və ya reklam alətləri yoxdur.',
+        accept: 'Anladım', readMore: 'Ətraflı Oxu',
+        notFoundTitle: 'Səhifə Tapılmadı və ya Giriş Qadağandır',
+        notFoundText: 'Axtardığınız keçid mövcud deyil və ya bu rol üçün icazə verilmir. İşçi və menecer panelləri bir-birindən tam ayrılıb.',
+        backHome: 'Ana Səhifəyə Qayıt', themeAria: 'Temanı dəyiş', langAria: 'Dil',
+        status_none: 'Status yoxdur', status_investigating: 'Araşdırılır', status_planned: 'Tədbir planlanıb', status_resolved: 'Həll olunub',
+        actionTitle: 'Tədbir izləmə', statusLabel: 'Status', ownerLabel: 'Məsul komanda / şəxs', ownerPh: 'məs. DevOps komandası',
+        noteLabel: 'Qeyd', notePh: 'Görüləcək tədbir haqqında qısa qeyd', saveAction: 'Yadda saxla', ownerShort: 'Məsul', updatedAt: 'Yenilənib',
+        actionSaved: 'Tədbir qeydi saxlanıldı.', actionFailed: 'Tədbir qeydi saxlanılmadı: qrup K həddindən aşağı düşüb və ya server cavab vermədi.',
+        announceTitle: 'Komandaya elan', announceSub: 'Elan bütün işçilərin panelində canlı görünür. Fərdi işçiyə ünvanlanmır.',
+        announcePh: 'məs. PR review üçün 24 saatlıq qayda təyin edirik', announceTo: 'Mövzu', announceAll: 'Ümumi (mövzusuz)',
+        announceSend: 'Elanı göndər', announceSent: 'Elan komandaya göndərildi.', announceFail: 'Elan göndərilmədi.',
+        announceHistory: 'Göndərilmiş elanlar', noAnnouncements: 'Hələ elan yoxdur.',
+        wsAnnouncements: 'Komanda elanları', wsStatusTitle: 'Tıxanmalar üzrə tədbirlər', wsNoStatus: 'Hələ tədbir qeydi yoxdur.',
         newAnnouncementToast: 'Menecerdən yeni komanda elanı var.',
-        demoResetBtn: 'Demo Məlumatını Sıfırla',
-        demoResetConfirmTitle: 'Demo Məlumatını Sıfırlamaq İstəyirsiniz?',
-        demoResetConfirmText: 'Bu əməliyyat bütün əlavə edilmiş sorğu cavablarını, tədbir qeydlərini və komanda elanlarını silərək ilkin seed vəziyyətinə qaytaracaq.',
-        demoResetConfirmYes: 'Bəli, Sıfırla',
-        demoResetDone: 'Demo məlumatları ilkin vəziyyətə sıfırlandı.',
-
-        // Footer & Cookie Consent
-        footerCopy: '© 2026 ContextPulse AI (NeuroBridge Hackathon · Code of War). Bütün hüquqlar qorunur.',
-        privacyLink: 'Məxfilik Siyasəti',
-        termsLink: 'İstifadə Şərtləri',
-        cookiesLink: 'Kuki Siyasəti',
-        cookieSettingsBtn: 'Kuki Seçimləri',
-        cookieTitle: 'Kuki və Lokal Yaddaş Seçimləri',
-        cookieText: 'ContextPulse AI üçüncü tərəf reklam və ya izləmə kukilərindən istifadə etmir. Sessiya təhlükəsizliyi üçün zəruri HttpOnly kuki və dil/tema seçimləriniz üçün brauzer yaddaşı (localStorage) tətbiq olunur.',
-        acceptAll: 'Hamısını Qəbul Et',
-        rejectNonEssential: 'Yalnız Zəruri',
-        customizeCookies: 'Fərdiləşdir',
-        savePreferences: 'Seçimləri Yadda Saxla',
-        cookieEssentialTitle: 'Zəruri Texniki Saxlama (Həmişə Aktiv)',
-        cookieEssentialDesc: 'Autentifikasiya sessiyası (cp_session HttpOnly cookie) və kuki razılıq vəziyyətinin saxlanması üçün tələb olunur.',
-        cookieFuncTitle: 'Funksional UI Seçimləri (İstəyə bağlı)',
-        cookieFuncDesc: 'Dil (AZ/EN) və görünüş rejimi (tünd/açıq tema) seçimlərinizin növbəti ziyarətlərdə xatırlanmasını təmin edir.',
-        cookieAnalyticsTitle: 'Analitika və İzləmə Kukiləri (İstifadə Olunmur)',
-        cookieAnalyticsDesc: 'Sistemdə heç bir üçüncü tərəf analitika və ya reklam izləyicisi quraşdırılmayıb.',
-        cookieSaved: 'Kuki və məxfilik seçimləriniz yadda saxlanıldı.',
-        readMore: 'Kuki Siyasəti',
-
-        // 404 / Access Denied
-        notFoundTitle: 'Giriş Məhdudlaşdırılıb və ya Səhifə Tapılmadı',
-        notFoundText: 'Müraciət etdiyiniz ünvan mövcud deyil və ya cari rolunuz üçün icazə verilmir. İşçi və menecer panelləri bir-birindən tam ayrılıb.',
-        backHome: 'Ana Səhifəyə Qayıt',
-        goPortalBtn: 'Giriş Portalına Keç',
-        themeAria: 'Temanı dəyiş',
-        langAria: 'Dil seçimi'
+        signIn: 'Daxil ol', signInDev: 'İşçi (Developer)', signInDevSub: 'IDE siqnalı, xatırlatma və öz tarixçəm', signInMgr: 'Menecer', signInMgrSub: 'Komanda səviyyəsində tıxanmalar və elanlar',
+        portalTitle: 'Panelə giriş', portalSub: 'Rolunuzu seçin. İşçi və menecer panelləri bir-birindən ayrıdır.', backToSite: 'Əsas səhifəyə qayıt', backToPortal: 'Rol seçiminə qayıt',
+        skipToContent: 'Məzmuna keç', mainNav: 'Əsas naviqasiya', legalNav: 'Hüquqi səhifələr', ctaPortal: 'Panellərə giriş', ctaPolicy: 'Məxfilik Siyasəti',
+        howTitle: 'Necə işləyir', how1T: '1. Hadisələr', how1P: 'IDE genişləndirməsi planlaşdırılır. Bu gün simulyator IDE və Pull Request metadatasını API-yə göndərir.',
+        how2T: '2. Xatırlatma', how2P: 'Fasilədən sonra server son hadisədən Gemini ilə qısa xatırlatma yazdırır və cavabı həmin məlumata qarşı yoxlayır. Gemini yoxdursa hazır mətn göstərilir.',
+        how3T: '3. Komanda görünüşü', how3P: 'Fasilə səbəbləri sayılır; 5-dən az cavabı olan qruplar gizli qalır. Menecer tədbir qeydi və komandaya elan yazır.',
+        limitsTitle: 'Hazırkı məhdudiyyətlər', lim1: 'IDE hadisələri simulyatordan gəlir, IDE genişləndirməsi hələ daxil deyil.', lim2: 'İlk AI xatırlatması bir neçə saniyə çəkə bilər; eyni hadisə üçün təkrar sorğular yaddaşdan gəlir.',
+        lim3: 'K-anonimlik panelin göstərdiyini məhdudlaşdırır, lakin tam anonimləşdirmə deyil.', lim4: 'Bu versiyada giriş və rol ayrılığı yalnız brauzerdə yoxlanılır.',
+        lastUpdated: 'Son yenilənmə', cookieSettings: 'Yaddaş ayarları', clearPrefs: 'Saxlanmış seçimləri sil', prefsCleared: 'Saxlanmış seçimlər silindi.',
+        tblName: 'Ad', tblType: 'Növ', tblPurpose: 'Məqsəd', tblDuration: 'Müddət', tblWhen: 'Nə vaxt yazılır',
+        pageTitle_home: 'ContextPulse AI', pageTitle_portal: 'Panelə giriş · ContextPulse AI', 'pageTitle_login-dev': 'İşçi girişi · ContextPulse AI', 'pageTitle_login-mgr': 'Menecer girişi · ContextPulse AI',
+        'pageTitle_dev-portal': 'İşçi paneli · ContextPulse AI', 'pageTitle_manager-portal': 'Menecer paneli · ContextPulse AI',
+        pageTitle_privacy: 'Məxfilik Siyasəti · ContextPulse AI', pageTitle_terms: 'İstifadə Şərtləri · ContextPulse AI', pageTitle_cookies: 'Kuki Siyasəti · ContextPulse AI', pageTitle_404: 'Səhifə tapılmadı · ContextPulse AI',
+        featSpyTitle: 'Yalnız metadata', featSpyText: 'API yalnız IDE və Pull Request metadatasını qəbul edir. Ekran qeydi, klaviatura məzmunu və ya mənbə kodu bildirən hadisələr və sxemdə olmayan sahələr serverdə rədd edilir.',
+        featReTitle: 'Fasilədən sonra kontekst bərpası', featReText: 'AI son IDE və PR metadatasından qısa xatırlatma hazırlayır və cavabı giriş məlumatına qarşı yoxlayır. İlk sorğu bir neçə saniyə çəkə bilər; əlçatmaz olduqda hazır mətn göstərilir.',
+        featKTitle: 'K-anonim qruplaşdırma (K=5)', featKText: 'Menecer paneli yalnız ən azı 5 cavabı olan qrupları göstərir. Bu, tam anonimləşdirmə deyil; məhdudiyyətlər Məxfilik Siyasətində izah olunur.'
     },
     en: {
-        brandSub: 'Privacy-First Context & Blocker Platform',
-        navHome: 'Product',
-        navArchitecture: 'Architecture',
-        navPrivacy: 'Privacy',
-        navPortal: 'Sign-In Portal',
-        devPanel: 'Employee Panel',
-        mgrPanel: 'Manager Panel',
-        logout: 'Log out',
-        live: 'Live SSE',
-        connecting: 'Connecting…',
-        offlineDemo: 'Offline demo',
-        loading: 'Loading...',
-
-        // Hero & Public Landing Page (Grounded in README.md)
-        homeBadge: 'IDE & PR Metadata Only • K-Anonymity (K = 5)',
-        homeTitle: 'Reduce Post-Break Context Loss & Surface Team Blockers Without Surveillance',
-        homeSub: 'ContextPulse AI restores developer context upon returning from a break and surfaces team-level bottlenecks to engineering managers under K-anonymity (K = 5) — using only IDE and Pull Request metadata. No screen capture, no keylogging, and no source code reading.',
-        heroCtaPrimary: 'Explore Architecture & Flow',
-        heroCtaPortal: 'Open Access Portal',
-        heroMeta1Label: 'Privacy Validation',
-        heroMeta1Val: 'Pydantic Strict (422 Reject)',
-        heroMeta2Label: 'Anonymity Threshold',
-        heroMeta2Val: 'K = 5 Minimum Group',
-        heroMeta3Label: 'AI Verification',
-        heroMeta3Val: 'Fact-Checked + Fallback',
-        heroMeta4Label: 'Live Updates',
-        heroMeta4Val: 'Server-Sent Events (SSE)',
-
-        // 3 Core Features (Corrected from README)
-        featSectionTag: 'CORE CAPABILITIES & VERIFIED MECHANISMS',
-        featSectionTitle: 'A Closed-Loop Architecture Balancing Privacy and Engineering Visibility',
-        featSectionSub: 'Built strictly on verified IDE and Pull Request metadata—supporting both individual developers and engineering managers without invasive monitoring.',
-
-        featSpyTitle: 'Metadata-Only Telemetry (Zero Spyware Architecture)',
-        featSpyBadge: 'HTTP 422 Schema Enforcement',
-        featSpyText: 'No screen recording (screen_capture) and no keystroke logging (keystroke_content). The API enforces strict Pydantic validation: if any privacy flag is true or an unexpected field (such as source_code) is submitted, the event is rejected with HTTP 422.',
-
-        featReTitle: 'Context Recovery in Seconds',
-        featReBadge: 'Gemini + Deterministic Validation',
-        featReText: 'When returning from a break, reminders are generated with Google Gemini and programmatically validated against the input JSON: if any hallucinated file, symbol, error code, or PR number is detected, the system automatically falls back to a deterministic template. The initial Gemini request may take a few seconds; subsequent requests for the same event are served from memory.',
-
-        featKTitle: 'K-Anonymity (K = 5) Blocker Aggregation',
-        featKBadge: 'K = 5 Threshold Enforcement',
-        featKText: 'No individual identifiers appear in the manager view. A blocker category is revealed only when it collects at least K = 5 responses. Smaller groups are shown as "hidden" (n < K) without disclosing exact counts, and server-side guards reject actions on hidden groups with HTTP 409.',
-
-        // Closed-loop architecture section
-        loopTag: 'CLOSED-LOOP WORKFLOW',
-        loopTitle: 'Three-Stage Team Coordination',
-        loopStep1Title: '1. Context Recovery for Developers',
-        loopStep1Text: 'Upon returning from a break, AI summarizes the last edited function, open diagnostic error (e.g., TS2345), failing test, and unresolved PR comments.',
-        loopStep2Title: '2. K-Anonymous Analytics for Managers',
-        loopStep2Text: 'Break reasons selected by developers are aggregated anonymously. For visible categories (n ≥ 5), managers assign status (Investigating, Action planned, Resolved), owner team, and action notes.',
-        loopStep3Title: '3. Closing the Loop (Live SSE)',
-        loopStep3Text: 'Manager action notes and team-wide announcements stream live via Server-Sent Events (SSE) to all developer dashboards without page reloads.',
-
-        // Schema & Limitations transparency section
-        schemaTag: 'TECHNICAL TRANSPARENCY & LIMITATIONS',
-        schemaTitle: 'Verified Event Schema & Known Limitations',
-        schemaSub: 'In accordance with the repository README, here is the exact metadata schema accepted by the API alongside current prototype boundaries.',
-        schemaBoxTitle: 'Accepted IDE Event Schema (contextpulse.ide_event.v1)',
-        limitsBoxTitle: 'Known Limitations & Roadmap',
-        limit1: 'IDE events are currently emitted via simulator.py or direct API calls; native VS Code extension and GitHub PR webhooks are on the roadmap.',
-        limit2: 'K-anonymity (K = 5) hides small groups below the threshold, though it does not fully protect against temporal observation attacks over sequential updates.',
-        limit3: 'SQLite storage and in-memory session/reminder caches are designed for demonstration; PostgreSQL and persistent caching are planned for production.',
-        limit4: 'In Offline Demo mode (e.g., static GitLab Pages deployment without a backend), the same K-anonymity and template fallback logic runs locally in the browser.',
-
-        // Portal & Login Views
-        portalBadge: 'ROLE-BASED ACCESS PORTAL',
-        portalTitle: 'ContextPulse AI Access Portal',
-        portalSub: 'Employee and Manager workspaces are strictly separated by role and data boundaries. Select your role to sign in.',
-        devCardTitle: 'Employee Panel (Developer View)',
-        devCardText: 'Live IDE metadata signal, fact-checked AI context recovery, anonymous break reason logging, team announcements, and blocker action updates.',
-        goDev: 'Open Employee Panel',
-        loginDev: 'Sign in as Employee',
-        mgrCardTitle: 'Manager Panel (K-Anonymous Analytics)',
-        mgrCardText: 'Team-level blocker analytics protected by K = 5 threshold, action tracking (status/owner/note), and live team-wide announcements.',
-        goMgr: 'Open Manager Panel',
-        loginMgr: 'Sign in as Manager',
-        loginTitleDev: 'Employee Panel Sign In',
-        loginTitleMgr: 'Manager Panel Sign In',
-        loginSub: 'Enter your role-specific company email and password',
-        email: 'Company Email',
-        password: 'Password',
-        demoCreds: 'Demo Credentials (from README):',
-        fillDemoBtn: 'Autofill demo credentials',
-        cancel: 'Back',
-        submit: 'Sign In',
-        loginErr: 'Invalid email, password, or role mismatch!',
-        loginOkDev: 'Signed in to the Employee Panel!',
-        loginOkMgr: 'Securely signed in to the Manager Panel!',
-        logoutToast: 'You have been signed out.',
-        switchRoleHint: 'To sign in with a different role, please log out of your current session first.',
-
-        // Developer Dashboard
-        devTitle: 'Employee Panel (Developer Workspace)',
-        devSub: 'Live IDE & PR metadata stream, AI context recovery, and team updates',
-        simBtn: 'Simulate Break / Away',
-        liveTitle: 'Live IDE & PR Signal (verified metadata only)',
-        workspaceLabel: 'Workspace / Repo',
-        sessionLabel: 'Session State',
-        idleSecLabel: 'Idle duration',
-        file: 'Last Edited File',
-        firstErr: 'Diagnostics (First Error)',
-        tests: 'Test Runner State',
-        pr: 'Pull Request Status',
-        line: 'line',
-        linesRange: 'lines',
-        errorsWord: 'errors',
-        warningsWord: 'warnings',
-        passed: 'passed',
-        failed: 'failed',
-        unresolved: 'unresolved comments',
-        privacyLine: 'screen_capture: false · keystroke_content: false · source_code_content: false',
-        historyTitle: 'Your Away and Break History',
-        historySub: 'Submitted break reasons contribute anonymously to team-level manager analytics without individual identifiers',
-        duration: 'Duration',
-        min: 'min',
-        simSuffix: '(simulation)',
-        idleTitle: 'Break Return & Context Recovery',
-        idleText: 'The system detected a break after your last activity. AI has summarized where you left off — select a break reason to contribute anonymously to team blocker analytics:',
-        whereLeft: 'Where you left off (AI Context Summary)',
-        aiReading: 'AI is reading your latest IDE & PR metadata...',
-        pickReason: 'Choose a break reason (K-Anonymous survey):',
-        selectPh: '-- Choose a reason --',
-        close: 'Close',
-        record: 'Save to History',
-        recorded: 'Your reason was added to history and sent anonymously to the manager view.',
+        brandSub: 'Enterprise Context Platform', devPanel: 'Employee Panel', mgrPanel: 'Manager Panel', logout: 'Log out',
+        live: 'Live', connecting: 'Connecting…', offlineDemo: 'Offline demo', loading: 'Loading...',
+        homeBadge: 'Metadata only · K-anonymous grouping (K=5)',
+        homeTitle: 'Context recovery after breaks, visible team blockers',
+        homeSub: 'The platform accepts IDE and pull request metadata: developers get a short reminder when they return, and managers see blockers only at team level.',
+        devCardTitle: 'Employee Panel (Dev View)', devCardText: 'Live IDE telemetry view, away history and personal context recovery tools.',
+        goDev: 'Open Employee Panel', loginDev: 'Log in as Employee (Password)',
+        mgrCardTitle: 'Manager Panel', mgrCardText: 'A live team-level view of blockers, action notes and announcements. Groups are shown according to the K=5 threshold.',
+        goMgr: 'Open Manager Panel', loginMgr: 'Log in as Manager (Password)',
+        loginTitleDev: 'Employee Panel Login', loginTitleMgr: 'Manager Panel Login', loginSub: 'Enter your company email and password',
+        email: 'Company Email', password: 'Password', demoCreds: 'Demo Credentials:', cancel: 'Cancel', submit: 'Log In',
+        loginErr: 'Wrong email or password!', loginOkDev: 'Signed in to the Employee Panel!',
+        loginOkMgr: 'Securely signed in to the Manager Panel!', logoutToast: 'You have been signed out.', cookieSaved: 'Your cookie preferences were saved.',
+        devTitle: 'Employee Panel (Developer View)', devSub: 'Live IDE metadata stream and personal re-engagement indicators',
+        simBtn: 'Simulate Break / Away', liveTitle: 'Live IDE Signal (metadata only)',
+        file: 'File', firstErr: 'First error', tests: 'Tests', pr: 'Pull Request', line: 'line', errorsWord: 'errors',
+        passed: 'passed', failed: 'failed', unresolved: 'unresolved comments',
+        privacyLine: 'event declaration: no screen capture · no keystroke content · no source code',
+        historyTitle: 'Your Away and Break History', duration: 'Duration', min: 'min', simSuffix: '(simulation)',
+        idleTitle: 'Break and Away Diagnostics', idleText: 'The system detected a break after your last activity. Choose the reason:',
+        whereLeft: 'Where you left off', aiReading: 'AI is reading your latest context...', pickReason: 'Choose a reason:', selectPh: '-- Choose a reason --',
+        close: 'Close', record: 'Save to History', recorded: 'Your reason was added to history and counted as part of a group total in the manager view.',
         serverFail: 'The server did not respond, your answer was not recorded.',
-        badge_gemini: 'Gemini · verified against the facts',
-        badge_no_key: 'template text (no API key)',
-        badge_invalid: 'template text (AI answer failed verification)',
-        badge_error: 'template text (AI unavailable)',
-        badge_timeout: 'template text (AI responded too slowly)',
-        badge_offline: 'offline demo · template text',
-        badge_srvfail: 'template text (server did not respond)',
-
-        // Manager Dashboard
+        badge_gemini: 'Gemini · verified against the facts', badge_no_key: 'template text (no API key)',
+        badge_invalid: 'template text (AI answer failed verification)', badge_error: 'template text (AI unavailable)',
+        badge_timeout: 'template text (AI responded too slowly)', badge_offline: 'offline demo · template text', badge_srvfail: 'template text (server did not respond)',
         mgrTitle: 'Manager Analytics Panel',
         mgrSub: (k) => `Team-level blockers under K-anonymity (K=${k}). No individual employee data appears in this panel.`,
-        orgUnitLabel: 'Organization unit',
-        teamSize: 'Team size',
-        last7: 'last 7 days',
-        responses: 'Responses',
-        anonAnswers: 'anonymous answers',
-        kLabel: 'K threshold',
-        minGroup: 'minimum group size',
-        hiddenGroups: 'Hidden groups',
-        analyticsTitle: 'Anonymized Blocker Analytics',
-        filterAll: 'All groups',
-        filterVisible: 'Visible (n ≥ K)',
-        filterActed: 'With action notes',
-        filterHidden: 'Hidden (n < K)',
-        insufficient: 'The total number of responses is below K, so no group is shown to preserve anonymity.',
-        employees: 'responses',
-        avgStall: 'avg stall',
-        hiddenRow: (k) => `Hidden: group size is below the K=${k} threshold (exact count suppressed, actions disabled)`,
+        teamSize: 'Team size', last7: 'last 7 days', responses: 'Responses', anonAnswers: 'recorded responses',
+        kLabel: 'K threshold', minGroup: 'minimum group size', hiddenGroups: 'Hidden groups',
+        analyticsTitle: 'Team-level blockers (K threshold applied)',
+        insufficient: 'The number of responses is below K, so no group is shown.', employees: 'employees', avgStall: 'avg stall',
+        hiddenRow: (k) => `Hidden: group size is below the K=${k} threshold`,
         kReached: (k, l) => `K=${k} reached, group now visible: ${l}`,
-        cat_PR_REVIEW_WAIT: 'Waiting for PR review',
-        sig_PR_REVIEW_WAIT: 'Median PR wait 26.4 hours',
-        cat_CI_FLAKY: 'Flaky CI tests',
-        sig_CI_FLAKY: '7 flaky tests, 3 pipelines re-run',
-        cat_MEETING_LOAD: 'Fragmentation between meetings',
-        sig_MEETING_LOAD: '3.1 meetings per day on average',
-        cat_UNCLEAR_REQUIREMENTS: 'Unclear requirements',
-        sig_UNCLEAR_REQUIREMENTS: '2 tasks closed with open questions',
-        cat_TOOLING: 'Environment / tooling problems',
-        sig_TOOLING: 'Local setup and dependency errors',
-        reason_pr: 'Waiting for PR review',
-        reason_ci: 'Flaky CI / test problem',
-        reason_meet: 'Fragmentation between meetings',
-        reason_req: 'Unclear requirements',
-        reason_tool: 'Environment / tooling problem',
-        reason_break: 'Personal break (tea / rest)',
-
-        // Action tracking & Announcements
-        status_none: 'No status',
-        status_investigating: 'Investigating',
-        status_planned: 'Action planned',
-        status_resolved: 'Resolved',
-        actionTitle: 'Action tracking',
-        statusLabel: 'Status',
-        ownerLabel: 'Owner team / person',
-        ownerPh: 'e.g. DevOps team',
-        noteLabel: 'Note',
-        notePh: 'Short note about the planned action',
-        saveAction: 'Save',
-        ownerShort: 'Owner',
-        updatedAt: 'Updated',
-        actionSaved: 'Action note saved.',
-        actionFailed: 'Action note was not saved: the group dropped below K or the server did not respond.',
-        announceTitle: 'Team announcement',
-        announceSub: 'The announcement appears live on every employee panel. It is not addressed to an individual and can only link to visible (n ≥ K) categories.',
-        announcePh: 'e.g. We are introducing a 24-hour PR review rule',
-        announceTo: 'Topic',
-        announceAll: 'General (no topic)',
-        announceSend: 'Send announcement',
-        announceSent: 'Announcement sent to the team.',
-        announceFail: 'Announcement was not sent.',
-        announceHistory: 'Sent announcements',
-        noAnnouncements: 'No announcements yet.',
-        wsAnnouncements: 'Team announcements',
-        wsStatusTitle: 'Actions on team blockers',
-        wsNoStatus: 'No action notes yet.',
+        cat_PR_REVIEW_WAIT: 'Waiting for PR review', sig_PR_REVIEW_WAIT: 'Median PR wait 26.4 hours',
+        cat_CI_FLAKY: 'Flaky CI tests', sig_CI_FLAKY: '7 flaky tests, 3 pipelines re-run',
+        cat_MEETING_LOAD: 'Fragmentation between meetings', sig_MEETING_LOAD: '3.1 meetings per day on average',
+        cat_UNCLEAR_REQUIREMENTS: 'Unclear requirements', sig_UNCLEAR_REQUIREMENTS: '2 tasks closed with open questions',
+        cat_TOOLING: 'Environment / tooling problems', sig_TOOLING: 'Local setup and dependency errors',
+        reason_pr: 'Waiting for PR review', reason_ci: 'Flaky CI / test problem', reason_meet: 'Fragmentation between meetings',
+        reason_req: 'Unclear requirements', reason_tool: 'Environment / tooling problem', reason_break: 'Personal break (tea / rest)',
+        footerCopy: '© 2026 ContextPulse AI. All rights reserved.', privacyLink: 'Privacy Policy', termsLink: 'Terms', cookiesLink: 'Cookie Policy',
+        cookieTitle: 'About browser storage', cookieText: 'This site sets no HTTP cookies. Your language and theme choices are saved in your browser local storage only when you change them. There are no analytics or advertising tools.',
+        accept: 'Got it', readMore: 'Read More',
+        notFoundTitle: 'Page Not Found or Access Denied',
+        notFoundText: 'The page does not exist or is not allowed for this role. The employee and manager panels are fully separated.',
+        backHome: 'Back to Home', themeAria: 'Toggle theme', langAria: 'Language',
+        status_none: 'No status', status_investigating: 'Investigating', status_planned: 'Action planned', status_resolved: 'Resolved',
+        actionTitle: 'Action tracking', statusLabel: 'Status', ownerLabel: 'Owner team / person', ownerPh: 'e.g. DevOps team',
+        noteLabel: 'Note', notePh: 'Short note about the planned action', saveAction: 'Save', ownerShort: 'Owner', updatedAt: 'Updated',
+        actionSaved: 'Action note saved.', actionFailed: 'Action note was not saved: the group dropped below K or the server did not respond.',
+        announceTitle: 'Team announcement', announceSub: 'The announcement appears live on every employee panel. It is not addressed to an individual.',
+        announcePh: 'e.g. We are introducing a 24-hour PR review rule', announceTo: 'Topic', announceAll: 'General (no topic)',
+        announceSend: 'Send announcement', announceSent: 'Announcement sent to the team.', announceFail: 'Announcement was not sent.',
+        announceHistory: 'Sent announcements', noAnnouncements: 'No announcements yet.',
+        wsAnnouncements: 'Team announcements', wsStatusTitle: 'Actions on team blockers', wsNoStatus: 'No action notes yet.',
         newAnnouncementToast: 'New team announcement from your manager.',
-        demoResetBtn: 'Reset Demo Data',
-        demoResetConfirmTitle: 'Reset Demo Data to Initial Seed State?',
-        demoResetConfirmText: 'This will clear all added survey responses, blocker action notes, and team announcements, restoring the default seed dataset.',
-        demoResetConfirmYes: 'Yes, Reset Demo',
-        demoResetDone: 'Demo dataset has been reset to initial seed values.',
-
-        // Footer & Cookie Consent
-        footerCopy: '© 2026 ContextPulse AI (NeuroBridge Hackathon · Code of War). All rights reserved.',
-        privacyLink: 'Privacy Policy',
-        termsLink: 'Terms & Conditions',
-        cookiesLink: 'Cookie Policy',
-        cookieSettingsBtn: 'Cookie Preferences',
-        cookieTitle: 'Cookie & Local Storage Preferences',
-        cookieText: 'ContextPulse AI does not use third-party advertising or tracking cookies. We use an essential HttpOnly session cookie for authentication and optional browser localStorage for language and theme preferences.',
-        acceptAll: 'Accept All',
-        rejectNonEssential: 'Essential Only',
-        customizeCookies: 'Customize',
-        savePreferences: 'Save Preferences',
-        cookieEssentialTitle: 'Strictly Necessary Storage (Always Active)',
-        cookieEssentialDesc: 'Required for authentication session integrity (cp_session HttpOnly cookie) and storing your consent choice.',
-        cookieFuncTitle: 'Functional UI Preferences (Optional)',
-        cookieFuncDesc: 'Remembers your selected interface language (AZ/EN) and color theme (dark/light) across visits in localStorage.',
-        cookieAnalyticsTitle: 'Analytics & Tracking Cookies (Not Used)',
-        cookieAnalyticsDesc: 'No third-party analytics, telemetry trackers, or advertising pixels are installed on this platform.',
-        cookieSaved: 'Your cookie and privacy preferences were saved.',
-        readMore: 'Cookie Policy',
-
-        // 404 / Access Denied
-        notFoundTitle: 'Access Restricted or Page Not Found',
-        notFoundText: 'The requested route does not exist or is restricted for your current role. Employee and Manager panels are strictly separated.',
-        backHome: 'Back to Home',
-        goPortalBtn: 'Go to Access Portal',
-        themeAria: 'Toggle color theme',
-        langAria: 'Select language'
+        signIn: 'Sign in', signInDev: 'Developer', signInDevSub: 'IDE signal, reminders and my history', signInMgr: 'Manager', signInMgrSub: 'Team-level blockers and announcements',
+        portalTitle: 'Dashboard access', portalSub: 'Choose your role. The developer and manager panels are separate.', backToSite: 'Back to the main site', backToPortal: 'Back to role selection',
+        skipToContent: 'Skip to content', mainNav: 'Main navigation', legalNav: 'Legal pages', ctaPortal: 'Access dashboards', ctaPolicy: 'Privacy Policy',
+        howTitle: 'How it works', how1T: '1. Events', how1P: 'An IDE extension is planned. Today a simulator sends IDE and pull request metadata to the API.',
+        how2T: '2. Reminder', how2P: 'After a break the server asks Gemini for a short reminder from the latest event and checks the answer against that data. Without Gemini, template text is shown.',
+        how3T: '3. Team view', how3P: 'Break reasons are counted; groups with fewer than 5 responses stay hidden. Managers write action notes and team announcements.',
+        limitsTitle: 'Current limitations', lim1: 'IDE events come from a simulator; no IDE extension is included yet.', lim2: 'The first AI reminder can take several seconds; repeated requests for the same event are served from memory.',
+        lim3: 'K-anonymity limits what the panel shows but is not complete anonymisation.', lim4: 'In this version, sign-in and role separation are enforced in the browser only.',
+        lastUpdated: 'Last updated', cookieSettings: 'Storage settings', clearPrefs: 'Delete saved preferences', prefsCleared: 'Saved preferences deleted.',
+        tblName: 'Name', tblType: 'Type', tblPurpose: 'Purpose', tblDuration: 'Duration', tblWhen: 'When it is written',
+        pageTitle_home: 'ContextPulse AI', pageTitle_portal: 'Dashboard access · ContextPulse AI', 'pageTitle_login-dev': 'Developer sign-in · ContextPulse AI', 'pageTitle_login-mgr': 'Manager sign-in · ContextPulse AI',
+        'pageTitle_dev-portal': 'Developer panel · ContextPulse AI', 'pageTitle_manager-portal': 'Manager panel · ContextPulse AI',
+        pageTitle_privacy: 'Privacy Policy · ContextPulse AI', pageTitle_terms: 'Terms and Conditions · ContextPulse AI', pageTitle_cookies: 'Cookie Policy · ContextPulse AI', pageTitle_404: 'Page not found · ContextPulse AI',
+        featSpyTitle: 'Metadata only', featSpyText: 'The API accepts only IDE and pull request metadata. Events declaring screen capture, keystroke content or source code, and fields outside the schema, are rejected by the server.',
+        featReTitle: 'Context recovery after a break', featReText: 'AI writes a short reminder from the latest IDE and PR metadata and checks the answer against that data. The first request can take several seconds; template text is shown when AI is unavailable.',
+        featKTitle: 'K-anonymous grouping (K=5)', featKText: 'The manager panel shows only groups with at least 5 responses. This is not full anonymisation; limitations are explained in the Privacy Policy.'
     }
 };
-
 function translate(lang, key, ...args) {
     const v = (I18N[lang] && I18N[lang][key] !== undefined) ? I18N[lang][key] : I18N.az[key];
     return typeof v === 'function' ? v(...args) : v;
@@ -497,55 +166,144 @@ function translate(lang, key, ...args) {
 const LangCtx = React.createContext({ lang: 'az', t: (k) => k });
 const useT = () => React.useContext(LangCtx);
 
-// ============ URL ROUTING MAP ============
-const PATH_TO_ROUTE = {
-    '/': 'home',
-    '/portal': 'portal',
-    '/login': 'portal',
-    '/login/developer': 'login-developer',
-    '/login/manager': 'login-manager',
-    '/developer': 'dev-portal',
-    '/dev-portal': 'dev-portal',
-    '/manager': 'manager-portal',
-    '/manager-portal': 'manager-portal',
-    '/privacy-policy': 'privacy-policy',
-    '/privacy': 'privacy-policy',
-    '/terms-and-conditions': 'terms-and-conditions',
-    '/terms': 'terms-and-conditions',
-    '/cookie-policy': 'cookie-policy',
-    '/cookies': 'cookie-policy'
-};
+const NavCtx = React.createContext(() => {});
 
-const ROUTE_TO_PATH = {
-    'home': '/',
-    'portal': '/portal',
-    'login-developer': '/login/developer',
-    'login-manager': '/login/manager',
-    'dev-portal': '/developer',
-    'manager-portal': '/manager',
-    'privacy-policy': '/privacy-policy',
-    'terms-and-conditions': '/terms-and-conditions',
-    'cookie-policy': '/cookie-policy'
-};
-
-function resolveInitialRoute() {
-    const p = window.location.pathname.replace(/\/+$/, '') || '/';
-    return PATH_TO_ROUTE[p] || '404';
+// ============ MARŞRUTLAR (History API; hər yol serverdə index.html-ə düşür) ============
+const ROUTE_PATHS = { home: '', portal: 'portal', 'login-dev': 'developer-login', 'login-mgr': 'manager-login', 'dev-portal': 'developer', 'manager-portal': 'manager', privacy: 'privacy-policy', terms: 'terms-and-conditions', cookies: 'cookie-policy' };
+// Sayt kökü (alt yolda, məsələn GitLab Pages-də də işləsin deyə styles.css-in ünvanından götürülür)
+const BASE = new URL(document.querySelector('link[href$="styles.css"]').href).pathname.replace(/styles\.css$/, '');
+const pathFor = (route) => BASE + (ROUTE_PATHS[route] || '');
+function routeFromPath() {
+    const rel = location.pathname.startsWith(BASE) ? location.pathname.slice(BASE.length).replace(/\/+$/, '') : '';
+    if (rel === '' || rel === 'index.html') return 'home';
+    return Object.keys(ROUTE_PATHS).find((k) => ROUTE_PATHS[k] === rel) || '404';
 }
+const guardRoute = (r, role) => {
+    if (r === 'dev-portal') return role === 'employee' ? r : role === null ? 'login-dev' : '404';
+    if (r === 'manager-portal') return role === 'manager' ? r : role === null ? 'login-mgr' : '404';
+    if ((r === 'login-dev' || r === 'login-mgr' || r === 'portal') && role) return role === 'manager' ? 'manager-portal' : 'dev-portal';
+    return r;
+};
+
+// ============ HÜQUQİ SƏNƏDLƏR (kod və README əsasında; [[...]] = operator tərəfindən doldurulmalı yer tutucu) ============
+const LEGAL_UPDATED = '2026-10-18';
+const LEGAL = {
+    en: {
+        privacy: {
+            title: 'Privacy Policy',
+            intro: 'This policy describes how this ContextPulse AI deployment handles data, based on what the application code does. Items shown as [[placeholders]] must be completed by the operator before production use. This page is not legal advice and does not claim legal compliance.',
+            sections: [
+                { h: 'Operator and contact', p: ['Operator: [[LEGAL ENTITY NAME]]. Address: [[ADDRESS]]. Privacy contact: [[EMAIL]]. Data protection officer or representative, if required: [[DETAILS]].'] },
+                { h: 'Data we process', ul: [
+                    'IDE event metadata (POST /api/events): a pseudonymous developer reference, repository and branch name, source file path, edited function name, line range and added or removed line counts, language, error and warning counts with the first error code and line, test runner with pass and fail counts and a failing test name, pull request number, title, status and unresolved comment count, and timestamps.',
+                    'Break responses: developer reference, the reason and category you choose, and the time.',
+                    'Manager input: action status, an owner label (up to 40 characters), a note (up to 200) and team announcements (up to 280).',
+                    'Server logs: request method, path, status code, duration and some counts. Notes and announcements are logged by length only. The application does not log IP addresses; your hosting provider may [[CONFIRM]].',
+                    'Browser storage for language, theme and notice acknowledgement: see the Cookie Policy.'],
+                  p: ['The API rejects events that declare screen capture, keystroke content or source code content, and rejects unknown fields. The server enforces this. This repository does not yet include an IDE extension; events currently come from a simulator, so what a future extension collects is not covered by this text.'] },
+                { h: 'Purposes', ul: ['Show a developer a short reminder of the last work context after a break.', 'Show managers team-level blocker counts and let them record actions and announcements.', 'Operate, secure and debug the service.'] },
+                { h: 'AI processing', p: ['If a Gemini API key is configured, the server sends the latest IDE event for the developer, without its privacy and source fields, to the Google Gemini API to write the reminder. This includes the developer reference, repository and branch, file path, function name, error code, test name and pull request title. The reply is checked against the input and replaced with template text if it does not match. Without a key, or if the call fails, template text is used and nothing is sent. Google handles this data under its own terms: [[CONFIRM plan and data-use settings]].'] },
+                { h: 'Who can see what', ul: ['Managers see team-level groups only when at least 5 responses fall into a group (K = 5), plus the notes and announcements managers write.', 'Employees see their own latest IDE event, team announcements and the status of visible blockers.'],
+                  p: ['K-anonymity here limits what the dashboard shows. It is not complete anonymisation: the database stores the developer reference next to each break response, so anyone with database or server access can link them, and changes in counts over time can reveal information.'] },
+                { h: 'Security and current limitations', ul: ['The demo sign-in is checked in the browser only; no account data is stored on the server.', 'Role separation is currently enforced in the user interface. The API endpoints are not yet authenticated on the server, so this version should not be exposed publicly with real personal data.', 'Secrets such as the Gemini API key are read from server environment variables and are not sent to the browser.'] },
+                { h: 'Storage and retention', p: ['Data is stored in an SQLite file on the server (default contextpulse.db; in the provided Docker image under /tmp, which is cleared when the container restarts). No automated retention or deletion schedule is implemented. A demo reset endpoint deletes events, responses, actions and announcements. Retention period: [[PERIOD]].'] },
+                { h: 'Third parties and transfers', ul: ['Google (Gemini API), only if configured.', 'Your browser loads scripts from cdn.tailwindcss.com and unpkg.com; their operators receive your IP address and request metadata. Fonts are served from this site.', 'Hosting provider: [[NAME AND LOCATION]].'], p: ['International transfers depend on the hosting location and Google services: [[CONFIRM]].'] },
+                { h: 'Your rights', p: ['Depending on the law that applies to you, you may have rights to access, correct, delete, restrict or object to processing of your data, to data portability, to withdraw consent, and to complain to a supervisory authority. There is no self-service export or deletion tool in this version. Send requests to [[EMAIL]]; process and response time: [[PROCESS]].'] },
+                { h: 'Changes', p: ['Changes are published on this page with a new date.'] }
+            ]
+        },
+        terms: {
+            title: 'Terms and Conditions',
+            intro: 'These terms apply to the use of this ContextPulse AI deployment. Items shown as [[placeholders]] must be completed by the operator. This page is not legal advice.',
+            sections: [
+                { h: 'The service', p: ['ContextPulse AI is pre-release software that shows a developer a short context reminder after a break and shows managers team-level blocker information. IDE events currently come from a simulator. Features may change or be removed.'] },
+                { h: 'Eligibility and accounts', p: ['Use is intended for members of a team authorised by [[OPERATOR]]. You are responsible for keeping your sign-in details confidential and for activity under your account. [[ACCOUNT RULES]]'] },
+                { h: 'Acceptable use', ul: ['Do not submit source code, secrets, credentials or personal data that the API does not need.', 'Do not try to identify individuals from team-level data or to circumvent the K threshold.', 'Do not use the service to monitor people unlawfully or without the notice that applies to them.', 'Do not disrupt, probe or overload the service, or access data you are not authorised to see.'] },
+                { h: 'AI-generated output', p: ['Reminders may be incomplete or wrong, even though they are checked against the input data. Verify them against your code, tests and pull requests before acting on them.'] },
+                { h: 'Availability and changes', p: ['The service is provided as available, with no guaranteed uptime. It may be changed, suspended or discontinued, and these terms may be updated by publishing a new date.'] },
+                { h: 'Intellectual property', p: ['The software and brand belong to their respective owners: [[LICENSE AND OWNER]]. You keep your rights to content you submit and allow its processing as described in the Privacy Policy.'] },
+                { h: 'Suspension and termination', p: ['Access may be suspended or ended for breach of these terms or to protect the service.'] },
+                { h: 'Warranty and liability', p: ['To the extent allowed by applicable law, the service is provided without warranties and the operator is not liable for indirect or consequential loss. Nothing here limits liability that cannot be limited by law. [[CONFIRM WITH COUNSEL]]'] },
+                { h: 'Governing law and contact', p: ['Governing law and venue: [[JURISDICTION]]. Contact: [[EMAIL]].'] }
+            ]
+        },
+        cookies: {
+            title: 'Cookie Policy',
+            intro: 'This policy lists what this site stores in your browser. Items shown as [[placeholders]] must be confirmed by the operator. This page is not legal advice.',
+            sections: [
+                { h: 'What this site sets', p: ['This application sets no HTTP cookies: the server sends no Set-Cookie header (checked by an automated test). It stores a few preferences in your browser local storage, listed in the table below.'] },
+                { h: 'When items are written', p: ['Items are written only when you act: the language and theme items when you change them, the notice item when you dismiss the notice. Nothing is written before that.'] },
+                { h: 'Optional cookies and analytics', p: ['There are no analytics, advertising or tracking tools, so there are no optional categories to accept or reject. If such tools are added later, a consent choice (accept, reject, customise) will be required before they run.'] },
+                { h: 'Third-party requests', p: ['The page loads scripts from cdn.tailwindcss.com and unpkg.com. We do not control whether those providers set cookies or other identifiers: [[CONFIRM]].'] },
+                { h: 'Your choices', p: ['You can delete the items below with the button, or through your browser settings. Deleting them does not stop you from using the site; the notice may appear again.'] }
+            ]
+        }
+    },
+    az: {
+        privacy: {
+            title: 'Məxfilik Siyasəti',
+            intro: 'Bu siyasət ContextPulse AI-ın bu quraşdırmasının məlumatla necə işlədiyini tətbiq kodunun real davranışına əsasən izah edir. [[Yer tutucu]] kimi göstərilən yerləri operator istehsalda istifadədən əvvəl doldurmalıdır. Bu səhifə hüquqi məsləhət deyil və hüquqi uyğunluq iddia etmir.',
+            sections: [
+                { h: 'Operator və əlaqə', p: ['Operator: [[HÜQUQİ ŞƏXSİN ADI]]. Ünvan: [[ÜNVAN]]. Məxfilik üzrə əlaqə: [[E-POÇT]]. Məlumatların mühafizəsi üzrə məsul şəxs və ya nümayəndə (tələb olunarsa): [[MƏLUMAT]].'] },
+                { h: 'Hansı məlumatı emal edirik', ul: [
+                    'IDE hadisə metadatası (POST /api/events): təxəllüslü developer istinadı, repozitoriya və branch adı, mənbə faylının yolu, dəyişdirilən funksiyanın adı, sətir aralığı və əlavə/silinən sətir sayı, dil, xəta və xəbərdarlıq sayı ilə ilk xəta kodu və sətri, test icraçısı, keçən/uğursuz test sayı və uğursuz testin adı, Pull Request nömrəsi, başlığı, statusu və həll olunmamış şərh sayı, vaxt möhürləri.',
+                    'Fasilə cavabları: developer istinadı, seçdiyiniz səbəb və kateqoriya, vaxt.',
+                    'Menecerin daxil etdikləri: tədbir statusu, məsul etiketi (40 simvola qədər), qeyd (200-ə qədər) və komanda elanları (280-ə qədər).',
+                    'Server logları: sorğu metodu, yol, status kodu, müddət və bəzi say göstəriciləri. Qeyd və elanlar yalnız uzunluğu ilə yazılır. Tətbiq IP ünvanlarını yazmır; hosting təminatçısı yaza bilər: [[YOXLAYIN]].',
+                    'Dil, tema və bildirişin qəbulu üçün brauzer yaddaşı: Kuki Siyasətinə baxın.'],
+                  p: ['API ekran qeydi, klaviatura məzmunu və ya mənbə kodu bildirən hadisələri və sxemdə olmayan sahələri rədd edir. Bunu server təmin edir. Bu repozitoriyada hələ IDE genişləndirməsi yoxdur; hadisələr hazırda simulyatordan gəlir, ona görə gələcək genişləndirmənin topladığı məlumat bu mətnə daxil deyil.'] },
+                { h: 'Məqsədlər', ul: ['Fasilədən sonra developerə son iş kontekstinin qısa xatırlatmasını göstərmək.', 'Menecerlərə komanda səviyyəsində tıxanma saylarını göstərmək, tədbir və elan yazmağa imkan vermək.', 'Xidməti işlətmək, qorumaq və xətaları aşkarlamaq.'] },
+                { h: 'AI ilə emal', p: ['Gemini API açarı təyin olunubsa, server developerin son IDE hadisəsini (privacy və source sahələri çıxarılmaqla) xatırlatmanı yazdırmaq üçün Google Gemini API-yə göndərir. Buraya developer istinadı, repozitoriya və branch, fayl yolu, funksiya adı, xəta kodu, test adı və Pull Request başlığı daxildir. Cavab giriş məlumatına qarşı yoxlanılır və uyğun gəlmirsə hazır mətnlə əvəz olunur. Açar yoxdursa və ya çağırış uğursuz olarsa, hazır mətn istifadə olunur və heç nə göndərilmir. Google bu məlumatı öz şərtlərinə əsasən emal edir: [[PLAN VƏ MƏLUMAT İSTİFADƏSİ AYARLARINI YOXLAYIN]].'] },
+                { h: 'Kim nəyi görür', ul: ['Menecerlər komanda səviyyəsində qrupları yalnız qrupda ən azı 5 cavab olduqda görür (K = 5), həmçinin menecerlərin yazdığı qeyd və elanları.', 'İşçilər öz son IDE hadisəsini, komanda elanlarını və görünən tıxanmaların statusunu görür.'],
+                  p: ['Buradakı K-anonimlik panelin göstərdiyini məhdudlaşdırır. Bu, tam anonimləşdirmə deyil: verilənlər bazası hər fasilə cavabının yanında developer istinadını saxlayır, ona görə baza və ya serverə çıxışı olan şəxs onları əlaqələndirə bilər və saylarda zamanla dəyişmələr məlumat aça bilər.'] },
+                { h: 'Təhlükəsizlik və hazırkı məhdudiyyətlər', ul: ['Demo giriş yalnız brauzerdə yoxlanılır; serverdə hesab məlumatı saxlanılmır.', 'Rol ayrılığı hazırda istifadəçi interfeysində təmin olunur. API endpoint-ləri serverdə hələ autentifikasiya olunmur, ona görə bu versiyanı real şəxsi məlumatla açıq şəkildə yerləşdirmək olmaz.', 'Gemini API açarı kimi sirlər server mühit dəyişənlərindən oxunur və brauzerə göndərilmir.'] },
+                { h: 'Saxlama və müddət', p: ['Məlumat serverdəki SQLite faylında saxlanılır (standart contextpulse.db; verilmiş Docker image-də /tmp qovluğunda, konteyner yenidən başlayanda təmizlənir). Avtomatik saxlama müddəti və ya silmə cədvəli tətbiq olunmayıb. Demo sıfırlama endpoint-i hadisələri, cavabları, tədbirləri və elanları silir. Saxlama müddəti: [[MÜDDƏT]].'] },
+                { h: 'Üçüncü tərəflər və ötürmələr', ul: ['Google (Gemini API), yalnız təyin olunubsa.', 'Brauzeriniz cdn.tailwindcss.com və unpkg.com saytlarından skript yükləyir; onların operatorları IP ünvanınızı və sorğu metadatasını alır. Şriftlər bu saytdan verilir.', 'Hosting təminatçısı: [[AD VƏ YER]].'], p: ['Beynəlxalq ötürmələr hosting yerindən və Google xidmətlərindən asılıdır: [[YOXLAYIN]].'] },
+                { h: 'Hüquqlarınız', p: ['Sizə şamil olunan qanunvericiliyə görə məlumatınıza çıxış, düzəliş, silmə, emalın məhdudlaşdırılması və ya ona etiraz, məlumatın daşınması, razılığı geri götürmə və nəzarət orqanına şikayət hüquqlarınız ola bilər. Bu versiyada özünəxidmət ixrac və ya silmə aləti yoxdur. Sorğuları [[E-POÇT]] ünvanına göndərin; proses və cavab müddəti: [[PROSES]].'] },
+                { h: 'Dəyişikliklər', p: ['Dəyişikliklər bu səhifədə yeni tarixlə dərc olunur.'] }
+            ]
+        },
+        terms: {
+            title: 'İstifadə Şərtləri',
+            intro: 'Bu şərtlər ContextPulse AI-ın bu quraşdırmasından istifadəyə şamil olunur. [[Yer tutucu]] kimi göstərilən yerləri operator doldurmalıdır. Bu səhifə hüquqi məsləhət deyil.',
+            sections: [
+                { h: 'Xidmət', p: ['ContextPulse AI istehsaldan əvvəlki proqram təminatıdır: fasilədən sonra developerə qısa kontekst xatırlatması göstərir, menecerlərə isə komanda səviyyəsində tıxanma məlumatı verir. IDE hadisələri hazırda simulyatordan gəlir. Funksiyalar dəyişə və ya çıxarıla bilər.'] },
+                { h: 'Uyğunluq və hesablar', p: ['İstifadə [[OPERATOR]] tərəfindən icazə verilmiş komanda üzvləri üçündür. Giriş məlumatlarınızın məxfiliyinə və hesabınız altındakı fəaliyyətə siz cavabdehsiniz. [[HESAB QAYDALARI]]'] },
+                { h: 'Məqbul istifadə', ul: ['API-nin ehtiyac duymadığı mənbə kodunu, sirləri, giriş məlumatlarını və ya şəxsi məlumatı göndərməyin.', 'Komanda səviyyəsindəki məlumatdan fərdləri tanımağa və ya K həddini keçməyə cəhd etməyin.', 'Xidməti insanları qanunsuz və ya onlara şamil olunan xəbərdarlıq olmadan izləmək üçün istifadə etməyin.', 'Xidmətə mane olmayın, onu yoxlamayın və ya həddindən artıq yükləməyin; baxmağa icazəniz olmayan məlumata çıxış əldə etməyin.'] },
+                { h: 'AI tərəfindən yaradılan nəticə', p: ['Giriş məlumatına qarşı yoxlanılsa da, xatırlatmalar natamam və ya yanlış ola bilər. Onlara əsasən hərəkət etməzdən əvvəl kodunuz, testləriniz və Pull Request-lərinizlə yoxlayın.'] },
+                { h: 'Əlçatanlıq və dəyişikliklər', p: ['Xidmət mövcud olduğu kimi, zəmanətli iş vaxtı olmadan təqdim olunur. O dəyişdirilə, dayandırıla və ya bağlana bilər; bu şərtlər yeni tarixlə dərc olunaraq yenilənə bilər.'] },
+                { h: 'Əqli mülkiyyət', p: ['Proqram və brend müvafiq sahiblərinə məxsusdur: [[LİSENZİYA VƏ SAHİB]]. Göndərdiyiniz məzmuna hüquqlarınız saxlanılır və onun Məxfilik Siyasətində izah olunan qaydada emalına icazə verirsiniz.'] },
+                { h: 'Dayandırma və xitam', p: ['Giriş bu şərtlərin pozulmasına görə və ya xidməti qorumaq üçün dayandırıla və ya ləğv edilə bilər.'] },
+                { h: 'Zəmanət və məsuliyyət', p: ['Tətbiq olunan qanunvericiliyin icazə verdiyi həddə xidmət zəmanətsiz təqdim olunur və operator dolayı və ya nəticə zərərlərinə görə məsuliyyət daşımır. Qanunla məhdudlaşdırıla bilməyən məsuliyyət burada məhdudlaşdırılmır. [[HÜQUQŞÜNASLA YOXLAYIN]]'] },
+                { h: 'Tətbiq olunan hüquq və əlaqə', p: ['Tətbiq olunan hüquq və yurisdiksiya: [[YURİSDİKSİYA]]. Əlaqə: [[E-POÇT]].'] }
+            ]
+        },
+        cookies: {
+            title: 'Kuki Siyasəti',
+            intro: 'Bu siyasət saytın brauzerinizdə nələri saxladığını göstərir. [[Yer tutucu]] kimi göstərilən yerləri operator təsdiqləməlidir. Bu səhifə hüquqi məsləhət deyil.',
+            sections: [
+                { h: 'Bu sayt nə qoyur', p: ['Bu tətbiq HTTP cookie qoymur: server Set-Cookie başlığı göndərmir (avtomatik testlə yoxlanılıb). Bir neçə seçimi brauzerin yerli yaddaşında saxlayır, aşağıdakı cədvəldə göstərilib.'] },
+                { h: 'Elementlər nə vaxt yazılır', p: ['Elementlər yalnız siz hərəkət edəndə yazılır: dil və tema elementləri onları dəyişəndə, bildiriş elementi bildirişi bağlayanda. Bundan əvvəl heç nə yazılmır.'] },
+                { h: 'İstəyə bağlı kukilər və analitika', p: ['Analitika, reklam və ya izləmə alətləri yoxdur, ona görə qəbul və ya rədd ediləcək istəyə bağlı kateqoriya yoxdur. Belə alətlər sonradan əlavə olunarsa, işə düşməzdən əvvəl razılıq seçimi (qəbul, rədd, fərdi seçim) tələb olunacaq.'] },
+                { h: 'Üçüncü tərəf sorğuları', p: ['Səhifə cdn.tailwindcss.com və unpkg.com saytlarından skript yükləyir. Bu təminatçıların cookie və ya başqa identifikator qoyub-qoymadığını biz idarə etmirik: [[YOXLAYIN]].'] },
+                { h: 'Seçimləriniz', p: ['Aşağıdakı elementləri düymə ilə və ya brauzer ayarlarından silə bilərsiniz. Silmək saytdan istifadəyə mane olmur; bildiriş yenidən görünə bilər.'] }
+            ]
+        }
+    }
+};
+const STORAGE_ITEMS = [
+    { name: 'cp_lang', type: { az: 'localStorage', en: 'localStorage' }, purpose: { az: 'Seçdiyiniz dil (az / en)', en: 'Your chosen language (az / en)' }, duration: { az: 'Siz silənə qədər', en: 'Until you delete it' }, when: { az: 'Dili dəyişəndə', en: 'When you change the language' } },
+    { name: 'cp_theme', type: { az: 'localStorage', en: 'localStorage' }, purpose: { az: 'Seçdiyiniz tema (açıq / tünd)', en: 'Your chosen theme (light / dark)' }, duration: { az: 'Siz silənə qədər', en: 'Until you delete it' }, when: { az: 'Temanı dəyişəndə', en: 'When you change the theme' } },
+    { name: 'cookieConsentGiven', type: { az: 'localStorage', en: 'localStorage' }, purpose: { az: 'Yaddaş bildirişinin bağlandığını xatırlayır', en: 'Remembers that the storage notice was dismissed' }, duration: { az: 'Siz silənə qədər', en: 'Until you delete it' }, when: { az: 'Bildirişi bağlayanda', en: 'When you dismiss the notice' } }
+];
 
 // ============ BACKEND (FastAPI) KÖMƏKÇİLƏRİ ============
 const REASONS = [
-    { id: 'pr', cat: 'PR_REVIEW_WAIT' },
-    { id: 'ci', cat: 'CI_FLAKY' },
-    { id: 'meet', cat: 'MEETING_LOAD' },
-    { id: 'req', cat: 'UNCLEAR_REQUIREMENTS' },
-    { id: 'tool', cat: 'TOOLING' },
-    { id: 'break', cat: null }
+    { id: 'pr', cat: 'PR_REVIEW_WAIT' }, { id: 'ci', cat: 'CI_FLAKY' }, { id: 'meet', cat: 'MEETING_LOAD' },
+    { id: 'req', cat: 'UNCLEAR_REQUIREMENTS' }, { id: 'tool', cat: 'TOOLING' }, { id: 'break', cat: null }
 ];
-
-async function api(path, opts = {}) {
-    const headers = Object.assign({}, opts.headers || {});
-    const r = await fetch(path, Object.assign({}, opts, { headers, credentials: 'same-origin' }));
+async function api(path, opts) {
+    const r = await fetch(path, opts);
     if (!r.ok) throw new Error(path + ' ' + r.status);
     return r.json();
 }
@@ -554,27 +312,17 @@ const postJson = (path, body) => api(path, { method: 'POST', headers: { 'Content
 // Oflayn demo (backend yoxdursa, məsələn GitLab Pages): eyni məntiq brauzerdə
 const K_ANON = 5, TEAM_SIZE = 40;
 const BLOCKER_META = {
-    PR_REVIEW_WAIT: { avg: 74, trend: '+18%' },
-    CI_FLAKY: { avg: 52, trend: '+6%' },
-    MEETING_LOAD: { avg: 38, trend: '-4%' },
-    UNCLEAR_REQUIREMENTS: { avg: 61, trend: '+2%' },
-    TOOLING: { avg: 45, trend: '+3%' }
+    PR_REVIEW_WAIT: { avg: 74, trend: '+18%' }, CI_FLAKY: { avg: 52, trend: '+6%' }, MEETING_LOAD: { avg: 38, trend: '-4%' },
+    UNCLEAR_REQUIREMENTS: { avg: 61, trend: '+2%' }, TOOLING: { avg: 45, trend: '+3%' }
 };
 const SEED_EVENT = {
-    schema: 'contextpulse.ide_event.v1',
-    event_id: 'evt_8f31c2a7',
-    source: { client: 'vscode-extension', version: '0.4.2' },
-    developer_ref: 'dev_a91f',
-    emitted_at: '2026-10-09T11:42:42+04:00',
-    session: { state: 'idle', last_activity_at: '2026-10-09T11:19:42+04:00', idle_duration_sec: 1380 },
+    event_id: 'evt_8f31c2a7', developer_ref: 'dev_a91f',
     workspace: { repo: 'payments-service', branch: 'feature/refund-idempotency' },
-    last_meaningful_action: { type: 'EDIT_FUNCTION', file: 'src/refunds/processRefund.ts', symbol: 'processRefund', line_range: [48, 71], lines_added: 14, lines_removed: 3, language: 'typescript' },
+    last_meaningful_action: { type: 'EDIT_FUNCTION', file: 'src/refunds/processRefund.ts', symbol: 'processRefund', line_range: [48, 71], lines_added: 14, lines_removed: 3 },
     diagnostics: { errors: 2, warnings: 1, first_error: { code: 'TS2345', line: 63 } },
     test_state: { runner: 'jest', passed: 18, failed: 1, failing_test: 'rejects duplicate idempotency key' },
-    pull_request: { id: 412, title: 'Refund idempotency keys', status: 'changes_requested', unresolved_comments: 3 },
-    privacy: { screen_capture: false, keystroke_content: false, source_code_content: false }
+    pull_request: { id: 412, title: 'Refund idempotency keys', status: 'changes_requested', unresolved_comments: 3 }
 };
-
 function localTeam(st) {
     const insufficient = st.respondents < K_ANON;
     let hidden = 0;
@@ -586,10 +334,9 @@ function localTeam(st) {
         shown.push({ category: cat, affected_count: n, share: Math.round(n / st.respondents * 100) / 100, avg_stall_minutes: m.avg, trend_7d: m.trend, suppressed: false, action: (st.actions && st.actions[cat]) || null });
     });
     shown.sort((a, b) => b.affected_count - a.affected_count);
-    const blockers = shown.concat(Array.from({ length: hidden }, (_, i) => ({ group: 'suppressed_' + (i + 1), suppressed: true, reason: 'n<k' })));
-    return { org_unit: 'Platform Engineering', period: 'last_7_days', k_threshold: K_ANON, population: { team_size: TEAM_SIZE, respondents: st.respondents }, blockers, suppressed_groups: hidden, insufficient_data: insufficient };
+    const blockers = shown.concat(Array.from({ length: hidden }, (_, i) => ({ group: 'suppressed_' + (i + 1), suppressed: true })));
+    return { k_threshold: K_ANON, population: { team_size: TEAM_SIZE, respondents: st.respondents }, blockers, suppressed_groups: hidden, insufficient_data: insufficient };
 }
-
 function localReminder(ev, lang) {
     const a = ev.last_meaningful_action, d = ev.diagnostics.first_error, t = ev.test_state, pr = ev.pull_request;
     const f = a.file.split('/').pop(), rng = f + ':' + a.line_range[0] + '–' + a.line_range[1];
@@ -607,105 +354,60 @@ function localReminder(ev, lang) {
     }
     return p.join(' ');
 }
-
-function getStoredConsent() {
-    try {
-        const raw = localStorage.getItem('cp_cookie_consent');
-        if (raw) return JSON.parse(raw);
-        if (localStorage.getItem('cookieConsentGiven') === 'true') {
-            return { decided: true, essential: true, functional: true, updatedAt: new Date().toISOString() };
-        }
-    } catch (e) { /* ignore */ }
-    return { decided: false, essential: true, functional: false, updatedAt: null };
-}
-
 function getStoredLang() {
-    try {
-        const consent = getStoredConsent();
-        if (consent.functional) {
-            const v = localStorage.getItem('cp_lang');
-            if (v === 'az' || v === 'en') return v;
-        }
-    } catch (e) { /* ignore */ }
+    try { const v = localStorage.getItem('cp_lang'); if (v === 'az' || v === 'en') return v; } catch (e) { /* yoxdur */ }
     return 'az';
-}
-
-function getStoredTheme() {
-    try {
-        const consent = getStoredConsent();
-        if (consent.functional) {
-            const v = localStorage.getItem('cp_theme');
-            if (v === 'dark' || v === 'light') return v;
-        }
-    } catch (e) { /* ignore */ }
-    return 'dark';
 }
 
 // ============ İKONLAR ============
 const Ico = ({ d, className = 'w-5 h-5' }) => (
-    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={d} />
-    </svg>
-);
-const IconPulse = ({ className = 'w-5 h-5' }) => (
-    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M3 12h4l3-7 4 14 3-7h4" />
-    </svg>
+    <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={d} /></svg>
 );
 const IconTerminal = (p) => <Ico {...p} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />;
 const IconUsers = (p) => <Ico {...p} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />;
 const IconSun = (p) => <Ico {...p} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />;
 const IconMoon = (p) => <Ico {...p} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />;
 const IconLock = (p) => <Ico {...p} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />;
-const IconShield = (p) => <Ico {...p} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />;
 const IconClock = (p) => <Ico {...p} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />;
-const IconCheck = (p) => <Ico {...p} d="M5 13l4 4L19 7" />;
-const IconAlert = (p) => <Ico {...p} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />;
-const IconArrowRight = (p) => <Ico {...p} d="M14 5l7 7m0 0l-7 7m7-7H3" />;
-const IconRefresh = (p) => <Ico {...p} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />;
 
 // ============ ORTAQ KOMPONENTLƏR ============
 function LivePill({ live, offline }) {
     const { t } = useT();
     const ok = live && !offline;
     return (
-        <span className={'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-mono font-medium border ' + (ok ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-700 dark:text-emerald-400' : 'bg-amber-500/10 border-amber-500/25 text-amber-700 dark:text-amber-400')}>
-            <span className={'w-1.5 h-1.5 rounded-full ' + (ok ? 'bg-emerald-500' : 'bg-amber-500')}></span>
-            {offline ? t('offlineDemo') : live ? t('live') : t('connecting')}
+        <span className={'px-3 py-1.5 rounded-full text-[11px] font-mono font-semibold ' + (ok ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'bg-amber-500/10 text-amber-600 dark:text-amber-400')}>
+            ● {offline ? t('offlineDemo') : live ? t('live') : t('connecting')}
         </span>
     );
 }
-
-function Stat({ label, value, sub, bump, accent }) {
+function Stat({ label, value, sub, bump }) {
     return (
-        <div className="p-4 bg-slate-50/90 dark:bg-slate-900/70 rounded-2xl border border-slate-200/90 dark:border-slate-800/90 flex flex-col justify-between">
-            <span className="text-[11px] uppercase tracking-wider font-mono text-slate-500 dark:text-slate-400">{label}</span>
-            <p className={'text-base sm:text-lg font-bold mt-1.5 break-words font-display ' + (accent || 'text-slate-900 dark:text-white')}>
+        <div className="p-4 bg-slate-50 dark:bg-slate-900/80 rounded-2xl border border-slate-200 dark:border-slate-800">
+            <span className="text-[10px] uppercase font-mono text-slate-400">{label}</span>
+            <p className="text-sm font-bold text-slate-900 dark:text-white mt-1 break-words">
                 {value}
-                {bump ? <span className="ml-2 px-1.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[11px] font-mono">+{bump}</span> : null}
+                {bump ? <span className="ml-2 px-1.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[10px] font-mono animate-pulse">+{bump}</span> : null}
             </p>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 break-words font-mono">{sub}</p>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 break-words">{sub}</p>
         </div>
     );
 }
-
 function RichText({ text }) {
     return (
         <span>
             {String(text).split('`').map((p, i) => i % 2
-                ? <code key={i} className="px-1.5 py-0.5 rounded-md bg-sky-500/15 text-sky-700 dark:text-sky-300 font-mono text-[12px] border border-sky-500/20">{p}</code>
+                ? <code key={i} className="px-1.5 py-0.5 rounded-md bg-sky-500/10 text-sky-700 dark:text-sky-300 font-mono text-[12px]">{p}</code>
                 : <span key={i}>{p}</span>)}
         </span>
     );
 }
-
 function LangSwitch({ lang, onChange }) {
     const { t } = useT();
     return (
-        <div role="group" aria-label={t('langAria')} className="inline-flex items-center bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-0.5">
+        <div role="group" aria-label={t('langAria')} className="flex items-center bg-slate-100 dark:bg-slate-900 rounded-xl p-1">
             {['az', 'en'].map((l) => (
-                <button key={l} type="button" onClick={() => onChange(l)} aria-pressed={lang === l}
-                    className={'px-2.5 py-1 rounded-lg text-[11px] font-bold font-mono transition-colors ' + (lang === l ? 'bg-sky-600 text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white')}>
+                <button key={l} onClick={() => onChange(l)} aria-pressed={lang === l}
+                    className={'px-2.5 py-1.5 rounded-lg text-[11px] font-bold font-mono transition-all ' + (lang === l ? 'bg-sky-600 text-white' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800')}>
                     {l.toUpperCase()}
                 </button>
             ))}
@@ -715,20 +417,16 @@ function LangSwitch({ lang, onChange }) {
 
 // ============ ƏSAS TƏTBİQ ============
 function App() {
-    const [consent, setConsent] = useState(getStoredConsent);
-    const [showCookieModal, setShowCookieModal] = useState(false);
-
-    const [theme, setTheme] = useState(getStoredTheme);
+    const [theme, setTheme] = useState(() => (document.documentElement.classList.contains('dark') ? 'dark' : 'light'));
     const [lang, setLang] = useState(getStoredLang);
-    const [currentRoute, setCurrentRoute] = useState(resolveInitialRoute);
+    const [currentRoute, setCurrentRoute] = useState(() => routeFromPath());
     const [userRole, setUserRole] = useState(null); // null | 'employee' | 'manager'
-    const [authChecked, setAuthChecked] = useState(false);
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     const [emailInput, setEmailInput] = useState('');
     const [passwordInput, setPasswordInput] = useState('');
     const [loginError, setLoginError] = useState(false);
-    const [loginBusy, setLoginBusy] = useState(false);
+
+    const [cookieConsent, setCookieConsent] = useState(() => { try { return localStorage.getItem('cookieConsentGiven') === 'true'; } catch (e) { return false; } });
 
     const [isIdleModalOpen, setIsIdleModalOpen] = useState(false);
     const [selectedReason, setSelectedReason] = useState('');
@@ -756,61 +454,13 @@ function App() {
     const t = (key, ...args) => translate(lang, key, ...args);
     const ctx = { lang, t };
 
-    // Theme & Language persistence (respecting functional cookie consent)
-    useEffect(() => {
-        document.documentElement.classList.toggle('dark', theme === 'dark');
-        try {
-            if (consent.functional) {
-                localStorage.setItem('cp_theme', theme);
-            } else {
-                localStorage.removeItem('cp_theme');
-            }
-        } catch (e) { /* ignore */ }
-    }, [theme, consent.functional]);
+    useEffect(() => { document.documentElement.classList.toggle('dark', theme === 'dark'); }, [theme]);
+    // Dil seçimi yalnız istifadəçi dəyişəndə yaddaşa yazılır (changeLang); burada yalnız <html lang> yenilənir
+    useEffect(() => { document.documentElement.lang = lang; }, [lang]);
 
-    useEffect(() => {
-        document.documentElement.lang = lang;
-        try {
-            if (consent.functional) {
-                localStorage.setItem('cp_lang', lang);
-            } else {
-                localStorage.removeItem('cp_lang');
-            }
-        } catch (e) { /* ignore */ }
-    }, [lang, consent.functional]);
+    const showToast = (msg) => { setToastMsg(msg); setTimeout(() => setToastMsg(null), 4000); };
 
-    // Update document title dynamically per route
-    useEffect(() => {
-        const titles = {
-            'home': 'ContextPulse AI — Privacy-First Context Recovery & K-Anonymous Analytics',
-            'portal': t('portalTitle') + ' | ContextPulse AI',
-            'login-developer': t('loginTitleDev') + ' | ContextPulse AI',
-            'login-manager': t('loginTitleMgr') + ' | ContextPulse AI',
-            'dev-portal': t('devTitle') + ' | ContextPulse AI',
-            'manager-portal': t('mgrTitle') + ' | ContextPulse AI',
-            'privacy-policy': t('privacyLink') + ' | ContextPulse AI',
-            'terms-and-conditions': t('termsLink') + ' | ContextPulse AI',
-            'cookie-policy': t('cookiesLink') + ' | ContextPulse AI',
-            '404': t('notFoundTitle') + ' | ContextPulse AI'
-        };
-        document.title = titles[currentRoute] || titles.home;
-    }, [currentRoute, lang]);
-
-    // Browser history popstate listener
-    useEffect(() => {
-        const onPopState = () => {
-            setCurrentRoute(resolveInitialRoute());
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        };
-        window.addEventListener('popstate', onPopState);
-        return () => window.removeEventListener('popstate', onPopState);
-    }, []);
-
-    const showToast = (msg) => {
-        setToastMsg(msg);
-        setTimeout(() => setToastMsg(null), 4200);
-    };
-
+    // Yeni komanda məlumatı: say artımlarını və yeni açılan qrupu aşkar edir
     const applyTeam = (p) => {
         const prev = teamRef.current;
         const b = {};
@@ -835,32 +485,16 @@ function App() {
         if (fresh) showToast(translate(langRef.current, 'kReached', p.k_threshold, translate(langRef.current, 'cat_' + fresh.category)));
     };
 
+    // Elanı siyahıya əlavə edir (eyni id təkrarlanmır); işçiyə bildiriş göstərir
     const addAnnouncement = (a, notify) => {
         setAnnouncements((cur) => (cur.some((x) => x.id === a.id) ? cur : [a].concat(cur).slice(0, 5)));
         if (notify && roleRef.current === 'employee') showToast(translate(langRef.current, 'newAnnouncementToast'));
     };
 
-    // Initial bootstrap + session check + SSE stream
     useEffect(() => {
         let es = null;
-        api('/api/auth/session')
-            .then((s) => {
-                if (s && s.authenticated && s.role) {
-                    setUserRole(s.role);
-                }
-                setAuthChecked(true);
-            })
-            .catch(() => {
-                setAuthChecked(true);
-            });
-
         api('/api/bootstrap')
-            .then((d) => {
-                setIdeEvent(d.event);
-                teamRef.current = d.team;
-                setTeam(d.team);
-                setAnnouncements(d.announcements || []);
-            })
+            .then((d) => { setIdeEvent(d.event); teamRef.current = d.team; setTeam(d.team); setAnnouncements(d.announcements || []); })
             .catch(() => {
                 setOffline(true);
                 setIdeEvent(SEED_EVENT);
@@ -868,7 +502,6 @@ function App() {
                 teamRef.current = tm;
                 setTeam(tm);
             });
-
         if (window.EventSource) {
             es = new EventSource('/api/stream');
             es.onopen = () => setLive(true);
@@ -884,46 +517,7 @@ function App() {
         return () => { if (es) es.close(); };
     }, []);
 
-    // Navigation helper with URL pushState and role guard
-    const navigateTo = (route) => {
-        setMobileMenuOpen(false);
-        setLoginError(false);
-        let target = route;
-        if (route === 'privacy') target = 'privacy-policy';
-        if (route === 'terms') target = 'terms-and-conditions';
-        if (route === 'cookies') target = 'cookie-policy';
-
-        if (target === 'manager-portal' && userRole !== 'manager') {
-            const path = ROUTE_TO_PATH['manager-portal'];
-            if (window.location.pathname !== path) window.history.pushState({}, '', path);
-            setCurrentRoute('404');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            return;
-        }
-        if (target === 'dev-portal' && userRole !== 'employee') {
-            const path = ROUTE_TO_PATH['dev-portal'];
-            if (window.location.pathname !== path) window.history.pushState({}, '', path);
-            setCurrentRoute('404');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            return;
-        }
-
-        const path = ROUTE_TO_PATH[target] || '/';
-        if (window.location.pathname !== path) {
-            window.history.pushState({}, '', path);
-        }
-        setCurrentRoute(target);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
-    // Enforce route protection when directly visiting /developer or /manager while logged out or wrong role
-    const effectiveRoute = (() => {
-        if (currentRoute === 'manager-portal' && userRole !== 'manager') return authChecked ? '404' : 'home';
-        if (currentRoute === 'dev-portal' && userRole !== 'employee') return authChecked ? '404' : 'home';
-        return currentRoute;
-    })();
-
-    // Manager operations
+    // ---- Menecer əməliyyatları: tədbir qeydi və komandaya elan ----
     const saveAction = (category, data) => {
         if (offline) {
             offlineState.current.actions[category] = Object.assign({}, data, { updated_at: new Date().toISOString() });
@@ -935,7 +529,6 @@ function App() {
             .then(() => { showToast(t('actionSaved')); return true; })
             .catch(() => { showToast(t('actionFailed')); return false; });
     };
-
     const sendAnnouncement = (data) => {
         if (offline) {
             addAnnouncement({ id: Date.now(), text: data.text, category: data.category || null, created_at: new Date().toISOString() }, false);
@@ -947,20 +540,7 @@ function App() {
             .catch(() => { showToast(t('announceFail')); return false; });
     };
 
-    const handleResetDemo = () => {
-        if (offline) {
-            offlineState.current = { counts: { PR_REVIEW_WAIT: 8, CI_FLAKY: 6, MEETING_LOAD: 5, UNCLEAR_REQUIREMENTS: 5, TOOLING: 2 }, respondents: 26, actions: {} };
-            applyTeam(localTeam(offlineState.current));
-            setAnnouncements([]);
-            showToast(t('demoResetDone'));
-            return Promise.resolve(true);
-        }
-        return postJson('/api/demo/reset', {})
-            .then(() => { showToast(t('demoResetDone')); return true; })
-            .catch(() => { showToast(t('serverFail')); return false; });
-    };
-
-    // AI reminder
+    // ---- AI xatırlatması (seçilmiş dildə) ----
     const loadReminder = (l) => {
         if (!ideEvent) { setReminder(null); return; }
         if (offline) { setReminder({ text: localReminder(ideEvent, l), code: 'offline' }); return; }
@@ -972,91 +552,61 @@ function App() {
     const openIdle = () => { setIsIdleModalOpen(true); loadReminder(lang); };
     useEffect(() => { if (isIdleModalOpen) loadReminder(lang); }, [lang]);
 
-    // Login & Logout with server session + offline fallback
-    const handleLoginSubmit = async (e, targetRole) => {
+    // ---- Marşrutlaşdırma (History API) və rol ayrılığı ----
+    // Qeyd: rol yoxlaması bu versiyada yalnız interfeysdədir; server API-ləri hələ autentifikasiya olunmur.
+    const ownRoute = userRole === 'manager' ? 'manager-portal' : userRole === 'employee' ? 'dev-portal' : 'home';
+    const route = guardRoute(currentRoute, userRole);
+    const goRoute = (r, hash) => {
+        const url = pathFor(r) + (hash || '');
+        if (location.pathname + location.hash !== url) history.pushState({}, '', url);
+        setCurrentRoute(r);
+        if (hash) setTimeout(() => { const el = document.getElementById(hash.slice(1)); if (el) el.scrollIntoView(); }, 60);
+    };
+    const navigateTo = goRoute;
+
+    useEffect(() => {
+        const onPop = () => setCurrentRoute(routeFromPath());
+        window.addEventListener('popstate', onPop);
+        return () => window.removeEventListener('popstate', onPop);
+    }, []);
+    useEffect(() => {
+        if (route === '404') return;
+        const want = pathFor(route);
+        if (location.pathname !== want) history.replaceState({}, '', want + location.hash);
+    }, [route]);
+    useEffect(() => { document.title = t('pageTitle_' + route); }, [route, lang]);
+    const navCount = useRef(0);
+    useEffect(() => {
+        navCount.current += 1;
+        if (navCount.current > 1) { const m = document.getElementById('main'); if (m) m.focus({ preventScroll: true }); window.scrollTo(0, 0); }
+        if (location.hash) setTimeout(() => { const el = document.getElementById(location.hash.slice(1)); if (el) el.scrollIntoView(); }, 60);
+    }, [route]);
+    useEffect(() => {
+        const onCleared = () => { setCookieConsent(false); showToast(translate(langRef.current, 'prefsCleared')); };
+        window.addEventListener('cp-prefs-cleared', onCleared);
+        return () => window.removeEventListener('cp-prefs-cleared', onCleared);
+    }, []);
+
+    const loginRole = route === 'login-mgr' ? 'manager' : 'employee';
+    const handleLoginSubmit = (e) => {
         e.preventDefault();
-        const mail = sanitizeInput(emailInput).trim().toLowerCase();
-        const pass = sanitizeInput(passwordInput).trim();
-        setLoginBusy(true);
-        setLoginError(false);
-
-        if (!offline) {
-            try {
-                const res = await postJson('/api/auth/login', { email: mail, password: pass, role: targetRole });
-                if (res && res.authenticated) {
-                    setUserRole(res.role);
-                    setEmailInput('');
-                    setPasswordInput('');
-                    setLoginBusy(false);
-                    const dest = res.role === 'manager' ? 'manager-portal' : 'dev-portal';
-                    const path = ROUTE_TO_PATH[dest];
-                    window.history.pushState({}, '', path);
-                    setCurrentRoute(dest);
-                    showToast(t(res.role === 'manager' ? 'loginOkMgr' : 'loginOkDev'));
-                    return;
-                }
-            } catch (err) {
-                setLoginBusy(false);
-                setLoginError(true);
-                return;
-            }
-        }
-
-        // Offline fallback validation
-        const okDev = targetRole === 'employee' && mail === 'dev@company.com' && pass === 'emp123';
-        const okMgr = targetRole === 'manager' && mail === 'manager@company.com' && pass === 'admin123';
-        setLoginBusy(false);
+        const mail = sanitizeInput(emailInput).trim(), pass = sanitizeInput(passwordInput).trim();
+        const okDev = loginRole === 'employee' && mail === 'dev@company.com' && pass === 'emp123';
+        const okMgr = loginRole === 'manager' && mail === 'manager@company.com' && pass === 'admin123';
         if (okDev || okMgr) {
-            const r = okMgr ? 'manager' : 'employee';
-            setUserRole(r);
-            setEmailInput('');
-            setPasswordInput('');
-            const dest = okMgr ? 'manager-portal' : 'dev-portal';
-            const path = ROUTE_TO_PATH[dest];
-            window.history.pushState({}, '', path);
-            setCurrentRoute(dest);
+            setUserRole(okMgr ? 'manager' : 'employee');
+            setLoginError(false); setEmailInput(''); setPasswordInput('');
+            goRoute(okMgr ? 'manager-portal' : 'dev-portal');
             showToast(t(okMgr ? 'loginOkMgr' : 'loginOkDev'));
-        } else {
-            setLoginError(true);
-        }
+        } else { setLoginError(true); }
     };
+    const handleLogout = () => { setUserRole(null); setIsIdleModalOpen(false); goRoute('home'); showToast(t('logoutToast')); };
+    const acceptCookies = () => { try { localStorage.setItem('cookieConsentGiven', 'true'); } catch (e) { /* yoxdur */ } setCookieConsent(true); showToast(t('cookieSaved')); };
+    // Seçimlər yalnız istifadəçi hərəkət edəndə brauzer yaddaşına yazılır
+    const changeLang = (l) => { setLang(l); try { localStorage.setItem('cp_lang', l); } catch (e) { /* yoxdur */ } };
+    const toggleTheme = () => { const nt = theme === 'dark' ? 'light' : 'dark'; setTheme(nt); try { localStorage.setItem('cp_theme', nt); } catch (e) { /* yoxdur */ } };
 
-    const handleLogout = () => {
-        if (!offline) {
-            postJson('/api/auth/logout', {}).catch(() => {});
-        }
-        setUserRole(null);
-        setIsIdleModalOpen(false);
-        window.history.pushState({}, '', '/');
-        setCurrentRoute('home');
-        showToast(t('logoutToast'));
-    };
-
-    // Cookie consent handlers
-    const saveConsentChoice = (functionalAllowed) => {
-        const next = {
-            decided: true,
-            essential: true,
-            functional: Boolean(functionalAllowed),
-            updatedAt: new Date().toISOString()
-        };
-        try {
-            localStorage.setItem('cp_cookie_consent', JSON.stringify(next));
-            localStorage.setItem('cookieConsentGiven', 'true');
-            if (!functionalAllowed) {
-                localStorage.removeItem('cp_lang');
-                localStorage.removeItem('cp_theme');
-            } else {
-                localStorage.setItem('cp_lang', lang);
-                localStorage.setItem('cp_theme', theme);
-            }
-        } catch (e) { /* ignore */ }
-        setConsent(next);
-        setShowCookieModal(false);
-        showToast(t('cookieSaved'));
-    };
-
-    // Record away reason
+    // ---- Səbəbin qeydi: tarixçə + backend (menecer paneli SSE ilə eyni anda yenilənir) ----
     const handleRecordAway = () => {
         const reason = REASONS.find((r) => r.id === selectedReason);
         if (!reason) return;
@@ -1070,839 +620,375 @@ function App() {
             postJson('/api/survey', { developer_ref: ideEvent.developer_ref, reason_id: reason.id, category: reason.cat })
                 .catch(() => showToast(t('serverFail')));
         }
-        setIsIdleModalOpen(false);
-        setSelectedReason('');
-        showToast(t('recorded'));
+        setIsIdleModalOpen(false); setSelectedReason(''); showToast(t('recorded'));
     };
 
-    const ownPanelRoute = userRole === 'manager' ? 'manager-portal' : userRole === 'employee' ? 'dev-portal' : null;
+    const tabCls = (active) => 'px-3.5 py-2 rounded-xl text-xs font-semibold transition-colors ' + (active ? 'bg-sky-600 text-white' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800');
 
     return (
-        <LangCtx.Provider value={ctx}>
-        <div className="min-h-screen flex flex-col justify-between relative bg-grid-pattern">
-            {/* Toast Notification */}
+        <LangCtx.Provider value={ctx}><NavCtx.Provider value={navigateTo}>
+        <div className="min-h-screen flex flex-col justify-between relative">
             {toastMsg && (
-                <div role="status" aria-live="polite" className="fixed top-5 right-5 z-50 bg-slate-900 dark:bg-slate-900 border border-sky-500/40 text-sky-200 px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 max-w-sm">
-                    <span className="w-2 h-2 bg-sky-400 rounded-full shrink-0"></span>
-                    <span className="text-xs sm:text-sm font-medium leading-snug">{toastMsg}</span>
+                <div className="fixed top-6 right-6 z-50 bg-slate-900 border border-sky-500/50 text-sky-300 px-5 py-3 rounded-2xl shadow-2xl flex items-center space-x-3 max-w-sm">
+                    <span className="w-2.5 h-2.5 bg-sky-400 rounded-full animate-ping shrink-0"></span>
+                    <span className="text-sm font-medium">{toastMsg}</span>
                 </div>
             )}
 
-            {/* Top Navigation Header */}
-            <header className="border-b border-slate-200/80 dark:border-slate-800/80 bg-white/90 dark:bg-[#090d16]/90 backdrop-blur-md sticky top-0 z-40">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-3">
-                    {/* Brand Logo */}
-                    <div className="flex items-center gap-3">
-                        <button type="button" onClick={() => navigateTo('home')} className="flex items-center gap-3 text-left group cursor-pointer">
-                            <div className="bg-gradient-to-br from-sky-500 to-sky-700 p-2.5 rounded-xl text-white shadow-md shadow-sky-600/20 group-hover:from-sky-400 group-hover:to-sky-600 transition-all">
-                                <IconPulse className="w-5 h-5" />
-                            </div>
-                            <div>
-                                <span className="text-lg sm:text-xl font-extrabold tracking-tight text-slate-900 dark:text-white font-display block leading-none">ContextPulse AI</span>
-                                <span className="text-[10px] uppercase font-mono text-sky-600 dark:text-sky-400 tracking-wider block mt-1">{t('brandSub')}</span>
-                            </div>
-                        </button>
-                    </div>
-
-                    {/* Desktop Navigation Links */}
-                    <nav aria-label="Main Navigation" className="hidden md:flex items-center gap-1">
-                        <button type="button" onClick={() => navigateTo('home')}
-                            className={'px-3.5 py-2 rounded-xl text-xs font-semibold transition-colors ' + (effectiveRoute === 'home' ? 'bg-slate-100 dark:bg-slate-800/90 text-sky-600 dark:text-sky-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-900')}>
-                            {t('navHome')}
-                        </button>
-                        <button type="button" onClick={() => navigateTo('privacy-policy')}
-                            className={'px-3.5 py-2 rounded-xl text-xs font-semibold transition-colors ' + (effectiveRoute === 'privacy-policy' ? 'bg-slate-100 dark:bg-slate-800/90 text-sky-600 dark:text-sky-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-900')}>
-                            {t('navPrivacy')}
-                        </button>
-                        {!userRole ? (
-                            <button type="button" onClick={() => navigateTo('portal')}
-                                className={'ml-1 px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ' + (['portal', 'login-developer', 'login-manager'].includes(effectiveRoute) ? 'bg-sky-600 text-white shadow-md shadow-sky-600/20' : 'bg-slate-900 dark:bg-sky-500/15 text-white dark:text-sky-300 border border-transparent dark:border-sky-500/30 hover:bg-slate-800 dark:hover:bg-sky-500/25')}>
-                                <IconLock className="w-3.5 h-3.5" />
-                                <span>{t('navPortal')}</span>
-                            </button>
-                        ) : (
-                            <div className="flex items-center gap-2 ml-1">
-                                <button type="button" onClick={() => navigateTo(ownPanelRoute)}
-                                    className={'px-4 py-2 rounded-xl text-xs font-bold transition-all ' + (effectiveRoute === ownPanelRoute ? 'bg-sky-600 text-white shadow-md shadow-sky-600/20' : 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/25 hover:bg-sky-500/20')}>
-                                    {userRole === 'manager' ? t('mgrPanel') : t('devPanel')}
-                                </button>
-                                <button type="button" onClick={handleLogout}
-                                    className="px-3.5 py-2 bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20 border border-rose-500/20 rounded-xl text-xs font-semibold transition-colors">
-                                    {t('logout')}
-                                </button>
-                            </div>
-                        )}
-                    </nav>
-
-                    {/* Right Utility Controls */}
-                    <div className="flex items-center gap-2">
-                        <div className="hidden sm:block">
-                            <LivePill live={live} offline={offline} />
-                        </div>
-                        <LangSwitch lang={lang} onChange={setLang} />
-                        <button type="button" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} aria-label={t('themeAria')}
-                            className="p-2 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors cursor-pointer">
-                            {theme === 'dark' ? <IconSun className="w-4 h-4 text-amber-400" /> : <IconMoon className="w-4 h-4 text-slate-700" />}
-                        </button>
-                        {/* Mobile Menu Toggle */}
-                        <button type="button" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label="Menu" aria-expanded={mobileMenuOpen}
-                            className="md:hidden p-2 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-200 rounded-xl">
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                {mobileMenuOpen
-                                    ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                                    : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />}
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-
-                {/* Mobile Navigation Drawer */}
-                {mobileMenuOpen && (
-                    <div className="md:hidden border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f1623] px-4 py-4 space-y-2">
-                        <div className="flex items-center justify-between pb-2 border-b border-slate-200 dark:border-slate-800">
-                            <LivePill live={live} offline={offline} />
-                        </div>
-                        <button type="button" onClick={() => navigateTo('home')} className="w-full text-left px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 block">
-                            {t('navHome')}
-                        </button>
-                        <button type="button" onClick={() => navigateTo('privacy-policy')} className="w-full text-left px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 block">
-                            {t('navPrivacy')}
-                        </button>
-                        {!userRole ? (
-                            <button type="button" onClick={() => navigateTo('portal')} className="w-full text-left px-3 py-2.5 rounded-xl text-xs font-bold bg-sky-600 text-white block">
-                                {t('navPortal')}
-                            </button>
-                        ) : (
+            <a href="#main" className="skip-link" onClick={(e) => { e.preventDefault(); const m = document.getElementById('main'); if (m) m.focus(); }}>{t('skipToContent')}</a>
+            <header className="border-b border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-950/90 backdrop-blur sticky top-0 z-40">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                    <Link route={ownRoute} className="flex items-center gap-3 rounded-xl">
+                        <img src="favicon.svg" alt="" width="36" height="36" className="rounded-xl" />
+                        <span className="leading-tight">
+                            <span className="block text-lg font-bold tracking-tight text-slate-900 dark:text-white">ContextPulse AI</span>
+                            <span className="hidden sm:block text-[10px] uppercase font-mono text-sky-700 dark:text-sky-400">{t('brandSub')}</span>
+                        </span>
+                    </Link>
+                    <nav aria-label={t('mainNav')} className="flex flex-wrap items-center justify-end gap-2">
+                        {userRole ? (
                             <>
-                                <button type="button" onClick={() => navigateTo(ownPanelRoute)} className="w-full text-left px-3 py-2.5 rounded-xl text-xs font-bold bg-sky-600 text-white block">
-                                    {userRole === 'manager' ? t('mgrPanel') : t('devPanel')}
-                                </button>
-                                <button type="button" onClick={handleLogout} className="w-full text-left px-3 py-2.5 rounded-xl text-xs font-semibold text-rose-600 dark:text-rose-400 bg-rose-500/10 block">
-                                    {t('logout')}
-                                </button>
+                                <Link route={ownRoute} className={tabCls(route === ownRoute)}>{userRole === 'manager' ? t('mgrPanel') : t('devPanel')}</Link>
+                                <button type="button" onClick={handleLogout} className="px-3.5 py-2 bg-rose-500/10 text-rose-700 dark:text-rose-400 hover:bg-rose-500/20 rounded-xl text-xs font-semibold transition-colors">{t('logout')}</button>
                             </>
-                        )}
-                    </div>
-                )}
+                        ) : <SignInMenu />}
+                        <LivePill live={live} offline={offline} />
+                        <LangSwitch lang={lang} onChange={changeLang} />
+                        <button type="button" onClick={toggleTheme} aria-label={t('themeAria')}
+                            className="p-2.5 bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-200 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors cursor-pointer">
+                            {theme === 'dark' ? <IconSun className="w-5 h-5 text-amber-400" /> : <IconMoon className="w-5 h-5 text-slate-700" />}
+                        </button>
+                    </nav>
+                </div>
             </header>
 
-            {/* Main Content Router */}
-            <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-                {effectiveRoute === 'home' && (
-                    <HomeView userRole={userRole} onNavigate={navigateTo} />
+            <main id="main" tabIndex={-1} className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 outline-none">
+                {route === 'home' && <HomeView userRole={userRole} />}
+                {route === 'portal' && <PortalPage />}
+                {(route === 'login-dev' || route === 'login-mgr') && (
+                    <LoginPage role={loginRole} email={emailInput} password={passwordInput} error={loginError}
+                        onEmail={setEmailInput} onPassword={setPasswordInput} onSubmit={handleLoginSubmit} />
                 )}
-                {effectiveRoute === 'portal' && (
-                    <PortalEntryView userRole={userRole} onNavigate={navigateTo} onLogout={handleLogout} />
-                )}
-                {effectiveRoute === 'login-developer' && (
-                    <DedicatedLoginPage
-                        roleType="employee"
-                        userRole={userRole}
-                        emailInput={emailInput}
-                        setEmailInput={setEmailInput}
-                        passwordInput={passwordInput}
-                        setPasswordInput={setPasswordInput}
-                        loginError={loginError}
-                        loginBusy={loginBusy}
-                        onSubmit={(e) => handleLoginSubmit(e, 'employee')}
-                        onNavigate={navigateTo}
-                    />
-                )}
-                {effectiveRoute === 'login-manager' && (
-                    <DedicatedLoginPage
-                        roleType="manager"
-                        userRole={userRole}
-                        emailInput={emailInput}
-                        setEmailInput={setEmailInput}
-                        passwordInput={passwordInput}
-                        setPasswordInput={setPasswordInput}
-                        loginError={loginError}
-                        loginBusy={loginBusy}
-                        onSubmit={(e) => handleLoginSubmit(e, 'manager')}
-                        onNavigate={navigateTo}
-                    />
-                )}
-                {effectiveRoute === 'dev-portal' && (
-                    <DevPortalView
-                        awayHistory={awayHistory}
-                        event={ideEvent}
-                        live={live}
-                        offline={offline}
-                        team={team}
-                        announcements={announcements}
-                        onTriggerIdle={openIdle}
-                    />
-                )}
-                {effectiveRoute === 'manager-portal' && (
-                    <ManagerPortalView
-                        team={team}
-                        bumps={bumps}
-                        live={live}
-                        offline={offline}
-                        announcements={announcements}
-                        onSaveAction={saveAction}
-                        onSend={sendAnnouncement}
-                        onResetDemo={handleResetDemo}
-                    />
-                )}
-                {effectiveRoute === 'privacy-policy' && (
-                    <PrivacyPolicyPage onNavigate={navigateTo} />
-                )}
-                {effectiveRoute === 'terms-and-conditions' && (
-                    <TermsAndConditionsPage onNavigate={navigateTo} />
-                )}
-                {effectiveRoute === 'cookie-policy' && (
-                    <CookiePolicyPage consent={consent} onOpenCookieModal={() => setShowCookieModal(true)} onNavigate={navigateTo} />
-                )}
-                {effectiveRoute === '404' && (
-                    <Custom404Page userRole={userRole} onNavigate={navigateTo} />
-                )}
+                {route === 'dev-portal' && <DevPortalView awayHistory={awayHistory} event={ideEvent} live={live} offline={offline} team={team} announcements={announcements} onTriggerIdle={openIdle} />}
+                {route === 'manager-portal' && <ManagerPortalView team={team} bumps={bumps} live={live} offline={offline} announcements={announcements} onSaveAction={saveAction} onSend={sendAnnouncement} />}
+                {route === 'privacy' && <LegalDocPage docKey="privacy" />}
+                {route === 'terms' && <LegalDocPage docKey="terms" />}
+                {route === 'cookies' && <LegalDocPage docKey="cookies" />}
+                {route === '404' && <Custom404Page onGoHome={() => navigateTo(ownRoute)} />}
             </main>
 
-            {/* Break / Idle Simulation Modal */}
             {isIdleModalOpen && (
-                <div role="dialog" aria-modal="true" aria-labelledby="idle-modal-title" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-sm">
-                    <div className="surface-card rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative border border-slate-200 dark:border-slate-800">
-                        <div className="flex items-start justify-between gap-3 mb-2">
-                            <h3 id="idle-modal-title" className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white font-display">{t('idleTitle')}</h3>
-                            <button type="button" onClick={() => setIsIdleModalOpen(false)} aria-label={t('close')} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1">✕</button>
-                        </div>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mb-5 leading-relaxed">{t('idleText')}</p>
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md">
+                    <div className="glass-panel rounded-3xl max-w-lg w-full p-8 shadow-2xl relative">
+                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{t('idleTitle')}</h3>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">{t('idleText')}</p>
                         {reminder && (
-                            <div className="mb-6 p-4 rounded-2xl bg-sky-500/10 border border-sky-500/25">
-                                <div className="flex items-center justify-between gap-2 mb-2">
-                                    <p className="text-[11px] uppercase font-mono font-semibold text-sky-700 dark:text-sky-400">{t('whereLeft')}</p>
-                                    {!reminder.loading && (
-                                        <span className="px-2 py-0.5 rounded-md bg-sky-500/15 text-sky-700 dark:text-sky-300 text-[10px] font-mono">
-                                            {t('badge_' + reminder.code)}
-                                        </span>
-                                    )}
-                                </div>
+                            <div className="mb-6 p-4 rounded-2xl bg-sky-500/10 border border-sky-500/20">
+                                <p className="text-[10px] uppercase font-mono text-sky-600 dark:text-sky-400 mb-1.5">{t('whereLeft')}</p>
                                 {reminder.loading ? (
-                                    <p className="text-xs text-slate-600 dark:text-slate-300 animate-pulse font-mono py-2">{t('aiReading')}</p>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400 animate-pulse">{t('aiReading')}</p>
                                 ) : (
-                                    <p className="text-sm leading-relaxed text-slate-800 dark:text-slate-100"><RichText text={reminder.text} /></p>
+                                    <>
+                                        <p className="text-sm leading-relaxed text-slate-800 dark:text-slate-200"><RichText text={reminder.text} /></p>
+                                        <p className="text-[10px] font-mono text-slate-500 dark:text-slate-400 mt-2">{t('badge_' + reminder.code)}</p>
+                                    </>
                                 )}
                             </div>
                         )}
-                        <div className="space-y-2 mb-6">
-                            <label htmlFor="break-reason-select" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">{t('pickReason')}</label>
-                            <select id="break-reason-select" value={selectedReason} onChange={(e) => setSelectedReason(e.target.value)}
-                                className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-sky-500">
+                        <div className="space-y-4 mb-6">
+                            <label className="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase">{t('pickReason')}</label>
+                            <select value={selectedReason} onChange={(e) => setSelectedReason(e.target.value)}
+                                className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-sky-500">
                                 <option value="">{t('selectPh')}</option>
                                 {REASONS.map((r) => (<option key={r.id} value={r.id}>{t('reason_' + r.id)}</option>))}
                             </select>
                         </div>
-                        <div className="flex items-center justify-end gap-3">
-                            <button type="button" onClick={() => setIsIdleModalOpen(false)} className="px-4 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl text-xs font-semibold transition-colors">{t('close')}</button>
-                            <button type="button" onClick={handleRecordAway} disabled={!selectedReason} className="px-5 py-2.5 bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white rounded-xl text-xs font-bold shadow-md shadow-sky-600/20 transition-all">{t('record')}</button>
+                        <div className="flex items-center justify-end space-x-3">
+                            <button onClick={() => setIsIdleModalOpen(false)} className="px-4 py-2.5 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-semibold">{t('close')}</button>
+                            <button onClick={handleRecordAway} disabled={!selectedReason} className="px-5 py-2.5 bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white rounded-xl text-xs font-bold shadow-lg shadow-sky-600/20">{t('record')}</button>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* Shared Footer with Legal Links & Persistent Cookie Settings */}
-            <footer className="border-t border-slate-200/80 dark:border-slate-800/80 bg-white/90 dark:bg-[#090d16]/90 py-8 mt-16">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500 dark:text-slate-400">
-                    <div className="flex items-center gap-2.5">
-                        <div className="w-2 h-2 rounded-full bg-sky-500"></div>
-                        <p>{t('footerCopy')}</p>
-                    </div>
-                    <nav aria-label="Legal and Privacy Navigation" className="flex flex-wrap justify-center items-center gap-x-6 gap-y-2 font-medium">
-                        <a href="/privacy-policy" onClick={(e) => { e.preventDefault(); navigateTo('privacy-policy'); }} className="hover:text-sky-600 dark:hover:text-sky-400 transition-colors">{t('privacyLink')}</a>
-                        <a href="/terms-and-conditions" onClick={(e) => { e.preventDefault(); navigateTo('terms-and-conditions'); }} className="hover:text-sky-600 dark:hover:text-sky-400 transition-colors">{t('termsLink')}</a>
-                        <a href="/cookie-policy" onClick={(e) => { e.preventDefault(); navigateTo('cookie-policy'); }} className="hover:text-sky-600 dark:hover:text-sky-400 transition-colors">{t('cookiesLink')}</a>
-                        <button type="button" onClick={() => setShowCookieModal(true)} className="text-sky-600 dark:text-sky-400 hover:underline font-mono text-[11px]">
-                            ⚙ {t('cookieSettingsBtn')}
-                        </button>
+            <footer className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 py-8 mt-12">
+                <div className="max-w-7xl mx-auto px-4 text-center sm:text-left sm:flex sm:items-center sm:justify-between text-xs text-slate-600 dark:text-slate-400">
+                    <p>{t('footerCopy')}</p>
+                    <nav aria-label={t('legalNav')} className="flex flex-wrap justify-center gap-x-6 gap-y-2 mt-4 sm:mt-0 font-medium">
+                        <Link route="privacy" className="hover:text-sky-700 dark:hover:text-sky-400 hover:underline">{t('privacyLink')}</Link>
+                        <Link route="terms" className="hover:text-sky-700 dark:hover:text-sky-400 hover:underline">{t('termsLink')}</Link>
+                        <Link route="cookies" className="hover:text-sky-700 dark:hover:text-sky-400 hover:underline">{t('cookiesLink')}</Link>
+                        <Link route="cookies" hash="#storage" className="hover:text-sky-700 dark:hover:text-sky-400 hover:underline">{t('cookieSettings')}</Link>
                     </nav>
                 </div>
             </footer>
 
-            {/* Non-blocking Cookie Consent Banner or Modal */}
-            {(!consent.decided || showCookieModal) && (
-                <CookieConsentManager
-                    consent={consent}
-                    isModal={showCookieModal}
-                    onAcceptAll={() => saveConsentChoice(true)}
-                    onRejectOptional={() => saveConsentChoice(false)}
-                    onSaveCustom={(funcAllowed) => saveConsentChoice(funcAllowed)}
-                    onOpenCustomize={() => setShowCookieModal(true)}
-                    onCloseModal={() => setShowCookieModal(false)}
-                    onReadPolicy={() => { setShowCookieModal(false); navigateTo('cookie-policy'); }}
-                />
+            {!cookieConsent && (
+                <div role="region" aria-label={t('cookieTitle')} className="fixed bottom-4 left-4 right-4 md:left-8 md:right-auto md:max-w-md z-50 p-5 glass-panel rounded-2xl">
+                    <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{t('cookieTitle')}</h2>
+                    <p className="text-xs text-slate-600 dark:text-slate-300 mt-1.5 leading-relaxed">{t('cookieText')}</p>
+                    <div className="flex items-center gap-3 mt-4">
+                        <button type="button" onClick={acceptCookies} className="px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white font-semibold text-xs rounded-xl">{t('accept')}</button>
+                        <Link route="cookies" hash="#storage" className="px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:underline">{t('readMore')}</Link>
+                    </div>
+                </div>
             )}
         </div>
-        </LangCtx.Provider>
+        </NavCtx.Provider></LangCtx.Provider>
     );
 }
 
-// ============ COOKIE CONSENT MANAGER (PHASE 9) ============
-function CookieConsentManager({ consent, isModal, onAcceptAll, onRejectOptional, onSaveCustom, onOpenCustomize, onCloseModal, onReadPolicy }) {
+// ============ ANA SƏHİFƏ: 3 xüsusiyyət kartı (AZ / EN dil dəstəyi ilə) ============
+const FeatIcon = ({ kind }) => {
+    const p = { width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' };
+    if (kind === 'spy') return (<svg {...p}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><path d="m9 12 2 2 4-4" /></svg>);
+    if (kind === 're') return (<svg {...p}><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>);
+    return (<svg {...p}><circle cx="9" cy="7" r="3" /><path d="M3 21v-1a6 6 0 0 1 12 0v1" /><circle cx="17" cy="9" r="2.5" /><path d="M17 14.5a4.5 4.5 0 0 1 4.5 4.5V20" /></svg>);
+};
+function FeatureCards() {
     const { t } = useT();
-    const [funcEnabled, setFuncEnabled] = useState(consent.decided ? consent.functional : true);
-
-    if (isModal) {
-        return (
-            <div role="dialog" aria-modal="true" aria-labelledby="cookie-modal-title" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-sm">
-                <div className="surface-card rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-5">
-                    <div className="flex items-start justify-between gap-3">
-                        <div>
-                            <h3 id="cookie-modal-title" className="text-lg font-bold text-slate-900 dark:text-white font-display">{t('cookieTitle')}</h3>
-                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">{t('cookieText')}</p>
-                        </div>
-                        {consent.decided && (
-                            <button type="button" onClick={onCloseModal} aria-label={t('close')} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1">✕</button>
-                        )}
-                    </div>
-
-                    <div className="space-y-3">
-                        {/* Essential */}
-                        <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 flex items-start justify-between gap-3">
-                            <div>
-                                <p className="text-xs font-bold text-slate-900 dark:text-white">{t('cookieEssentialTitle')}</p>
-                                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">{t('cookieEssentialDesc')}</p>
-                            </div>
-                            <input type="checkbox" checked disabled aria-label={t('cookieEssentialTitle')} className="mt-1 h-4 w-4 accent-sky-600 rounded" />
-                        </div>
-
-                        {/* Functional */}
-                        <label className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 flex items-start justify-between gap-3 cursor-pointer">
-                            <div>
-                                <p className="text-xs font-bold text-slate-900 dark:text-white">{t('cookieFuncTitle')}</p>
-                                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">{t('cookieFuncDesc')}</p>
-                            </div>
-                            <input type="checkbox" checked={funcEnabled} onChange={(e) => setFuncEnabled(e.target.checked)} className="mt-1 h-4 w-4 accent-sky-600 rounded" />
-                        </label>
-
-                        {/* Analytics (None used) */}
-                        <div className="p-4 rounded-2xl bg-slate-50/60 dark:bg-slate-900/40 border border-dashed border-slate-200 dark:border-slate-800 flex items-start justify-between gap-3 opacity-75">
-                            <div>
-                                <p className="text-xs font-bold text-slate-700 dark:text-slate-300">{t('cookieAnalyticsTitle')}</p>
-                                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">{t('cookieAnalyticsDesc')}</p>
-                            </div>
-                            <input type="checkbox" checked={false} disabled aria-label={t('cookieAnalyticsTitle')} className="mt-1 h-4 w-4 rounded" />
-                        </div>
-                    </div>
-
-                    <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
-                        <button type="button" onClick={onReadPolicy} className="text-xs font-semibold text-sky-600 dark:text-sky-400 hover:underline">
-                            {t('readMore')}
-                        </button>
-                        <div className="flex flex-wrap items-center gap-2">
-                            <button type="button" onClick={onRejectOptional} className="px-3.5 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold text-xs rounded-xl transition-colors">
-                                {t('rejectNonEssential')}
-                            </button>
-                            <button type="button" onClick={() => onSaveCustom(funcEnabled)} className="px-3.5 py-2 bg-slate-900 dark:bg-slate-700 hover:bg-slate-800 text-white font-semibold text-xs rounded-xl transition-colors">
-                                {t('savePreferences')}
-                            </button>
-                            <button type="button" onClick={onAcceptAll} className="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs rounded-xl shadow-md transition-colors">
-                                {t('acceptAll')}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    return (
-        <aside aria-label={t('cookieTitle')} className="fixed bottom-4 left-4 right-4 md:left-6 md:right-6 lg:left-auto lg:right-8 lg:max-w-xl z-40 p-5 surface-card rounded-2xl shadow-2xl border border-sky-500/30">
-            <div className="flex flex-col gap-3">
-                <div>
-                    <h4 className="text-sm font-bold text-slate-900 dark:text-white font-display">{t('cookieTitle')}</h4>
-                    <p className="text-xs text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">{t('cookieText')}</p>
-                </div>
-                <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
-                    <button type="button" onClick={onReadPolicy} className="text-xs font-semibold text-sky-600 dark:text-sky-400 hover:underline">
-                        {t('readMore')}
-                    </button>
-                    <div className="flex flex-wrap items-center gap-2">
-                        <button type="button" onClick={onRejectOptional} className="px-3.5 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold text-xs rounded-xl transition-colors">
-                            {t('rejectNonEssential')}
-                        </button>
-                        <button type="button" onClick={onOpenCustomize} className="px-3.5 py-2 border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-xs rounded-xl transition-colors">
-                            {t('customizeCookies')}
-                        </button>
-                        <button type="button" onClick={onAcceptAll} className="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs rounded-xl shadow-sm transition-colors">
-                            {t('acceptAll')}
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </aside>
-    );
-}
-
-// ============ ANA SƏHİFƏ (PUBLIC LANDING PAGE — PHASE 2, 3, 5) ============
-function HomeView({ userRole, onNavigate }) {
-    const { t } = useT();
-    const ownPanelRoute = userRole === 'manager' ? 'manager-portal' : userRole === 'employee' ? 'dev-portal' : 'portal';
-
-    const features = [
-        {
-            kind: 'spy',
-            badge: t('featSpyBadge'),
-            title: t('featSpyTitle'),
-            text: t('featSpyText'),
-            icon: <IconShield className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />,
-            accent: 'border-cyan-500/20 bg-cyan-500/10 text-cyan-700 dark:text-cyan-300'
-        },
-        {
-            kind: 're',
-            badge: t('featReBadge'),
-            title: t('featReTitle'),
-            text: t('featReText'),
-            icon: <IconClock className="w-5 h-5 text-sky-600 dark:text-sky-400" />,
-            accent: 'border-sky-500/20 bg-sky-500/10 text-sky-700 dark:text-sky-300'
-        },
-        {
-            kind: 'k',
-            badge: t('featKBadge'),
-            title: t('featKTitle'),
-            text: t('featKText'),
-            icon: <IconUsers className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />,
-            accent: 'border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
-        }
+    const items = [
+        { kind: 'spy', title: t('featSpyTitle'), text: t('featSpyText'), color: 'text-cyan-600 dark:text-cyan-400' },
+        { kind: 're', title: t('featReTitle'), text: t('featReText'), color: 'text-purple-600 dark:text-purple-400' },
+        { kind: 'k', title: t('featKTitle'), text: t('featKText'), color: 'text-emerald-600 dark:text-emerald-400' }
     ];
-
-    const sampleSchema = `{
-  "schema": "contextpulse.ide_event.v1",
-  "developer_ref": "dev_a91f",
-  "workspace": { "repo": "payments-service", "branch": "feature/refund-idempotency" },
-  "last_meaningful_action": {
-    "type": "EDIT_FUNCTION",
-    "file": "src/refunds/processRefund.ts",
-    "symbol": "processRefund",
-    "line_range": [48, 71]
-  },
-  "diagnostics": { "errors": 2, "first_error": { "code": "TS2345", "line": 63 } },
-  "test_state": { "runner": "jest", "passed": 18, "failed": 1 },
-  "pull_request": { "id": 412, "status": "changes_requested", "unresolved_comments": 3 },
-  "privacy": {
-    "screen_capture": false,
-    "keystroke_content": false,
-    "source_code_content": false
-  }
-}`;
-
     return (
-        <div className="space-y-16 sm:space-y-24 py-4 sm:py-8">
-            {/* Hero Section */}
-            <section className="text-center max-w-4xl mx-auto space-y-6">
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sky-500/10 border border-sky-500/25 text-sky-700 dark:text-sky-300 text-xs font-mono font-medium">
-                    <IconShield className="w-3.5 h-3.5" />
-                    <span>{t('homeBadge')}</span>
-                </div>
-                <h1 className="text-3xl sm:text-5xl lg:text-[52px] font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.15] font-display">
-                    {t('homeTitle')}
-                </h1>
-                <p className="text-sm sm:text-base lg:text-lg text-slate-600 dark:text-slate-300 leading-relaxed max-w-3xl mx-auto">
-                    {t('homeSub')}
-                </p>
-
-                <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-                    <button type="button" onClick={() => navigateTo(ownPanelRoute)}
-                        className="px-6 py-3.5 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-xl text-xs sm:text-sm shadow-lg shadow-sky-600/20 transition-all inline-flex items-center gap-2 cursor-pointer">
-                        <span>{userRole ? (userRole === 'manager' ? t('goMgr') : t('goDev')) : t('heroCtaPortal')}</span>
-                        <IconArrowRight className="w-4 h-4" />
-                    </button>
-                    <a href="#architecture-section"
-                        className="px-6 py-3.5 bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-800 font-semibold rounded-xl text-xs sm:text-sm transition-colors">
-                        {t('heroCtaPrimary')}
-                    </a>
-                </div>
-
-                {/* Verified Architecture Strip */}
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 pt-6 text-left">
-                    <div className="surface-card p-4 rounded-2xl">
-                        <span className="text-[10px] uppercase font-mono text-slate-500 dark:text-slate-400 block">{t('heroMeta1Label')}</span>
-                        <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white font-mono mt-1 block">{t('heroMeta1Val')}</span>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
+            {items.map((it) => (
+                <div key={it.kind} className="feature-card rounded-2xl p-5 transition-all duration-300">
+                    <div className={'flex items-center gap-2.5 mb-2 ' + it.color}>
+                        <FeatIcon kind={it.kind} />
+                        <h2 className="text-base font-semibold">{it.title}</h2>
                     </div>
-                    <div className="surface-card p-4 rounded-2xl">
-                        <span className="text-[10px] uppercase font-mono text-slate-500 dark:text-slate-400 block">{t('heroMeta2Label')}</span>
-                        <span className="text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 font-mono mt-1 block">{t('heroMeta2Val')}</span>
-                    </div>
-                    <div className="surface-card p-4 rounded-2xl">
-                        <span className="text-[10px] uppercase font-mono text-slate-500 dark:text-slate-400 block">{t('heroMeta3Label')}</span>
-                        <span className="text-xs sm:text-sm font-bold text-sky-600 dark:text-sky-400 font-mono mt-1 block">{t('heroMeta3Val')}</span>
-                    </div>
-                    <div className="surface-card p-4 rounded-2xl">
-                        <span className="text-[10px] uppercase font-mono text-slate-500 dark:text-slate-400 block">{t('heroMeta4Label')}</span>
-                        <span className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white font-mono mt-1 block">{t('heroMeta4Val')}</span>
-                    </div>
+                    <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-400">{it.text}</p>
                 </div>
-            </section>
-
-            {/* Core Verified Capabilities (Phase 5 accurate claims) */}
-            <section className="space-y-8">
-                <div className="text-center max-w-2xl mx-auto space-y-2">
-                    <span className="text-[11px] font-mono uppercase tracking-widest text-sky-600 dark:text-sky-400 font-semibold">{t('featSectionTag')}</span>
-                    <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white font-display">{t('featSectionTitle')}</h2>
-                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{t('featSectionSub')}</p>
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {features.map((it) => (
-                        <div key={it.kind} className="feature-card rounded-2xl p-6 flex flex-col justify-between space-y-4">
-                            <div className="space-y-3">
-                                <div className="flex items-center justify-between gap-2">
-                                    <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800/90">{it.icon}</div>
-                                    <span className={'px-2.5 py-1 rounded-full text-[10px] font-mono font-semibold border ' + it.accent}>{it.badge}</span>
-                                </div>
-                                <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white font-display">{it.title}</h3>
-                                <p className="text-xs sm:text-sm leading-relaxed text-slate-600 dark:text-slate-300">{it.text}</p>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </section>
-
-            {/* Closed-Loop Architecture Workflow */}
-            <section id="architecture-section" className="surface-card rounded-3xl p-6 sm:p-10 space-y-8">
-                <div className="max-w-2xl space-y-2">
-                    <span className="text-[11px] font-mono uppercase tracking-widest text-sky-600 dark:text-sky-400 font-semibold">{t('loopTag')}</span>
-                    <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white font-display">{t('loopTitle')}</h2>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 space-y-2">
-                        <span className="inline-block px-2.5 py-1 rounded-lg bg-sky-500/10 text-sky-600 dark:text-sky-400 font-mono text-xs font-bold">01 · IDE & PR</span>
-                        <h3 className="text-base font-bold text-slate-900 dark:text-white font-display">{t('loopStep1Title')}</h3>
-                        <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{t('loopStep1Text')}</p>
-                    </div>
-                    <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 space-y-2">
-                        <span className="inline-block px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-mono text-xs font-bold">02 · K = 5</span>
-                        <h3 className="text-base font-bold text-slate-900 dark:text-white font-display">{t('loopStep2Title')}</h3>
-                        <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{t('loopStep2Text')}</p>
-                    </div>
-                    <div className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 space-y-2">
-                        <span className="inline-block px-2.5 py-1 rounded-lg bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 font-mono text-xs font-bold">03 · LIVE SSE</span>
-                        <h3 className="text-base font-bold text-slate-900 dark:text-white font-display">{t('loopStep3Title')}</h3>
-                        <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{t('loopStep3Text')}</p>
-                    </div>
-                </div>
-            </section>
-
-            {/* Technical Schema & Known Limitations (README Transparency) */}
-            <section className="space-y-8">
-                <div className="max-w-2xl space-y-2">
-                    <span className="text-[11px] font-mono uppercase tracking-widest text-sky-600 dark:text-sky-400 font-semibold">{t('schemaTag')}</span>
-                    <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white font-display">{t('schemaTitle')}</h2>
-                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{t('schemaSub')}</p>
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div className="surface-card rounded-2xl p-6 space-y-3 overflow-hidden">
-                        <div className="flex items-center justify-between">
-                            <h3 className="text-sm font-bold text-slate-900 dark:text-white font-mono">{t('schemaBoxTitle')}</h3>
-                            <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-mono">extra=&quot;forbid&quot;</span>
-                        </div>
-                        <pre className="p-4 rounded-xl bg-slate-900 text-slate-100 text-[11px] font-mono overflow-x-auto leading-relaxed border border-slate-800">
-                            {sampleSchema}
-                        </pre>
-                    </div>
-
-                    <div className="surface-card rounded-2xl p-6 flex flex-col justify-between space-y-4">
-                        <div className="space-y-4">
-                            <h3 className="text-base font-bold text-slate-900 dark:text-white font-display">{t('limitsBoxTitle')}</h3>
-                            <ul className="space-y-3 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
-                                {[t('limit1'), t('limit2'), t('limit3'), t('limit4')].map((lim, idx) => (
-                                    <li key={idx} className="flex items-start gap-2.5">
-                                        <span className="mt-1 w-1.5 h-1.5 rounded-full bg-sky-500 shrink-0"></span>
-                                        <span className="leading-relaxed">{lim}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                        <div className="pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3">
-                            <span className="text-xs text-slate-500 dark:text-slate-400">{t('portalSub')}</span>
-                            <button type="button" onClick={() => navigateTo(ownPanelRoute)}
-                                className="shrink-0 px-4 py-2.5 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-xl text-xs transition-colors">
-                                {t('navPortal')}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </section>
+            ))}
         </div>
     );
 }
 
-// ============ PORTAL ENTRY & DEDICATED LOGIN VIEWS (PHASE 3) ============
-function PortalEntryView({ userRole, onNavigate, onLogout }) {
-    const { t } = useT();
+// ============ NAVİQASİYA KOMPONENTLƏRİ ============
+function Link({ route, hash, className, children }) {
+    const go = React.useContext(NavCtx);
     return (
-        <div className="py-8 max-w-4xl mx-auto space-y-8">
-            <div className="text-center space-y-3">
-                <span className="px-3.5 py-1 rounded-full bg-sky-500/10 border border-sky-500/25 text-sky-600 dark:text-sky-400 text-xs font-mono font-semibold">
-                    {t('portalBadge')}
-                </span>
-                <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white font-display">{t('portalTitle')}</h1>
-                <p className="text-sm text-slate-600 dark:text-slate-400 max-w-xl mx-auto leading-relaxed">{t('portalSub')}</p>
-            </div>
+        <a href={pathFor(route) + (hash || '')} className={className}
+            onClick={(e) => { if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return; e.preventDefault(); go(route, hash); }}>
+            {children}
+        </a>
+    );
+}
 
-            {userRole && (
-                <div className="p-4 rounded-2xl bg-sky-500/10 border border-sky-500/25 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-sky-800 dark:text-sky-200">
-                    <span>{t('switchRoleHint')}</span>
-                    <button type="button" onClick={onLogout} className="px-3.5 py-1.5 bg-rose-500/15 text-rose-600 dark:text-rose-300 rounded-lg font-bold shrink-0">
-                        {t('logout')}
-                    </button>
+// Kompakt "Daxil ol" menyusu: İşçi və Menecer üçün ayrı giriş səhifələrinə keçid
+function SignInMenu() {
+    const { t } = useT();
+    const go = React.useContext(NavCtx);
+    const [open, setOpen] = useState(false);
+    const ref = useRef(null);
+    useEffect(() => {
+        if (!open) return undefined;
+        const onDown = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+        const onKey = (e) => { if (e.key === 'Escape') setOpen(false); };
+        document.addEventListener('mousedown', onDown);
+        document.addEventListener('keydown', onKey);
+        return () => { document.removeEventListener('mousedown', onDown); document.removeEventListener('keydown', onKey); };
+    }, [open]);
+    const item = (r, title, sub) => (
+        <a role="menuitem" href={pathFor(r)} onClick={(e) => { e.preventDefault(); setOpen(false); go(r); }}
+            className="block px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+            <span className="block text-sm font-semibold text-slate-900 dark:text-white">{title}</span>
+            <span className="block text-[11px] text-slate-600 dark:text-slate-400">{sub}</span>
+        </a>
+    );
+    return (
+        <div className="relative" ref={ref}>
+            <button type="button" aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen(!open)}
+                className="px-3.5 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-xs font-semibold transition-colors">
+                {t('signIn')} <span aria-hidden="true">▾</span>
+            </button>
+            {open && (
+                <div role="menu" className="absolute right-0 mt-2 w-64 p-1.5 glass-panel rounded-xl z-50">
+                    {item('login-dev', t('signInDev'), t('signInDevSub'))}
+                    {item('login-mgr', t('signInMgr'), t('signInMgrSub'))}
                 </div>
             )}
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Employee Role Entry Card */}
-                <div className={'surface-card p-6 sm:p-8 rounded-3xl flex flex-col justify-between space-y-6 ' + (userRole === 'manager' ? 'opacity-60' : '')}>
-                    <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                            <div className="p-3 bg-sky-500/10 text-sky-600 dark:text-sky-400 rounded-2xl"><IconTerminal className="w-6 h-6" /></div>
-                            <span className="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[11px] font-mono">/login/developer</span>
-                        </div>
-                        <h2 className="text-xl font-bold text-slate-900 dark:text-white font-display">{t('devCardTitle')}</h2>
-                        <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{t('devCardText')}</p>
-                    </div>
-                    {userRole === 'employee' ? (
-                        <button type="button" onClick={() => onNavigate('dev-portal')} className="w-full py-3 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-xl text-xs sm:text-sm shadow-md shadow-sky-600/20 transition-all">
-                            {t('goDev')}
-                        </button>
-                    ) : (
-                        <button type="button" disabled={userRole === 'manager'} onClick={() => onNavigate('login-developer')}
-                            className="w-full py-3 bg-slate-900 dark:bg-sky-600 hover:bg-slate-800 dark:hover:bg-sky-500 disabled:opacity-50 text-white font-bold rounded-xl text-xs sm:text-sm transition-all">
-                            {t('loginDev')}
-                        </button>
-                    )}
-                </div>
-
-                {/* Manager Role Entry Card */}
-                <div className={'surface-card p-6 sm:p-8 rounded-3xl flex flex-col justify-between space-y-6 ' + (userRole === 'employee' ? 'opacity-60' : '')}>
-                    <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                            <div className="p-3 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-2xl"><IconUsers className="w-6 h-6" /></div>
-                            <span className="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[11px] font-mono">/login/manager</span>
-                        </div>
-                        <h2 className="text-xl font-bold text-slate-900 dark:text-white font-display">{t('mgrCardTitle')}</h2>
-                        <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{t('mgrCardText')}</p>
-                    </div>
-                    {userRole === 'manager' ? (
-                        <button type="button" onClick={() => onNavigate('manager-portal')} className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs sm:text-sm shadow-md shadow-emerald-600/20 transition-all">
-                            {t('goMgr')}
-                        </button>
-                    ) : (
-                        <button type="button" disabled={userRole === 'employee'} onClick={() => onNavigate('login-manager')}
-                            className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-bold rounded-xl text-xs sm:text-sm transition-all">
-                            {t('loginMgr')}
-                        </button>
-                    )}
-                </div>
-            </div>
         </div>
     );
 }
 
-function DedicatedLoginPage({ roleType, userRole, emailInput, setEmailInput, passwordInput, setPasswordInput, loginError, loginBusy, onSubmit, onNavigate }) {
+// ============ ANA SƏHİFƏ ============
+function HomeView({ userRole }) {
     const { t } = useT();
-    const isMgr = roleType === 'manager';
-    const demoMail = isMgr ? 'manager@company.com' : 'dev@company.com';
-    const demoPass = isMgr ? 'admin123' : 'emp123';
-
-    const autofillDemo = () => {
-        setEmailInput(demoMail);
-        setPasswordInput(demoPass);
-    };
-
+    const own = userRole === 'manager' ? 'manager-portal' : 'dev-portal';
     return (
-        <div className="py-8 max-w-md mx-auto">
-            <div className="surface-card rounded-3xl p-6 sm:p-8 shadow-xl space-y-6">
-                <div className="flex items-center justify-between">
-                    <div className={'p-3 rounded-2xl ' + (isMgr ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'bg-sky-500/10 text-sky-600 dark:text-sky-400')}>
-                        {isMgr ? <IconUsers className="w-6 h-6" /> : <IconTerminal className="w-6 h-6" />}
+        <div className="max-w-5xl mx-auto py-8 space-y-14">
+            <section className="text-center space-y-5 max-w-3xl mx-auto">
+                <span className="inline-block px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-700 dark:text-sky-300 text-xs font-mono">{t('homeBadge')}</span>
+                <h1 className="text-3xl sm:text-5xl font-bold text-slate-900 dark:text-white leading-tight">{t('homeTitle')}</h1>
+                <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 leading-relaxed">{t('homeSub')}</p>
+                <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                    <Link route={userRole ? own : 'portal'} className="px-5 py-3 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-xl text-sm transition-colors">
+                        {userRole ? (userRole === 'manager' ? t('goMgr') : t('goDev')) : t('ctaPortal')}
+                    </Link>
+                    <Link route="privacy" className="px-5 py-3 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-900 font-semibold rounded-xl text-sm transition-colors">{t('ctaPolicy')}</Link>
+                </div>
+            </section>
+            <FeatureCards />
+            <section aria-labelledby="how-h">
+                <h2 id="how-h" className="text-xl font-semibold text-slate-900 dark:text-white">{t('howTitle')}</h2>
+                <ol className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                    {[['how1T', 'how1P'], ['how2T', 'how2P'], ['how3T', 'how3P']].map(([a, b]) => (
+                        <li key={a} className="glass-panel rounded-2xl p-5">
+                            <h3 className="text-sm font-semibold text-slate-900 dark:text-white">{t(a)}</h3>
+                            <p className="text-sm text-slate-600 dark:text-slate-400 mt-1.5 leading-relaxed">{t(b)}</p>
+                        </li>
+                    ))}
+                </ol>
+            </section>
+            <section aria-labelledby="lim-h" className="glass-panel rounded-2xl p-6">
+                <h2 id="lim-h" className="text-xl font-semibold text-slate-900 dark:text-white">{t('limitsTitle')}</h2>
+                <ul className="mt-3 space-y-2 text-sm text-slate-600 dark:text-slate-400 list-disc pl-5 leading-relaxed">
+                    {['lim1', 'lim2', 'lim3', 'lim4'].map((k) => (<li key={k}>{t(k)}</li>))}
+                </ul>
+            </section>
+        </div>
+    );
+}
+
+// ============ /portal: rol seçimi ============
+function PortalPage() {
+    const { t } = useT();
+    const card = (r, icon, title, text, cta) => (
+        <Link route={r} className="glass-panel rounded-2xl p-6 flex flex-col gap-3 hover:border-sky-500/60 transition-colors">
+            <span className="p-3 bg-sky-500/10 text-sky-700 dark:text-sky-400 rounded-xl w-fit">{icon}</span>
+            <span className="text-lg font-semibold text-slate-900 dark:text-white">{title}</span>
+            <span className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{text}</span>
+            <span className="text-sm font-semibold text-sky-700 dark:text-sky-400 mt-1">{cta} →</span>
+        </Link>
+    );
+    return (
+        <div className="max-w-3xl mx-auto py-8">
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">{t('portalTitle')}</h1>
+            <p className="text-sm text-slate-600 dark:text-slate-400 mt-2">{t('portalSub')}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+                {card('login-dev', <IconTerminal className="w-6 h-6" />, t('devCardTitle'), t('devCardText'), t('signInDev'))}
+                {card('login-mgr', <IconUsers className="w-6 h-6" />, t('mgrCardTitle'), t('mgrCardText'), t('signInMgr'))}
+            </div>
+            <p className="mt-6"><Link route="home" className="text-sm text-sky-700 dark:text-sky-400 hover:underline">← {t('backToSite')}</Link></p>
+        </div>
+    );
+}
+
+// ============ /developer-login və /manager-login ============
+function LoginPage({ role, email, password, error, onEmail, onPassword, onSubmit }) {
+    const { t } = useT();
+    const mgr = role === 'manager';
+    const field = 'w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-sky-500 font-mono';
+    return (
+        <div className="max-w-md mx-auto py-6">
+            <Link route="portal" className="text-xs text-sky-700 dark:text-sky-400 hover:underline">← {t('backToPortal')}</Link>
+            <div className="glass-panel rounded-2xl p-7 mt-4">
+                <div className="flex items-center gap-3 mb-6">
+                    <span className="p-3 bg-sky-500/10 text-sky-700 dark:text-sky-400 rounded-xl">{mgr ? <IconUsers className="w-6 h-6" /> : <IconTerminal className="w-6 h-6" />}</span>
+                    <div>
+                        <h1 className="text-xl font-bold text-slate-900 dark:text-white">{mgr ? t('loginTitleMgr') : t('loginTitleDev')}</h1>
+                        <p className="text-xs text-slate-600 dark:text-slate-400">{t('loginSub')}</p>
                     </div>
-                    <span className="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-mono text-slate-500">
-                        {isMgr ? 'Role: Manager' : 'Role: Employee'}
-                    </span>
                 </div>
-
-                <div>
-                    <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white font-display">
-                        {isMgr ? t('loginTitleMgr') : t('loginTitleDev')}
-                    </h1>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{t('loginSub')}</p>
-                </div>
-
                 <form onSubmit={onSubmit} className="space-y-4">
                     <div>
-                        <label htmlFor="login-email" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">{t('email')}</label>
-                        <input id="login-email" type="email" required autoComplete="username" value={emailInput} onChange={(e) => setEmailInput(e.target.value)}
-                            placeholder={demoMail}
-                            className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-sky-500 font-mono" />
+                        <label htmlFor="login-email" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">{t('email')}</label>
+                        <input id="login-email" type="email" autoComplete="username" required value={email} onChange={(e) => onEmail(e.target.value)}
+                            placeholder={mgr ? 'manager@company.com' : 'dev@company.com'} className={field} />
                     </div>
                     <div>
-                        <label htmlFor="login-password" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">{t('password')}</label>
-                        <input id="login-password" type="password" required autoComplete="current-password" value={passwordInput} onChange={(e) => setPasswordInput(e.target.value)}
-                            placeholder="••••••••"
-                            className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-sky-500 font-mono" />
+                        <label htmlFor="login-password" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">{t('password')}</label>
+                        <input id="login-password" type="password" autoComplete="current-password" required value={password} onChange={(e) => onPassword(e.target.value)} placeholder="••••••••" className={field} />
                     </div>
-
-                    {loginError && (
-                        <div role="alert" className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/25 text-xs text-rose-600 dark:text-rose-400 font-medium">
-                            {t('loginErr')}
-                        </div>
-                    )}
-
-                    <div className="p-3.5 bg-sky-500/10 border border-sky-500/20 rounded-xl text-xs text-sky-800 dark:text-sky-300 space-y-2 font-mono">
-                        <div className="flex items-center justify-between">
-                            <span className="font-bold">{t('demoCreds')}</span>
-                            <button type="button" onClick={autofillDemo} className="underline text-[11px] font-sans font-semibold hover:text-sky-500">
-                                {t('fillDemoBtn')}
-                            </button>
-                        </div>
-                        <p>Email: <b>{demoMail}</b> | {t('password')}: <b>{demoPass}</b></p>
+                    {error && <p role="alert" className="text-xs text-rose-700 dark:text-rose-400 font-medium">{t('loginErr')}</p>}
+                    <div className="p-3 bg-sky-500/10 rounded-xl text-xs text-sky-900 dark:text-sky-200 space-y-1 font-mono">
+                        <p className="font-bold">{t('demoCreds')}</p>
+                        {mgr ? <p>Email: <b>manager@company.com</b> | {t('password')}: <b>admin123</b></p> : <p>Email: <b>dev@company.com</b> | {t('password')}: <b>emp123</b></p>}
                     </div>
-
-                    <div className="flex items-center justify-between gap-3 pt-2">
-                        <button type="button" onClick={() => onNavigate('portal')} className="px-4 py-2.5 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-semibold transition-colors">
-                            {t('cancel')}
-                        </button>
-                        <button type="submit" disabled={loginBusy} className="px-6 py-2.5 bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white rounded-xl text-xs font-bold shadow-md shadow-sky-600/20 transition-all">
-                            {t('submit')}
-                        </button>
-                    </div>
+                    <button type="submit" className="w-full py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-sm font-semibold transition-colors">{t('submit')}</button>
                 </form>
             </div>
         </div>
     );
 }
 
-// ============ İŞÇİ PANELİ (DEVELOPER PANEL — PHASE 4) ============
+// ============ İŞÇİ PANELİ ============
 function DevPortalView({ awayHistory, event, live, offline, team, announcements, onTriggerIdle }) {
     const { t, lang } = useT();
     const loc = lang === 'az' ? 'az-AZ' : 'en-GB';
     const a = event && event.last_meaningful_action;
-    const ws = event && event.workspace;
-    const sess = event && event.session;
-
     return (
         <div className="space-y-8">
-            {/* Top Header Bar */}
-            <div className="surface-card p-6 sm:p-8 rounded-3xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div className="space-y-1">
-                    <div className="flex items-center gap-2.5">
-                        <span className="px-2.5 py-0.5 rounded-md bg-sky-500/10 text-sky-600 dark:text-sky-400 font-mono text-[11px] font-semibold">
-                            {event ? event.developer_ref : 'dev_a91f'}
-                        </span>
-                        {ws && (
-                            <span className="text-xs font-mono text-slate-500 dark:text-slate-400">
-                                {ws.repo} · <code className="text-sky-600 dark:text-sky-400">{ws.branch}</code>
-                            </span>
-                        )}
-                    </div>
-                    <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white font-display">{t('devTitle')}</h1>
-                    <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">{t('devSub')}</p>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 glass-panel p-6 rounded-3xl">
+                <div>
+                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{t('devTitle')}</h1>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">{t('devSub')}</p>
                 </div>
-                <button type="button" onClick={onTriggerIdle}
-                    className="px-5 py-3 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-2xl text-xs sm:text-sm shadow-lg shadow-sky-600/20 transition-all cursor-pointer flex items-center gap-2 shrink-0">
-                    <IconClock className="w-4 h-4" />
-                    <span>{t('simBtn')}</span>
+                <button onClick={onTriggerIdle} className="px-5 py-3 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/20 font-bold rounded-2xl text-xs transition-all cursor-pointer flex items-center space-x-2">
+                    <IconClock className="w-4 h-4" /><span>{t('simBtn')}</span>
                 </button>
             </div>
 
-            {/* Live IDE Telemetry Cards */}
-            <div className="surface-card p-6 sm:p-8 rounded-3xl space-y-5">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                        <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white font-display">{t('liveTitle')}</h2>
-                        {sess && (
-                            <p className="text-xs font-mono text-slate-500 dark:text-slate-400 mt-0.5">
-                                {t('sessionLabel')}: <span className="text-amber-600 dark:text-amber-400 font-semibold">{sess.state}</span> · {t('idleSecLabel')}: {Math.round((sess.idle_duration_sec || 0) / 60)} {t('min')}
-                            </p>
-                        )}
-                    </div>
+            <div className="glass-panel p-6 rounded-3xl">
+                <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white">{t('liveTitle')}</h3>
                     <LivePill live={live} offline={offline} />
                 </div>
-
-                {!event ? (
-                    <p className="text-xs text-slate-500 dark:text-slate-400 font-mono py-4">{t('loading')}</p>
-                ) : (
-                    <div key={event.event_id} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <Stat
-                            label={t('file')}
-                            value={a.file.split('/').pop()}
-                            sub={`${a.symbol}() · ${t('linesRange')} ${a.line_range[0]}–${a.line_range[1]} (+${a.lines_added} / -${a.lines_removed})`}
-                        />
-                        <Stat
-                            label={t('firstErr')}
-                            value={event.diagnostics.first_error.code}
-                            sub={`${t('line')} ${event.diagnostics.first_error.line} · ${event.diagnostics.errors} ${t('errorsWord')}`}
-                            accent="text-rose-600 dark:text-rose-400"
-                        />
-                        <Stat
-                            label={t('tests')}
-                            value={`${event.test_state.passed} ${t('passed')} / ${event.test_state.failed} ${t('failed')}`}
-                            sub={`${event.test_state.runner}: ${event.test_state.failing_test}`}
-                            accent={event.test_state.failed > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400'}
-                        />
-                        <Stat
-                            label={t('pr')}
-                            value={`PR #${event.pull_request.id}`}
-                            sub={`${event.pull_request.unresolved_comments} ${t('unresolved')} · ${event.pull_request.status}`}
-                        />
+                {!event ? <p className="text-xs text-slate-500 dark:text-slate-400">{t('loading')}</p> : (
+                    <div key={event.event_id} className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                        <Stat label={t('file')} value={a.file.split('/').pop()} sub={a.symbol + ' · +' + a.lines_added + ' / -' + a.lines_removed} />
+                        <Stat label={t('firstErr')} value={event.diagnostics.first_error.code} sub={t('line') + ' ' + event.diagnostics.first_error.line + ' · ' + event.diagnostics.errors + ' ' + t('errorsWord')} />
+                        <Stat label={t('tests')} value={event.test_state.passed + ' ' + t('passed') + ' / ' + event.test_state.failed + ' ' + t('failed')} sub={event.test_state.failing_test} />
+                        <Stat label={t('pr')} value={'#' + event.pull_request.id} sub={event.pull_request.unresolved_comments + ' ' + t('unresolved')} />
                     </div>
                 )}
-
-                <div className="pt-3 border-t border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono text-slate-500 dark:text-slate-400">
-                    <span>event_id: {event ? event.event_id : '-'} · developer_ref: {event ? event.developer_ref : '-'}</span>
-                    <span className="text-emerald-600 dark:text-emerald-400">✓ {t('privacyLine')}</span>
-                </div>
+                <p className="text-[10px] font-mono text-slate-400 mt-3">developer_ref: {event ? event.developer_ref : '-'} · {t('privacyLine')}</p>
             </div>
 
-            {/* Two-Column Lower Section: Team Announcements/Actions & Personal Break History */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <TeamNews team={team} announcements={announcements} />
+            <TeamNews team={team} announcements={announcements} />
 
-                <div className="surface-card p-6 sm:p-8 rounded-3xl space-y-4">
-                    <div>
-                        <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white font-display flex items-center gap-2">
-                            <IconClock className="w-5 h-5 text-sky-500" />
-                            <span>{t('historyTitle')}</span>
-                        </h2>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{t('historySub')}</p>
-                    </div>
-                    <div className="space-y-3">
-                        {awayHistory.map((item) => (
-                            <div key={item.id} className="p-4 bg-slate-50 dark:bg-slate-900/70 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                                <div>
-                                    <span className="text-[11px] font-mono text-sky-600 dark:text-sky-400 font-semibold block">
-                                        {new Date(item.iso).toLocaleString(loc, { hour12: false })}
-                                    </span>
-                                    <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 mt-0.5">{t('reason_' + item.reasonId)}</p>
-                                </div>
-                                <span className="px-3 py-1 bg-slate-200/80 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-mono rounded-full w-fit shrink-0">
-                                    {t('duration')}: {item.minutes} {t('min')}{item.sim ? ' ' + t('simSuffix') : ''}
-                                </span>
+            <div className="glass-panel p-6 rounded-3xl">
+                <h3 className="text-base font-bold text-slate-900 dark:text-white mb-4 flex items-center space-x-2">
+                    <IconClock className="w-5 h-5 text-sky-500" /><span>{t('historyTitle')}</span>
+                </h3>
+                <div className="space-y-3">
+                    {awayHistory.map((item) => (
+                        <div key={item.id} className="p-4 bg-slate-50 dark:bg-slate-900/80 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <div>
+                                <span className="text-xs font-mono text-sky-600 dark:text-sky-400 font-bold block">{new Date(item.iso).toLocaleString(loc, { hour12: false })}</span>
+                                <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 mt-0.5">{t('reason_' + item.reasonId)}</p>
                             </div>
-                        ))}
-                    </div>
+                            <span className="px-3 py-1 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-mono rounded-full w-fit">
+                                {t('duration')}: {item.minutes} {t('min')}{item.sim ? ' ' + t('simSuffix') : ''}
+                            </span>
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>
     );
 }
 
-// ============ MENECER PANELİ (MANAGER PANEL — PHASE 4) ============
+// ============ MENECER PANELİ (K-anonim məlumat + tədbir izləmə + komandaya elan) ============
 const ACTION_STATUSES = ['investigating', 'planned', 'resolved'];
 const fmtTime = (iso, lang) => { try { return new Date(iso).toLocaleTimeString(lang === 'az' ? 'az-AZ' : 'en-GB', { hour: '2-digit', minute: '2-digit' }); } catch (e) { return ''; } };
-const inputCls = 'w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-sky-500';
+const inputCls = 'w-full bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-sky-500';
 
 function StatusBadge({ status }) {
     const { t } = useT();
     const cls = {
-        investigating: 'bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30',
-        planned: 'bg-sky-500/15 text-sky-700 dark:text-sky-300 border-sky-500/30',
-        resolved: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30'
-    }[status] || 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-transparent';
-    return <span className={'px-2.5 py-1 rounded-full text-[10px] font-mono font-semibold border ' + cls}>{t('status_' + (status || 'none'))}</span>;
+        investigating: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
+        planned: 'bg-sky-500/10 text-sky-600 dark:text-sky-400',
+        resolved: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+    }[status] || 'bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400';
+    return <span className={'px-2.5 py-1 rounded-full text-[10px] font-mono font-semibold ' + cls}>{t('status_' + (status || 'none'))}</span>;
 }
 
+// Görünən (K həddini keçmiş) tıxanma kartı + menecerin tədbir qeydi
 function BlockerCard({ b, max, bump, onSave }) {
     const { t, lang } = useT();
     const saved = b.action;
@@ -1910,74 +996,58 @@ function BlockerCard({ b, max, bump, onSave }) {
     const [owner, setOwner] = useState(saved ? saved.owner : '');
     const [note, setNote] = useState(saved ? saved.note : '');
     const [busy, setBusy] = useState(false);
-
-    useEffect(() => {
-        if (b.action) {
-            setStatus(b.action.status);
-            setOwner(b.action.owner || '');
-            setNote(b.action.note || '');
-        }
-    }, [b.action]);
-
-    const save = () => {
-        setBusy(true);
-        onSave(b.category, { status, owner: owner.trim(), note: note.trim() }).then(() => setBusy(false));
-    };
-
+    const save = () => { setBusy(true); onSave(b.category, { status, owner: owner.trim(), note: note.trim() }).then(() => setBusy(false)); };
     return (
-        <div className="p-5 bg-slate-50/90 dark:bg-slate-900/70 rounded-2xl border border-slate-200 dark:border-slate-800">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="p-4 bg-slate-50 dark:bg-slate-900/80 rounded-2xl border border-slate-200 dark:border-slate-800">
+            <div className="flex items-center justify-between gap-3">
                 <div>
-                    <div className="flex items-center gap-2">
-                        <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white font-display">{t('cat_' + b.category)}</h4>
-                        <span className="text-[10px] font-mono text-slate-400">{b.category}</span>
-                    </div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{t('sig_' + b.category)}</p>
+                    <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200">{t('cat_' + b.category)}</h4>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400">{t('sig_' + b.category)}</p>
                 </div>
-                <div className=" sm:text-right shrink-0">
-                    <span className="inline-block px-3 py-1 bg-sky-500/10 border border-sky-500/20 text-sky-700 dark:text-sky-300 text-xs font-mono font-semibold rounded-full">
+                <div className="text-right shrink-0">
+                    <span className="px-3 py-1 bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-mono rounded-full">
                         {b.affected_count} {t('employees')} · {Math.round(b.share * 100)}%
                     </span>
-                    {bump ? <span className="ml-2 px-1.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[10px] font-mono">+{bump}</span> : null}
-                    <p className="text-[11px] font-mono text-slate-500 dark:text-slate-400 mt-1">{t('avgStall')}: {b.avg_stall_minutes} {t('min')} · 7d: {b.trend_7d}</p>
+                    {bump ? <span className="ml-2 px-1.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[10px] font-mono animate-pulse">+{bump}</span> : null}
+                    <p className="text-[10px] font-mono text-slate-400 mt-1">{t('avgStall')} {b.avg_stall_minutes} {t('min')} · {b.trend_7d}</p>
                 </div>
             </div>
-
             <div className="h-2 mt-3 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-sky-500 to-cyan-400 transition-all duration-500" style={{ width: Math.round(b.affected_count / max * 100) + '%' }}></div>
+                <div className="h-full bg-sky-500 transition-all duration-700" style={{ width: Math.round(b.affected_count / max * 100) + '%' }}></div>
             </div>
 
             <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-800 space-y-3">
                 <div className="flex items-center justify-between gap-3">
-                    <span className="text-[10px] uppercase font-mono text-slate-500 dark:text-slate-400 font-semibold">{t('actionTitle')}</span>
+                    <span className="text-[10px] uppercase font-mono text-slate-400">{t('actionTitle')}</span>
                     <StatusBadge status={saved ? saved.status : null} />
                 </div>
                 {saved && (saved.owner || saved.note) && (
-                    <p className="text-xs text-slate-700 dark:text-slate-300 break-words bg-white dark:bg-slate-950/60 p-3 rounded-xl border border-slate-200/80 dark:border-slate-800">
+                    <p className="text-[11px] text-slate-600 dark:text-slate-300 break-words">
                         {saved.owner ? <b>{t('ownerShort')}: {saved.owner}. </b> : null}{saved.note}
-                        <span className="text-slate-400 font-mono text-[11px]"> · {t('updatedAt')} {fmtTime(saved.updated_at, lang)}</span>
+                        <span className="text-slate-400 font-mono"> · {t('updatedAt')} {fmtTime(saved.updated_at, lang)}</span>
                     </p>
                 )}
                 <div className="flex flex-wrap gap-2" role="group" aria-label={t('statusLabel')}>
                     {ACTION_STATUSES.map((st) => (
                         <button key={st} type="button" onClick={() => setStatus(st)} aria-pressed={status === st}
-                            className={'px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ' + (status === st ? 'bg-sky-600 text-white' : 'bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700')}>
+                            className={'px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all ' + (status === st ? 'bg-sky-600 text-white' : 'bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700')}>
                             {t('status_' + st)}
                         </button>
                     ))}
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                     <input value={owner} maxLength={40} onChange={(e) => setOwner(e.target.value)} placeholder={t('ownerPh')} aria-label={t('ownerLabel')} className={inputCls} />
                     <input value={note} maxLength={200} onChange={(e) => setNote(e.target.value)} placeholder={t('notePh')} aria-label={t('noteLabel')} className={inputCls + ' sm:col-span-2'} />
                 </div>
                 <div className="flex justify-end">
-                    <button type="button" onClick={save} disabled={busy} className="px-4 py-2 bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white rounded-xl text-xs font-bold transition-colors">{t('saveAction')}</button>
+                    <button type="button" onClick={save} disabled={busy} className="px-4 py-2 bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white rounded-xl text-xs font-bold">{t('saveAction')}</button>
                 </div>
             </div>
         </div>
     );
 }
 
+// Komandaya elan (yalnız menecer göndərir; bütün işçilərin panelində canlı görünür)
 function AnnounceBox({ visible, announcements, onSend }) {
     const { t, lang } = useT();
     const [text, setText] = useState('');
@@ -1989,72 +1059,69 @@ function AnnounceBox({ visible, announcements, onSend }) {
         onSend({ text: text.trim(), category: category || null }).then((ok) => { setBusy(false); if (ok) setText(''); });
     };
     return (
-        <div className="surface-card p-6 sm:p-8 rounded-3xl space-y-4">
-            <div>
-                <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white font-display">{t('announceTitle')}</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{t('announceSub')}</p>
-            </div>
+        <div className="glass-panel p-6 rounded-3xl">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">{t('announceTitle')}</h3>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 mb-4">{t('announceSub')}</p>
             <textarea value={text} maxLength={280} rows={2} onChange={(e) => setText(e.target.value)} placeholder={t('announcePh')} aria-label={t('announceTitle')} className={inputCls} />
-            <div className="flex flex-wrap items-center justify-between gap-3">
-                <label className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300 font-medium">
-                    <span>{t('announceTo')}:</span>
+            <div className="flex flex-wrap items-center justify-between gap-3 mt-2">
+                <label className="flex items-center gap-2 text-[11px] text-slate-500 dark:text-slate-400">
+                    {t('announceTo')}:
                     <select value={category} onChange={(e) => setCategory(e.target.value)} className={inputCls + ' w-auto'}>
                         <option value="">{t('announceAll')}</option>
                         {visible.map((b) => (<option key={b.category} value={b.category}>{t('cat_' + b.category)}</option>))}
                     </select>
                 </label>
                 <div className="flex items-center gap-3">
-                    <span className="text-[11px] font-mono text-slate-400">{text.length}/280</span>
-                    <button type="button" onClick={send} disabled={busy || !text.trim()} className="px-5 py-2.5 bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white rounded-xl text-xs font-bold shadow-sm transition-colors">{t('announceSend')}</button>
+                    <span className="text-[10px] font-mono text-slate-400">{text.length}/280</span>
+                    <button type="button" onClick={send} disabled={busy || !text.trim()} className="px-4 py-2 bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white rounded-xl text-xs font-bold">{t('announceSend')}</button>
                 </div>
             </div>
-            <div className="pt-4 border-t border-slate-200 dark:border-slate-800">
-                <p className="text-[10px] uppercase font-mono text-slate-500 dark:text-slate-400 mb-2.5">{t('announceHistory')}</p>
-                {announcements.length === 0 ? <p className="text-xs text-slate-500 dark:text-slate-400">{t('noAnnouncements')}</p> : (
-                    <ul className="space-y-2">
-                        {announcements.map((a) => (
-                            <li key={a.id} className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 text-xs text-slate-700 dark:text-slate-300 break-words">
-                                <span className="font-mono text-slate-400">{fmtTime(a.created_at, lang)}</span>
-                                {a.category ? <span className="ml-2 px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-600 dark:text-sky-400 text-[10px] font-mono">{t('cat_' + a.category)}</span> : null}
-                                <span className="ml-2">{a.text}</span>
-                            </li>
-                        ))}
-                    </ul>
-                )}
-            </div>
+            <p className="text-[10px] uppercase font-mono text-slate-400 mt-5 mb-2">{t('announceHistory')}</p>
+            {announcements.length === 0 ? <p className="text-xs text-slate-500 dark:text-slate-400">{t('noAnnouncements')}</p> : (
+                <ul className="space-y-2">
+                    {announcements.map((a) => (
+                        <li key={a.id} className="text-xs text-slate-700 dark:text-slate-300 break-words">
+                            <span className="font-mono text-slate-400">{fmtTime(a.created_at, lang)}</span>
+                            {a.category ? <span className="ml-2 px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-600 dark:text-sky-400 text-[10px]">{t('cat_' + a.category)}</span> : null}
+                            <span className="ml-2">{a.text}</span>
+                        </li>
+                    ))}
+                </ul>
+            )}
         </div>
     );
 }
 
+// İşçi panelində: menecerin elanları və tıxanmalar üzrə görülən tədbirlər (komanda səviyyəsində)
 function TeamNews({ team, announcements }) {
     const { t, lang } = useT();
     const acted = team ? team.blockers.filter((b) => !b.suppressed && b.action) : [];
     return (
-        <div className="surface-card p-6 sm:p-8 rounded-3xl space-y-6">
+        <div className="glass-panel p-6 rounded-3xl space-y-5">
             <div>
-                <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white font-display mb-3">{t('wsAnnouncements')}</h2>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white mb-3">{t('wsAnnouncements')}</h3>
                 {announcements.length === 0 ? <p className="text-xs text-slate-500 dark:text-slate-400">{t('noAnnouncements')}</p> : (
-                    <ul className="space-y-2.5">
+                    <ul className="space-y-2">
                         {announcements.map((a) => (
-                            <li key={a.id} className="p-3.5 bg-slate-50 dark:bg-slate-900/70 rounded-2xl border border-slate-200 dark:border-slate-800 text-sm text-slate-800 dark:text-slate-200 break-words">
+                            <li key={a.id} className="p-3 bg-slate-50 dark:bg-slate-900/80 rounded-2xl border border-slate-200 dark:border-slate-800 text-sm text-slate-800 dark:text-slate-200 break-words">
                                 <span className="font-mono text-[10px] text-slate-400">{fmtTime(a.created_at, lang)}</span>
-                                {a.category ? <span className="ml-2 px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-600 dark:text-sky-400 text-[10px] font-mono">{t('cat_' + a.category)}</span> : null}
-                                <p className="mt-1 text-xs sm:text-sm">{a.text}</p>
+                                {a.category ? <span className="ml-2 px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-600 dark:text-sky-400 text-[10px]">{t('cat_' + a.category)}</span> : null}
+                                <p className="mt-1">{a.text}</p>
                             </li>
                         ))}
                     </ul>
                 )}
             </div>
-            <div className="pt-4 border-t border-slate-200 dark:border-slate-800">
-                <h3 className="text-base font-bold text-slate-900 dark:text-white font-display mb-3">{t('wsStatusTitle')}</h3>
+            <div>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white mb-3">{t('wsStatusTitle')}</h3>
                 {acted.length === 0 ? <p className="text-xs text-slate-500 dark:text-slate-400">{t('wsNoStatus')}</p> : (
-                    <ul className="space-y-2.5">
+                    <ul className="space-y-2">
                         {acted.map((b) => (
-                            <li key={b.category} className="p-3.5 bg-slate-50 dark:bg-slate-900/70 rounded-2xl border border-slate-200 dark:border-slate-800 flex items-start justify-between gap-3">
+                            <li key={b.category} className="p-3 bg-slate-50 dark:bg-slate-900/80 rounded-2xl border border-slate-200 dark:border-slate-800 flex items-start justify-between gap-3">
                                 <div className="text-xs text-slate-700 dark:text-slate-300 break-words">
                                     <b>{t('cat_' + b.category)}</b>
                                     {b.action.owner ? <span className="text-slate-500 dark:text-slate-400"> · {t('ownerShort')}: {b.action.owner}</span> : null}
-                                    {b.action.note ? <p className="mt-1">{b.action.note}</p> : null}
+                                    {b.action.note ? <p className="mt-0.5">{b.action.note}</p> : null}
                                 </div>
                                 <StatusBadge status={b.action.status} />
                             </li>
@@ -2066,420 +1133,120 @@ function TeamNews({ team, announcements }) {
     );
 }
 
-function ManagerPortalView({ team, bumps, live, offline, announcements, onSaveAction, onSend, onResetDemo }) {
+function ManagerPortalView({ team, bumps, live, offline, announcements, onSaveAction, onSend }) {
     const { t } = useT();
-    const [filterMode, setFilterMode] = useState('all'); // 'all' | 'visible' | 'acted' | 'hidden'
-    const [confirmResetOpen, setConfirmResetOpen] = useState(false);
-
     const shown = team ? team.blockers.filter((b) => !b.suppressed) : [];
     const hidden = team ? team.blockers.filter((b) => b.suppressed) : [];
     const max = Math.max(1, ...shown.map((b) => b.affected_count));
-
-    const filteredShown = shown.filter((b) => {
-        if (filterMode === 'hidden') return false;
-        if (filterMode === 'acted') return Boolean(b.action);
-        return true;
-    });
-    const showHiddenRows = filterMode === 'all' || filterMode === 'hidden';
-
     return (
         <div className="space-y-8">
-            <div className="surface-card p-6 sm:p-8 rounded-3xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                        <span className="px-2.5 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-mono text-[11px] font-semibold">
-                            {team && team.org_unit ? team.org_unit : 'Platform Engineering'}
-                        </span>
-                        <span className="text-xs font-mono text-slate-400">K = {team ? team.k_threshold : K_ANON}</span>
-                    </div>
-                    <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white font-display">{t('mgrTitle')}</h1>
-                    <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">{t('mgrSub', team ? team.k_threshold : K_ANON)}</p>
+            <div className="glass-panel p-6 rounded-3xl flex items-start justify-between gap-4">
+                <div>
+                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{t('mgrTitle')}</h1>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">{t('mgrSub', team ? team.k_threshold : K_ANON)}</p>
                 </div>
-                <div className="flex items-center gap-2.5">
-                    <LivePill live={live} offline={offline} />
-                    <button type="button" onClick={() => setConfirmResetOpen(true)}
-                        className="px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 inline-flex items-center gap-1.5 transition-colors">
-                        <IconRefresh className="w-3.5 h-3.5" />
-                        <span>{t('demoResetBtn')}</span>
-                    </button>
-                </div>
+                <LivePill live={live} offline={offline} />
             </div>
-
-            {!team ? (
-                <div className="surface-card p-6 rounded-3xl text-xs text-slate-500 dark:text-slate-400 font-mono">{t('loading')}</div>
-            ) : (
+            {!team ? <div className="glass-panel p-6 rounded-3xl text-xs text-slate-500 dark:text-slate-400">{t('loading')}</div> : (
                 <>
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                         <Stat label={t('teamSize')} value={team.population.team_size} sub={t('last7')} />
-                        <Stat label={t('responses')} value={team.population.respondents} sub={t('anonAnswers')} bump={bumps.respondents} accent="text-sky-600 dark:text-sky-400" />
-                        <Stat label={t('kLabel')} value={`K = ${team.k_threshold}`} sub={t('minGroup')} accent="text-emerald-600 dark:text-emerald-400" />
-                        <Stat label={t('hiddenGroups')} value={team.suppressed_groups} sub="n < K (suppressed)" />
+                        <Stat label={t('responses')} value={team.population.respondents} sub={t('anonAnswers')} bump={bumps.respondents} />
+                        <Stat label={t('kLabel')} value={team.k_threshold} sub={t('minGroup')} />
+                        <Stat label={t('hiddenGroups')} value={team.suppressed_groups} sub="n < k" />
                     </div>
-
-                    <div className="surface-card p-6 sm:p-8 rounded-3xl space-y-5">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                            <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white font-display">{t('analyticsTitle')}</h2>
-                            {/* Filter Tabs */}
-                            <div className="flex flex-wrap gap-1.5 bg-slate-100 dark:bg-slate-900 p-1 rounded-xl w-fit">
-                                {[
-                                    { id: 'all', label: t('filterAll') },
-                                    { id: 'visible', label: t('filterVisible') },
-                                    { id: 'acted', label: t('filterActed') },
-                                    { id: 'hidden', label: t('filterHidden') }
-                                ].map((f) => (
-                                    <button key={f.id} type="button" onClick={() => setFilterMode(f.id)}
-                                        className={'px-3 py-1 rounded-lg text-[11px] font-semibold transition-colors ' + (filterMode === f.id ? 'bg-white dark:bg-slate-800 text-sky-600 dark:text-sky-400 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white')}>
-                                        {f.label}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        {team.insufficient_data && (
-                            <p className="text-xs text-amber-600 dark:text-amber-400 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20">{t('insufficient')}</p>
-                        )}
-
-                        <div className="space-y-4">
-                            {filteredShown.map((b) => (
-                                <BlockerCard key={b.category} b={b} max={max} bump={bumps[b.category]} onSave={onSaveAction} />
-                            ))}
-                            {showHiddenRows && hidden.map((b) => (
-                                <div key={b.group} className="p-4 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/40 dark:bg-slate-900/30 flex items-center gap-3 text-slate-500 dark:text-slate-400">
-                                    <IconLock className="w-4 h-4 shrink-0 text-amber-500" />
-                                    <span className="text-xs font-mono">{t('hiddenRow', team.k_threshold)}</span>
+                    <div className="glass-panel p-6 rounded-3xl">
+                        <h3 className="text-base font-bold text-slate-900 dark:text-white mb-4">{t('analyticsTitle')}</h3>
+                        {team.insufficient_data && <p className="text-xs text-amber-600 dark:text-amber-400 mb-4">{t('insufficient')}</p>}
+                        <div className="space-y-3">
+                            {shown.map((b) => (<BlockerCard key={b.category} b={b} max={max} bump={bumps[b.category]} onSave={onSaveAction} />))}
+                            {hidden.map((b) => (
+                                <div key={b.group} className="p-4 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 flex items-center space-x-3 text-slate-500 dark:text-slate-400">
+                                    <IconLock className="w-4 h-4" /><span className="text-xs font-mono">{t('hiddenRow', team.k_threshold)}</span>
                                 </div>
                             ))}
                         </div>
                     </div>
-
                     <AnnounceBox visible={shown} announcements={announcements} onSend={onSend} />
                 </>
-            )}
-
-            {/* Confirmation Modal for Demo Reset */}
-            {confirmResetOpen && (
-                <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-sm">
-                    <div className="surface-card rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
-                        <div className="flex items-center gap-3 text-amber-500">
-                            <IconAlert className="w-6 h-6 shrink-0" />
-                            <h3 className="text-lg font-bold text-slate-900 dark:text-white font-display">{t('demoResetConfirmTitle')}</h3>
-                        </div>
-                        <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">{t('demoResetConfirmText')}</p>
-                        <div className="flex justify-end gap-3 pt-2">
-                            <button type="button" onClick={() => setConfirmResetOpen(false)} className="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-semibold">
-                                {t('cancel')}
-                            </button>
-                            <button type="button" onClick={() => { setConfirmResetOpen(false); onResetDemo(); }} className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-bold">
-                                {t('demoResetConfirmYes')}
-                            </button>
-                        </div>
-                    </div>
-                </div>
             )}
         </div>
     );
 }
 
-// ============ DEDICATED LEGAL PAGES (PHASE 8) ============
-function LegalLayout({ title, subtitle, updatedDate, onNavigate, children }) {
-    const { t } = useT();
+// ============ HÜQUQİ SƏHİFƏLƏR VƏ 404 ============
+// ============ HÜQUQİ SƏHİFƏLƏR (/privacy-policy, /terms-and-conditions, /cookie-policy) ============
+// [[...]] yer tutucuları və `kod` hissələri render olunur; mətn React tərəfindən escape edilir
+function LegalText({ text }) {
     return (
-        <article className="max-w-4xl mx-auto py-4 space-y-6">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-                <button type="button" onClick={() => onNavigate('home')}
-                    className="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-900 hover:bg-slate-200 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 transition-colors">
-                    ← {t('backHome')}
-                </button>
-                <span className="text-xs font-mono text-slate-500 dark:text-slate-400">
-                    Son yenilənmə / Last updated: {updatedDate}
-                </span>
+        <>
+            {String(text).split(/(\[\[.*?\]\]|`[^`]+`)/g).map((part, i) => {
+                if (part.startsWith('[[')) return <span key={i} className="placeholder">{part.slice(2, -2)}</span>;
+                if (part.startsWith('`')) return <code key={i}>{part.slice(1, -1)}</code>;
+                return <React.Fragment key={i}>{part}</React.Fragment>;
+            })}
+        </>
+    );
+}
+function StorageTable() {
+    const { t, lang } = useT();
+    const clear = () => {
+        try { ['cp_lang', 'cp_theme', 'cookieConsentGiven'].forEach((k) => localStorage.removeItem(k)); } catch (e) { /* yoxdur */ }
+        window.dispatchEvent(new Event('cp-prefs-cleared'));
+    };
+    return (
+        <section id="storage" tabIndex={-1} className="outline-none">
+            <h2>{t('cookieSettings')}</h2>
+            <div className="overflow-x-auto">
+                <table>
+                    <thead><tr><th scope="col">{t('tblName')}</th><th scope="col">{t('tblType')}</th><th scope="col">{t('tblPurpose')}</th><th scope="col">{t('tblDuration')}</th><th scope="col">{t('tblWhen')}</th></tr></thead>
+                    <tbody>
+                        {STORAGE_ITEMS.map((r) => (
+                            <tr key={r.name}><td><code>{r.name}</code></td><td>{r.type[lang]}</td><td>{r.purpose[lang]}</td><td>{r.duration[lang]}</td><td>{r.when[lang]}</td></tr>
+                        ))}
+                    </tbody>
+                </table>
             </div>
-            <div className="surface-card p-6 sm:p-10 rounded-3xl legal-prose text-sm text-slate-700 dark:text-slate-300 space-y-4">
-                <header className="border-b border-slate-200 dark:border-slate-800 pb-5 mb-6">
-                    <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-display">{title}</h1>
-                    <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-2">{subtitle}</p>
-                </header>
-                {children}
+            <button type="button" onClick={clear} className="mt-4 px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-sm font-semibold transition-colors">{t('clearPrefs')}</button>
+        </section>
+    );
+}
+function LegalDocPage({ docKey }) {
+    const { t, lang } = useT();
+    const doc = LEGAL[lang][docKey];
+    const date = new Date(LEGAL_UPDATED + 'T00:00:00').toLocaleDateString(lang === 'az' ? 'az-AZ' : 'en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
+    const others = [['privacy', 'privacyLink'], ['terms', 'termsLink'], ['cookies', 'cookiesLink']].filter(([k]) => k !== docKey);
+    return (
+        <article className="max-w-3xl mx-auto">
+            <nav aria-label="breadcrumb" className="mb-4"><Link route="home" className="text-sm text-sky-700 dark:text-sky-400 hover:underline">← {t('backToSite')}</Link></nav>
+            <div className="legal glass-panel rounded-2xl p-6 sm:p-10">
+                <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{doc.title}</h1>
+                <p className="mt-1 text-xs font-mono text-slate-600 dark:text-slate-400">{t('lastUpdated')}: <time dateTime={LEGAL_UPDATED}>{date}</time></p>
+                <p className="mt-4"><LegalText text={doc.intro} /></p>
+                {doc.sections.map((sec, i) => (
+                    <section key={i}>
+                        <h2>{sec.h}</h2>
+                        {(sec.p || []).map((p, j) => <p key={j}><LegalText text={p} /></p>)}
+                        {sec.ul && <ul>{sec.ul.map((li, j) => <li key={j}><LegalText text={li} /></li>)}</ul>}
+                    </section>
+                ))}
+                {docKey === 'cookies' && <StorageTable />}
+                <div className="mt-10 pt-5 border-t border-slate-200 dark:border-slate-800 flex flex-wrap gap-x-6 gap-y-2 text-sm">
+                    <Link route="home" className="text-sky-700 dark:text-sky-400 hover:underline">← {t('backToSite')}</Link>
+                    {others.map(([k, lbl]) => <Link key={k} route={k} className="text-sky-700 dark:text-sky-400 hover:underline">{t(lbl)}</Link>)}
+                </div>
             </div>
         </article>
     );
 }
-
-function PrivacyPolicyPage({ onNavigate }) {
-    const { lang } = useT();
-    if (lang === 'en') {
-        return (
-            <LegalLayout
-                title="Privacy Policy"
-                subtitle="How ContextPulse AI collects, validates, aggregates, and protects IDE and Pull Request metadata."
-                updatedDate="October 18, 2026"
-                onNavigate={onNavigate}
-            >
-                <h2>1. Overview & Privacy-First Design</h2>
-                <p>
-                    ContextPulse AI (&quot;Platform&quot;), developed by Team <b>Code of War</b> for the NeuroBridge Hackathon (Operator: <code>[COMPANY / LEGAL ENTITY NAME PLACEHOLDER]</code>), is designed around strict metadata minimization and K-anonymity. The Platform never records screens, never logs keystrokes, and never reads or stores source code content.
-                </p>
-
-                <h2>2. Categories of Data Actually Collected</h2>
-                <ul>
-                    <li><b>IDE &amp; Pull Request Metadata (<code>events</code> table):</b> Pseudonymous developer reference (e.g., <code>developer_ref: &quot;dev_a91f&quot;</code>), timestamp (<code>emitted_at</code>), session state and idle duration in seconds, workspace repository and branch name, last edited file path, function symbol name, edited line numbers, diagnostic error codes and line numbers (e.g., <code>TS2345</code>), test runner counts and failing test title, and Pull Request ID, title, status, and unresolved comment count.</li>
-                    <li><b>Strict Schema Enforcement:</b> Every incoming event must include <code>privacy: &#123;&quot;screen_capture&quot;: false, &quot;keystroke_content&quot;: false, &quot;source_code_content&quot;: false&#125;</code>. If any flag is <code>true</code> or any undeclared field (such as <code>source_code</code>) is present, Pydantic <code>extra=&quot;forbid&quot;</code> validation immediately rejects the request with HTTP <code>422 Unprocessable Entity</code> prior to database storage.</li>
-                    <li><b>Break Survey Responses (<code>survey_responses</code> table):</b> Pseudonymous <code>developer_ref</code>, selected break <code>reason_id</code>, standardized blocker <code>category</code> (<code>PR_REVIEW_WAIT</code>, <code>CI_FLAKY</code>, <code>MEETING_LOAD</code>, <code>UNCLEAR_REQUIREMENTS</code>, <code>TOOLING</code>, or <code>null</code> for personal break), and creation timestamp.</li>
-                    <li><b>Team-Level Actions &amp; Announcements (<code>blocker_actions</code> &amp; <code>team_messages</code> tables):</b> Team-wide status, responsible team/owner label, action note, and broadcast announcements created by managers. These records never contain individual employee identifiers.</li>
-                </ul>
-
-                <h2>3. How Data Is Used &amp; K-Anonymity Aggregation</h2>
-                <ul>
-                    <li><b>Developer Context Recovery:</b> The latest IDE metadata event for a developer is used to generate a short reminder upon returning from a break.</li>
-                    <li><b>K-Anonymity (K = 5) Manager Analytics:</b> Survey responses are aggregated by blocker category. A category is displayed to managers only if total respondents are at least K = 5 and the specific category has at least K = 5 responses. Groups below K = 5 are suppressed (<code>suppressed: true, reason: &quot;n&lt;k&quot;</code>) without revealing exact counts, and server endpoints reject manager actions or announcements targeting suppressed categories with HTTP <code>409 Conflict</code>.</li>
-                </ul>
-
-                <h2>4. AI Processing &amp; Third-Party Interactions (Google Gemini API)</h2>
-                <p>
-                    When <code>GEMINI_API_KEY</code> is configured on the server, the backend transmits a sanitized JSON payload of the developer&apos;s latest IDE metadata event (excluding <code>privacy</code> and <code>source</code> fields) to Google&apos;s Gemini API (<code>google-genai</code> SDK) to generate a 1-paragraph context summary. The AI output is programmatically verified against the input JSON before display; if verification fails or no API key is configured, a local deterministic template is used. When Google Gemini is enabled, metadata is processed by Google servers, which may involve international data transfers subject to Google API Terms.
-                </p>
-
-                <h2>5. Storage Location, Retention &amp; Security Practices</h2>
-                <p>
-                    Data is stored in a local SQLite database (<code>contextpulse.db</code>, or <code>/tmp/contextpulse.db</code> in Docker containers). Successful AI reminders are cached in server memory per <code>(event_id, lang)</code>, and authenticated sessions are held in server memory with a 24-hour expiration. Demo environments can be wiped at any time via <code>POST /api/demo/reset</code>.
-                </p>
-
-                <h2>6. Your Rights &amp; Contact Information</h2>
-                <p>
-                    Subject to applicable data protection laws, you may request access to, correction of, or deletion of your pseudonymous metadata records. For privacy inquiries or requests, contact: <code>[PRIVACY CONTACT EMAIL PLACEHOLDER, e.g., privacy@example.com]</code> at <code>[REGISTERED ADDRESS PLACEHOLDER]</code>.
-                </p>
-            </LegalLayout>
-        );
-    }
-
-    return (
-        <LegalLayout
-            title="Məxfilik Siyasəti (Privacy Policy)"
-            subtitle="ContextPulse AI tərəfindən IDE və Pull Request metadatasının toplanması, doğrulanması, K-anonim aqreqasiyası və qorunması qaydaları."
-            updatedDate="18 Oktyabr 2026"
-            onNavigate={onNavigate}
-        >
-            <h2>1. Ümumi Baxış və Məxfilik Prinsipləri</h2>
-            <p>
-                ContextPulse AI (&quot;Platforma&quot;) NeuroBridge Hackathon çərçivəsində <b>Code of War</b> komandası tərəfindən hazırlanmışdır (Operator: <code>[ŞİRKƏT / HÜQUQİ ŞƏXS ADI YERİ]</code>). Sistem yalnız minimal IDE və Pull Request metadatası ilə işləyir: ekran görüntüsü çəkilmir, klaviatura izlənmir və mənbə kodu oxunmur.
-            </p>
-
-            <h2>2. Faktiki Toplanan Məlumat Kateqoriyaları</h2>
-            <ul>
-                <li><b>IDE və Pull Request Metadatası (<code>events</code> cədvəli):</b> Psevdonim işçi identifikatoru (məs. <code>developer_ref: &quot;dev_a91f&quot;</code>), vaxt möhürü (<code>emitted_at</code>), sessiya vəziyyəti və fasilə müddəti (saniyə), repozitoriya və budaq (branch) adı, son dəyişdirilən faylın yolu və funksiya adı (symbol), sətir aralığı, diaqnostika xəta kodu və sətri (məs. <code>TS2345</code>), test nəticələri və uğursuz testin adı, PR nömrəsi, başlığı, statusu və həll olunmamış şərhlərin sayı.</li>
-                <li><b>Sərt Sxem Doğrulaması:</b> Hər bir hadisədə <code>privacy: &#123;&quot;screen_capture&quot;: false, &quot;keystroke_content&quot;: false, &quot;source_code_content&quot;: false&#125;</code> sahələri mütləq <code>false</code> olmalıdır. Hər hansı sahə <code>true</code> olarsa və ya sxemdə olmayan əlavə sahə (məs. <code>source_code</code>) göndərilərsə, Pydantic <code>extra=&quot;forbid&quot;</code> yoxlaması sorğunu bazaya yazmadan HTTP <code>422</code> ilə rədd edir.</li>
-                <li><b>Fasilə Səbəbi Sorğusu (<code>survey_responses</code> cədvəli):</b> <code>developer_ref</code>, seçilmiş <code>reason_id</code>, tıxanma kateqoriyası (<code>PR_REVIEW_WAIT</code>, <code>CI_FLAKY</code>, <code>MEETING_LOAD</code>, <code>UNCLEAR_REQUIREMENTS</code>, <code>TOOLING</code> və ya şəxsi fasilə üçün <code>null</code>) və tarix.</li>
-                <li><b>Komanda Tədbirləri və Elanlar (<code>blocker_actions</code> və <code>team_messages</code>):</b> Menecer tərəfindən görünən tıxanmalar üzrə yazılan status, məsul komanda, qeyd və ümumi komanda elanları. Bu qeydlərdə fərdi işçi adı və ya identifikatoru saxlanmır.</li>
-            </ul>
-
-            <h2>3. Emal Məqsədləri və K-Anonimlik (K = 5) Mexanizmi</h2>
-            <ul>
-                <li><b>İşçi Kontekst Bərpası:</b> İşçi fasilədən qayıdanda son IDE hadisəsi əsasında qısa xatırlatma yaradılır.</li>
-                <li><b>Menecer Analitikası (K = 5):</b> Tıxanma qrupları yalnız ümumi cavab sayı və müvafiq kateqoriya üzrə cavab sayı ən azı <code>K = 5</code> olduqda menecerə göstərilir. <code>n &lt; 5</code> olan qruplar gizlədilir, dəqiq say açıqlanmır və gizli qrup üzərində tədbir və ya elan açmaq cəhdi server tərəfindən HTTP <code>409</code> ilə rədd edilir.</li>
-            </ul>
-
-            <h2>4. Süni İntellekt (Google Gemini API) və Üçüncü Tərəf Ötürmələri</h2>
-            <p>
-                Serverdə <code>GEMINI_API_KEY</code> təyin edildikdə, son hadisənin təmizlənmiş JSON metadatası (<code>privacy</code> və <code>source</code> sahələri çıxarılmaqla) qısa xatırlatma mətni yaratmaq üçün Google Gemini API-ya (<code>google-genai</code>) göndərilir. AI cavabı proqramla giriş faktlarına qarşı yoxlanır; uydurma məlumat aşkarlanarsa və ya açar yoxdursa, lokal hazır mətn (fallback) istifadə edilir. Gemini API istifadəsi zamanı metadata Google serverlərinə ötürülə bilər.
-            </p>
-
-            <h2>5. Saxlama Yeri, Müddəti və Təhlükəsizlik</h2>
-            <p>
-                Məlumatlar lokal SQLite verilənlər bazasında (<code>contextpulse.db</code> və ya Docker konteynerində <code>/tmp/contextpulse.db</code>) saxlanılır. Demo məlumatları istənilən vaxt <code>POST /api/demo/reset</code> vasitəsilə sıfırlana bilər.
-            </p>
-
-            <h2>6. İstifadəçi Hüquqları və Əlaqə</h2>
-            <p>
-                Məlumatlarınızla bağlı sorğu, düzəliş və ya silinmə tələbləri üçün əlaqə: <code>[MƏXFİLİK ƏLAQƏ E-POÇTU YERİ, məs. privacy@example.com]</code> · Ünvan: <code>[HÜQUQİ ÜNVAN YERİ]</code>.
-            </p>
-        </LegalLayout>
-    );
-}
-
-function TermsAndConditionsPage({ onNavigate }) {
-    const { lang } = useT();
-    if (lang === 'en') {
-        return (
-            <LegalLayout
-                title="Terms & Conditions"
-                subtitle="Terms governing the use of the ContextPulse AI platform, role-based dashboards, and AI-assisted context reminders."
-                updatedDate="October 18, 2026"
-                onNavigate={onNavigate}
-            >
-                <h2>1. Scope of Service</h2>
-                <p>
-                    ContextPulse AI provides metadata-driven developer context recovery and K-anonymous team blocker analytics. These Terms govern access to and use of the Platform operated by <code>[COMPANY / LEGAL ENTITY NAME PLACEHOLDER]</code>.
-                </p>
-
-                <h2>2. Role Separation &amp; Account Responsibilities</h2>
-                <p>
-                    The Platform enforces strict separation between the <b>Employee (Developer)</b> role and the <b>Manager</b> role. Users must access only the portal authorized for their role and must not attempt to bypass role checks, probe suppressed groups (<code>n &lt; K</code>), or submit unauthorized payloads.
-                </p>
-
-                <h2>3. Acceptable Use &amp; Prohibited Activities</h2>
-                <ul>
-                    <li>You may not submit source code content, keystroke logs, screen captures, or personal sensitive data to <code>POST /api/events</code>.</li>
-                    <li>You may not attempt to de-anonymize K-anonymous blocker categories through automated sequential polling or timing attacks.</li>
-                    <li>Managers must use blocker analytics solely for resolving team-wide engineering bottlenecks and never for individual employee surveillance or disciplinary evaluation.</li>
-                </ul>
-
-                <h2>4. AI-Generated Output Disclaimer</h2>
-                <p>
-                    Context recovery reminders may be generated using Google Gemini AI and validated against event metadata, or produced via deterministic fallback templates. AI outputs are provided as informational aids only. Developers remain responsible for independently verifying code lines, compiler diagnostics, test results, and Pull Request comments before merging or deploying software.
-                </p>
-
-                <h2>5. Intellectual Property</h2>
-                <p>
-                    The ContextPulse AI software, interface design, validation logic, and documentation are the intellectual property of the project authors (Team Code of War / <code>[RIGHTSHOLDER PLACEHOLDER]</code>).
-                </p>
-
-                <h2>6. Service Availability, Limitation of Liability &amp; Governing Law</h2>
-                <p>
-                    The Platform is provided on an &quot;AS IS&quot; and &quot;AS AVAILABLE&quot; basis without warranties of uninterrupted availability. To the maximum extent permitted by applicable law in <code>[JURISDICTION PLACEHOLDER]</code>, the operator shall not be liable for indirect or consequential damages arising from reliance on AI reminders or demo analytics. Contact: <code>[LEGAL CONTACT EMAIL PLACEHOLDER]</code>.
-                </p>
-            </LegalLayout>
-        );
-    }
-
-    return (
-        <LegalLayout
-            title="İstifadə Şərtləri (Terms & Conditions)"
-            subtitle="ContextPulse AI platformasından, rol əsaslı panellərdən və AI kontekst xatırlatmalarından istifadə qaydaları."
-            updatedDate="18 Oktyabr 2026"
-            onNavigate={onNavigate}
-        >
-            <h2>1. Xidmətin Əhatə Dairəsi</h2>
-            <p>
-                ContextPulse AI proqramçılar üçün fasilədən sonra kontekst bərpası və komanda rəhbərləri üçün K-anonim (K = 5) tıxanma analitikası təqdim edir. Bu şərtlər <code>[ŞİRKƏT / HÜQUQİ ŞƏXS ADI YERİ]</code> tərəfindən idarə olunan platformadan istifadəni tənzimləyir.
-            </p>
-
-            <h2>2. Rolların Ayrılması və Hesab Məsuliyyəti</h2>
-            <p>
-                Sistemdə <b>İşçi (Developer)</b> və <b>Menecer</b> rolları bir-birindən tam ayrılmışdır. İstifadəçilər yalnız öz rollarına uyğun panelə daxil olmalı, digər rolun marşrutlarına və ya API-lərinə icazəsiz müraciət etməməlidirlər.
-            </p>
-
-            <h2>3. Məqbul İstifadə və Qadağan Olunan Hərəkətlər</h2>
-            <ul>
-                <li><code>POST /api/events</code> ünvanına mənbə kodu, klaviatura qeydləri, ekran görüntüsü və ya fərdi həssas məlumatların göndərilməsi qadağandır.</li>
-                <li>K-anonimlik həddindən (<code>K = 5</code>) aşağı olan gizli qrupların fərdi cavablarını ardıcıl sorğularla aşkarlamağa çalışmaq qadağandır.</li>
-                <li>Menecer panelindəki analitika yalnız komanda səviyyəli texniki maneələri aradan qaldırmaq üçündür və fərdi işçinin qiymətləndirilməsi üçün istifadə edilə bilməz.</li>
-            </ul>
-
-            <h2>4. Süni İntellekt Çıxışları üzrə Məsuliyyətin Məhdudlaşdırılması</h2>
-            <p>
-                Kontekst xatırlatmaları Google Gemini AI (fakt yoxlaması ilə) və ya deterministik şablon vasitəsilə yaradılır. Bu mətnlər yalnız köməkçi xarakter daşıyır; proqramçı kod dəyişikliklərini, xəta sətirlərini və test nəticələrini müstəqil şəkildə yoxlamağa məsuldur.
-            </p>
-
-            <h2>5. Əqli Mülkiyyət və Qanunvericilik</h2>
-            <p>
-                ContextPulse AI proqram təminatı, dizayn sistemi və alqoritmləri müəllif komandaya (Code of War / <code>[HÜQUQ SAHİBİ YERİ]</code>) məxsusdur. Mübahisələr <code>[YURİSDİKSİYA YERİ]</code> qanunvericiliyinə uyğun həll edilir. Əlaqə: <code>[HÜQUQİ ƏLAQƏ E-POÇTU YERİ]</code>.
-            </p>
-        </LegalLayout>
-    );
-}
-
-function CookiePolicyPage({ consent, onOpenCookieModal, onNavigate }) {
-    const { lang, t } = useT();
-    return (
-        <LegalLayout
-            title={lang === 'en' ? 'Cookie & Local Storage Policy' : 'Kuki və Lokal Yaddaş Siyasəti (Cookie Policy)'}
-            subtitle={lang === 'en'
-                ? 'Transparent inventory of browser cookies and localStorage keys used by ContextPulse AI.'
-                : 'ContextPulse AI tərəfindən istifadə edilən kuki və brauzer yaddaşı (localStorage) elementlərinin tam siyahısı.'}
-            updatedDate={lang === 'en' ? 'October 18, 2026' : '18 Oktyabr 2026'}
-            onNavigate={onNavigate}
-        >
-            <h2>{lang === 'en' ? '1. No Third-Party Tracking or Advertising Cookies' : '1. Üçüncü Tərəf İzləmə və ya Reklam Kukiləri Yoxdur'}</h2>
-            <p>
-                {lang === 'en'
-                    ? 'ContextPulse AI does not load any third-party analytics scripts, advertising pixels, or cross-site tracking cookies.'
-                    : 'ContextPulse AI heç bir üçüncü tərəf analitika skripti, reklam pikseli və ya saytlararası izləmə kukisi istifadə etmir.'}
-            </p>
-
-            <h2>{lang === 'en' ? '2. Storage Inventory (Cookies & localStorage)' : '2. İstifadə Olunan Kuki və Lokal Yaddaş Cədvəli'}</h2>
-            <div className="overflow-x-auto my-4">
-                <table className="w-full text-left border-collapse text-xs font-mono">
-                    <thead>
-                        <tr className="border-b border-slate-200 dark:border-slate-800 text-slate-500">
-                            <th className="py-2 pr-4">Ad / Key</th>
-                            <th className="py-2 pr-4">Növ / Type</th>
-                            <th className="py-2 pr-4">Kateqoriya</th>
-                            <th className="py-2 pr-4">Müddət</th>
-                            <th className="py-2">Məqsəd / Purpose</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
-                        <tr>
-                            <td className="py-2.5 pr-4 font-bold text-sky-600 dark:text-sky-400">cp_session</td>
-                            <td className="py-2.5 pr-4">HttpOnly Cookie</td>
-                            <td className="py-2.5 pr-4">Strictly Necessary</td>
-                            <td className="py-2.5 pr-4">24h / Logout</td>
-                            <td className="py-2.5 font-sans">{lang === 'en' ? 'Maintains authenticated Employee or Manager session on the backend.' : 'İşçi və ya Menecer giriş sessiyasını server tərəfdə qoruyur.'}</td>
-                        </tr>
-                        <tr>
-                            <td className="py-2.5 pr-4 font-bold text-sky-600 dark:text-sky-400">cp_cookie_consent</td>
-                            <td className="py-2.5 pr-4">localStorage</td>
-                            <td className="py-2.5 pr-4">Strictly Necessary</td>
-                            <td className="py-2.5 pr-4">Persistent</td>
-                            <td className="py-2.5 font-sans">{lang === 'en' ? 'Stores your granular cookie consent decision.' : 'Kuki razılıq seçimlərinizi yadda saxlayır.'}</td>
-                        </tr>
-                        <tr>
-                            <td className="py-2.5 pr-4 font-bold text-emerald-600 dark:text-emerald-400">cp_lang</td>
-                            <td className="py-2.5 pr-4">localStorage</td>
-                            <td className="py-2.5 pr-4">Functional (Optional)</td>
-                            <td className="py-2.5 pr-4">Persistent</td>
-                            <td className="py-2.5 font-sans">{lang === 'en' ? 'Remembers selected language (AZ / EN) if functional storage is enabled.' : 'Funksional icazə verildikdə seçilmiş dili (AZ / EN) xatırlayır.'}</td>
-                        </tr>
-                        <tr>
-                            <td className="py-2.5 pr-4 font-bold text-emerald-600 dark:text-emerald-400">cp_theme</td>
-                            <td className="py-2.5 pr-4">localStorage</td>
-                            <td className="py-2.5 pr-4">Functional (Optional)</td>
-                            <td className="py-2.5 pr-4">Persistent</td>
-                            <td className="py-2.5 font-sans">{lang === 'en' ? 'Remembers dark/light theme preference if functional storage is enabled.' : 'Funksional icazə verildikdə tünd/açıq tema seçimini xatırlayır.'}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <h2>{lang === 'en' ? '3. Managing or Withdrawing Your Consent' : '3. Razılığın İdarə Edilməsi və Geri Çağırılması'}</h2>
-            <p>
-                {lang === 'en'
-                    ? 'If you reject optional functional storage, cp_lang and cp_theme are immediately removed from localStorage and only kept in memory for your current tab. You can review or modify your choice at any time below:'
-                    : 'Funksional yaddaşdan imtina etdikdə cp_lang və cp_theme dərhal localStorage-dən silinir. Seçiminizi istənilən vaxt aşağıdakı düymə ilə dəyişə bilərsiniz:'}
-            </p>
-            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 not-prose">
-                <span className="text-xs font-mono text-slate-600 dark:text-slate-300">
-                    Status: {consent.decided ? (consent.functional ? 'Essential + Functional Enabled' : 'Essential Only (Functional Disabled)') : 'Pending Choice'}
-                </span>
-                <button type="button" onClick={onOpenCookieModal} className="px-4 py-2 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-xl text-xs transition-colors">
-                    {t('cookieSettingsBtn')}
-                </button>
-            </div>
-        </LegalLayout>
-    );
-}
-
-// ============ 404 / ACCESS DENIED VIEW ============
-function Custom404Page({ userRole, onNavigate }) {
+function Custom404Page({ onGoHome }) {
     const { t } = useT();
-    const ownRoute = userRole === 'manager' ? 'manager-portal' : userRole === 'employee' ? 'dev-portal' : 'home';
     return (
-        <div className="py-16 text-center max-w-lg mx-auto space-y-6">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-rose-500/10 border border-rose-500/25 text-rose-500 rounded-2xl font-mono text-2xl font-extrabold">
-                403/404
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white font-display">{t('notFoundTitle')}</h1>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{t('notFoundText')}</p>
-            <div className="flex flex-wrap items-center justify-center gap-3">
-                <button type="button" onClick={() => onNavigate(ownRoute)} className="px-5 py-3 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-xl text-xs shadow-md shadow-sky-600/20">
-                    {t('backHome')}
-                </button>
-                {!userRole && (
-                    <button type="button" onClick={() => onNavigate('portal')} className="px-5 py-3 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold rounded-xl text-xs">
-                        {t('goPortalBtn')}
-                    </button>
-                )}
-            </div>
+        <div className="py-20 text-center space-y-6">
+            <div className="inline-block p-6 bg-rose-500/10 text-rose-500 rounded-full font-mono text-4xl font-extrabold">404</div>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{t('notFoundTitle')}</h1>
+            <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">{t('notFoundText')}</p>
+            <button onClick={onGoHome} className="px-6 py-3 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-2xl text-xs shadow-lg shadow-sky-600/20">{t('backHome')}</button>
         </div>
     );
 }

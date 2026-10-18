@@ -16,7 +16,7 @@ Proqramçı toplantıdan və ya qısa fasilədən sonra harada qaldığını xat
 
 ## Əsas xüsusiyyətlər
 
-- **Zero Spyware.** Ekran qeydi və keylogger yoxdur. API `privacy` sahələrindən biri `true` olarsa və ya sxemdə olmayan sahə (məsələn `source_code`) gələrsə hadisəni `422` ilə rədd edir.
+- **Yalnız metadata qəbulu.** API `privacy` sahələrindən biri `true` olarsa (ekran qeydi, klaviatura məzmunu, mənbə kodu) və ya sxemdə olmayan sahə (məsələn `source_code`) gələrsə hadisəni `422` ilə rədd edir. Bu yoxlama serverdədir; hələ IDE genişləndirməsi olmadığı üçün onun nə topladığını bu repo təsdiqləmir.
 - **Saniyələr içində geri dönüş.** Xatırlatma Gemini ilə yazılır, cavab proqramla doğrulanır: uydurma fayl, funksiya, xəta kodu və ya PR nömrəsi varsa hazır mətnə (fallback) keçilir. İlk Gemini sorğusu bir neçə saniyə çəkə bilər, eyni hadisə üçün sonrakı sorğular yaddaşdan gəlir.
 - **K-anonimlik.** Qrup yalnız ən azı K = 5 cavab toplayanda menecerə görünür. Daha az olanlar "gizlədilib" kimi göstərilir və dəqiq sayı açıqlanmır.
 - **Tədbir izləmə (menecer).** Görünən hər tıxanma üçün status (Araşdırılır, Tədbir planlanıb, Həll olunub), məsul komanda və qısa qeyd. Gizli (K həddindən az) qrup üzərində tədbir açmaq serverdə rədd edilir (`409`).
@@ -46,7 +46,7 @@ Proqramçı toplantıdan və ya qısa fasilədən sonra harada qaldığını xat
 │   ├── core.py            # SQLite, seed data, K-anonim aqreqasiya, tədbir və elan saxlanması
 │   ├── ai_engine.py       # Gemini prompt, cavabın doğrulanması, fallback
 │   └── schemas.py         # Pydantic sxemləri (məxfilik yoxlaması daxil)
-├── static/                # index.html, app.js, styles.css
+├── static/                # index.html, app.js, styles.css, favicon.*, fonts/ (lokal şriftlər)
 ├── tests/                 # pytest testləri (conftest.py testləri yaddaşdakı bazaya yönəldir)
 ├── contextpulse_ai/       # İlk prototip (Streamlit, mock data)
 ├── simulator.py           # IDE simulyatoru və demo köməkçisi
@@ -56,6 +56,22 @@ Proqramçı toplantıdan və ya qısa fasilədən sonra harada qaldığını xat
 ├── requirements.txt
 └── .env.example
 ```
+
+## Səhifələr və marşrutlar
+
+Frontend tək səhifəli tətbiqdir (React, build addımı yoxdur). Hər yol serverdə `index.html` qaytarır və marşrutu `static/app.js` oxuyur. Naməlum yollar `404` verir.
+
+| Yol | Səhifə |
+|---|---|
+| `/` | Ana səhifə (məhsul, necə işləyir, hazırkı məhdudiyyətlər) |
+| `/portal` | Rol seçimi (Developer / Manager) |
+| `/developer-login`, `/manager-login` | Rola görə ayrı giriş səhifələri |
+| `/developer`, `/manager` | Paneller (giriş tələb edir, səhv rolda 404 səhifəsi göstərilir) |
+| `/privacy-policy`, `/terms-and-conditions`, `/cookie-policy` | Hüquqi səhifələr (AZ / EN, son yenilənmə tarixi ilə) |
+
+Giriş naviqasiyadakı "Daxil ol" menyusundan və ya `/portal` səhifəsindən açılır. Hüquqi səhifələrdəki `[[YER TUTUCULAR]]` operator tərəfindən doldurulmalıdır (şirkət adı, ünvan, əlaqə, saxlama müddəti, yurisdiksiya və s.). Bu mətnlər hüquqi məsləhət deyil.
+
+**Brauzer yaddaşı:** tətbiq HTTP cookie qoymur (testlə yoxlanılır). Dil, tema və bildiriş seçimləri `localStorage`-də yalnız istifadəçi dəyişəndə yazılır (`cp_lang`, `cp_theme`, `cookieConsentGiven`). Analitika və ya izləmə aləti yoxdur. Şriftlər (Inter, JetBrains Mono, SIL OFL lisenziyası, `static/fonts/`) lokal verilir; Tailwind, React və Babel hələ CDN-dən (`cdn.tailwindcss.com`, `unpkg.com`) yüklənir. Favicon: `static/favicon.ico`, `favicon.svg`, `apple-touch-icon.png`.
 
 ## Quraşdırma və işə salma
 
@@ -186,6 +202,7 @@ Swagger sənədləşməsi: `http://localhost:8000/docs`
 - Giriş brauzer tərəflidir və API-lərin özü (menecer endpoint-ləri daxil) hələ qorunmur. Server tərəfdə autentifikasiya və rol yoxlaması növbəti addımdır.
 - IDE hadisələri hələlik simulyatordan gəlir. Növbəti addımlar: VS Code extension və GitHub PR inteqrasiyası.
 - K-anonimlik zamana görə müşahidə hücumlarından tam qorumur.
+- Panellərə girişin yoxlanması brauzerdədir və paroller `static/app.js`-dədir; `PUT /api/team/...`, `POST /api/team/messages` kimi menecer endpoint-ləri serverdə hələ autentifikasiya olunmur. Bu versiyanı real şəxsi məlumatla açıq yerləşdirməyin.
 - SQLite demo üçündür. İstehsal üçün PostgreSQL və AI cavab keşinin bazada saxlanması planlaşdırılır.
 
 ## İlk prototip (Streamlit)

@@ -1,171 +1,56 @@
+/* ===== Şriftlər (lokal, üçüncü tərəfə sorğu yoxdur) ===== */
+@font-face { font-family: 'Inter Variable'; font-style: normal; font-weight: 100 900; font-display: swap;
+  src: url('fonts/inter-latin-ext-wght-normal.woff2') format('woff2-variations'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Inter Variable'; font-style: normal; font-weight: 100 900; font-display: swap;
+  src: url('fonts/inter-latin-wght-normal.woff2') format('woff2-variations'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'JetBrains Mono Variable'; font-style: normal; font-weight: 100 800; font-display: swap;
+  src: url('fonts/jetbrains-mono-latin-ext-wght-normal.woff2') format('woff2-variations'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'JetBrains Mono Variable'; font-style: normal; font-weight: 100 800; font-display: swap;
+  src: url('fonts/jetbrains-mono-latin-wght-normal.woff2') format('woff2-variations'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+/* ===== Dizayn tokenləri ===== */
 :root {
-    --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --font-display: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
-    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-
-    --surface-bg: #f8fafc;
-    --surface-card: #ffffff;
-    --surface-elevated: #f1f5f9;
-    --border-subtle: #e2e8f0;
-    --border-strong: #cbd5e1;
-    --text-primary: #0f172a;
-    --text-secondary: #475569;
-    --text-muted: #64748b;
-    --accent-primary: #0284c7;
-    --accent-cyan: #0891b2;
-    --radius-card: 16px;
-    --radius-lg: 20px;
-    --shadow-card: 0 1px 3px rgba(15, 23, 42, 0.04), 0 8px 24px -6px rgba(15, 23, 42, 0.06);
+  --surface: #ffffff; --surface-2: #f8fafc; --line: #e2e8f0; --ink: #0f172a; --muted: #475569;
+  --brand: #2b59d9; --radius-card: 1rem; --shadow-card: 0 1px 2px rgba(15, 23, 42, .06), 0 4px 16px -8px rgba(15, 23, 42, .12);
+  --ease: cubic-bezier(.2, .7, .2, 1);
 }
+.dark { --surface: #0b1220; --surface-2: #0f172a; --line: #1e293b; --ink: #f1f5f9; --muted: #94a3b8; --shadow-card: 0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px -12px rgba(0, 0, 0, .6); }
 
-.dark {
-    --surface-bg: #090d16;
-    --surface-card: #0f1623;
-    --surface-elevated: #161f30;
-    --border-subtle: rgba(148, 163, 184, 0.14);
-    --border-strong: rgba(56, 189, 248, 0.28);
-    --text-primary: #f8fafc;
-    --text-secondary: #94a3b8;
-    --text-muted: #64748b;
-    --accent-primary: #38bdf8;
-    --accent-cyan: #22d3ee;
-    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 32px -8px rgba(0, 0, 0, 0.5);
-}
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: 5rem; }
+body { font-family: 'Inter Variable', Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-feature-settings: 'cv11', 'ss01'; line-height: 1.6; overflow-x: hidden; }
+.font-mono { font-family: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+h1, h2, h3 { letter-spacing: -0.015em; }
 
-body {
-    font-family: var(--font-sans);
-    background-color: var(--surface-bg);
-    color: var(--text-primary);
-    overflow-x: hidden;
-    line-height: 1.6;
-}
+/* ===== Səthlər (əvvəlki "glass" siniflər saxlanıb, lakin bulanıqlıq əvəzinə bərk səth) ===== */
+.glass-panel, .glass-panel-accent, .feature-card { background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-card); }
+.glass-panel-accent { background: var(--surface-2); }
+.soft-glow-sky { box-shadow: var(--shadow-card); }
+.feature-card { transition: border-color .2s var(--ease), transform .2s var(--ease); }
+.feature-card:hover { border-color: color-mix(in srgb, var(--brand) 45%, var(--line)); transform: translateY(-2px); }
 
-h1, h2, h3, h4, .font-display {
-    font-family: var(--font-display);
-    letter-spacing: -0.02em;
-}
+/* ===== Fokus və əlçatanlıq ===== */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible { outline: 2px solid #6b95f9; outline-offset: 2px; border-radius: 0.5rem; }
+.skip-link { position: absolute; left: .75rem; top: -4rem; z-index: 100; background: var(--brand); color: #fff; padding: .6rem 1rem; border-radius: .6rem; font-weight: 600; }
+.skip-link:focus { top: .75rem; }
 
-.font-mono, code, pre {
-    font-family: var(--font-mono);
-}
+/* ===== Hüquqi sənəd tipoqrafiyası ===== */
+.legal h2 { font-size: 1.15rem; font-weight: 650; margin: 2rem 0 .6rem; color: var(--ink); }
+.legal p, .legal li { font-size: .95rem; line-height: 1.75; color: var(--muted); }
+.legal ul { list-style: disc; padding-left: 1.25rem; margin: .5rem 0; }
+.legal table { width: 100%; font-size: .85rem; border-collapse: collapse; }
+.legal th, .legal td { text-align: left; padding: .55rem .6rem; border-bottom: 1px solid var(--line); vertical-align: top; color: var(--muted); }
+.legal th { color: var(--ink); font-weight: 600; }
+.legal code { font-family: 'JetBrains Mono Variable', ui-monospace, monospace; font-size: .8rem; background: var(--surface-2); padding: .1rem .35rem; border-radius: .35rem; }
+.placeholder { background: #fef3c7; color: #78350f; padding: 0 .3rem; border-radius: .25rem; font-weight: 600; }
+.dark .placeholder { background: #422006; color: #fde68a; }
 
-/* Subtle architectural grid background */
-.bg-grid-pattern {
-    background-size: 36px 36px;
-    background-image: 
-        linear-gradient(to right, rgba(148, 163, 184, 0.07) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(148, 163, 184, 0.07) 1px, transparent 1px);
-}
+/* ===== Skroll zolağı ===== */
+::-webkit-scrollbar { width: 8px; height: 8px; } ::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; } .dark ::-webkit-scrollbar-thumb { background: #334155; }
+::-webkit-scrollbar-thumb:hover { background: var(--brand); }
 
-.dark .bg-grid-pattern {
-    background-image: 
-        linear-gradient(to right, rgba(148, 163, 184, 0.04) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(148, 163, 184, 0.04) 1px, transparent 1px);
-}
-
-/* Clean, high-contrast surfaces */
-.surface-card {
-    background-color: var(--surface-card);
-    border: 1px solid var(--border-subtle);
-    box-shadow: var(--shadow-card);
-    border-radius: var(--radius-card);
-}
-
-.surface-elevated {
-    background-color: var(--surface-elevated);
-    border: 1px solid var(--border-subtle);
-    border-radius: 12px;
-}
-
-/* Backwards-compatible refined glass-panel class */
-.glass-panel {
-    background-color: var(--surface-card);
-    border: 1px solid var(--border-subtle);
-    box-shadow: var(--shadow-card);
-}
-
-.dark .glass-panel {
-    background-color: rgba(15, 22, 35, 0.92);
-    border: 1px solid rgba(148, 163, 184, 0.14);
-}
-
-.feature-card {
-    background-color: var(--surface-card);
-    border: 1px solid var(--border-subtle);
-    box-shadow: var(--shadow-card);
-    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.feature-card:hover {
-    border-color: var(--border-strong);
-    transform: translateY(-2px);
-}
-
-/* Accessible Focus States */
-a:focus-visible,
-button:focus-visible,
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible {
-    outline: 2px solid #0ea5e9;
-    outline-offset: 2px;
-}
-
-/* Custom Scrollbars */
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 4px;
-}
-
-.dark ::-webkit-scrollbar-thumb {
-    background: #1e293b;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #0284c7;
-}
-
-/* Legal document typography */
-.legal-prose h2 {
-    font-size: 1.25rem;
-    font-weight: 700;
-    margin-top: 1.75rem;
-    margin-bottom: 0.75rem;
-}
-
-.legal-prose p {
-    margin-bottom: 0.875rem;
-    line-height: 1.7;
-}
-
-.legal-prose ul {
-    list-style-type: disc;
-    padding-left: 1.5rem;
-    margin-bottom: 1rem;
-}
-
-.legal-prose li {
-    margin-bottom: 0.375rem;
-}
-
-/* Respect prefers-reduced-motion */
+/* ===== Hərəkət azaltma tərcihinə hörmət ===== */
 @media (prefers-reduced-motion: reduce) {
-    *, ::before, ::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
-    }
-    .feature-card:hover {
-        transform: none !important;
-    }
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  .feature-card:hover { transform: none; }
 }
