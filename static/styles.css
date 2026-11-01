@@ -210,6 +210,10 @@ main#main button:active:not(:disabled) { transform:translateY(1px); }
 
 /* ===== İşıqlı tema (redizayn v2 qaranlıq rəngləri sabit yazırdı; keçid `html.dark` sinfi ilə işləyir) ===== */
 html:not(.dark) { background:#f1f5f9; color-scheme:light; }
+html:not(.dark) { --surface:#ffffff; --surface-2:#f1f5f9; --line:#e2e8f0; --ink:#0f172a; --muted:#475569; --brand:#2b59d9; }
+html:not(.dark) .legal th { color:#0f172a!important; }
+html:not(.dark) .legal th, html:not(.dark) .legal td { border-bottom-color:#e2e8f0; }
+html:not(.dark) .legal code { background:#e2e8f0; color:#0f172a; }
 html:not(.dark) input, html:not(.dark) select, html:not(.dark) textarea { color-scheme:light; }
 html:not(.dark) body { color:#0f172a !important; background:#f1f5f9 !important; background-image:radial-gradient(ellipse at 6% 0%,rgba(14,165,233,.10),transparent 32%),radial-gradient(ellipse at 100% 22%,rgba(99,102,241,.07),transparent 30%),linear-gradient(180deg,#f8fafc 0%,#eef2f7 100%) !important; }
 html:not(.dark) body:before { opacity:.5; background-image:linear-gradient(rgba(100,116,139,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(100,116,139,.07) 1px,transparent 1px); }
