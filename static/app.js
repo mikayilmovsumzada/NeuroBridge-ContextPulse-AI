@@ -14,6 +14,7 @@ const I18N = {
         homeBadge: 'Yalnız metadata · K-anonim qruplaşdırma (K=5)',
         homeTitle: 'Fasilədən sonra kontekst bərpası, komanda üçün görünən tıxanmalar',
         homeSub: 'Platforma IDE və Pull Request metadatasını qəbul edir: işçi qayıdanda qısa xatırlatma alır, menecer isə tıxanmaları yalnız komanda səviyyəsində görür.',
+        featuresHeadline: 'Kontekst, lazımsız səs-küy olmadan.', featuresSub: 'Kiçik siqnallar. Daha aydın növbəti addımlar. Fərdi fəaliyyəti yarış cədvəlinə çevirmədən komanda baxışı.', workflowKicker: 'SADƏ AXIN', workflowSub: 'Faydalı texniki metadatadan praktik növbəti addıma.', closingKicker: 'KONTEKSTƏ QAYIT', closingTitle: 'Növbəti addımı daha aydın gör.', closingSub: 'Developer və manager panellərini kəşf et.', platformKicker: 'PLATFORMA', signalLive: 'SİQNAL AKTİVDİR', contextLabel: 'KONTEKST', contextReady: 'Bərpa hazırdır', teamView: 'KOMANDA BAXIŞI', thresholdApplied: 'K həddi tətbiq olunub', previewNote: 'Vizual önbaxış · canlı telemetriya deyil',
         devCardTitle: 'İşçi Paneli (Dev View)', devCardText: 'Canlı IDE telemeteriya baxışı, uzaqda olma tarixçəsi və şəxsi kontekst bərpa vasitələri.',
         goDev: 'İşçi Panelinə Keçid', loginDev: 'İşçi Kimi Giriş Et (Parol ilə)',
         mgrCardTitle: 'Menecer Paneli', mgrCardText: 'Komanda səviyyəsində tıxanmaların canlı görünüşü, tədbir qeydləri və elanlar. Qruplar K=5 həddinə görə göstərilir.',
@@ -21,7 +22,7 @@ const I18N = {
         loginTitleDev: 'İşçi Panelinə Giriş', loginTitleMgr: 'Menecer Panelinə Giriş', loginSub: 'Şirkət e-poçtu və parolunuzu daxil edin',
         email: 'Şirkət E-poçtu', password: 'Parol', demoCreds: 'Demo Giriş Məlumatları:', cancel: 'İmtina', submit: 'Daxil Ol',
         loginErr: 'Səhv e-poçt və ya parol!', loginOkDev: 'İşçi Panelinə uğurla daxil oldunuz!',
-        loginOkMgr: 'Menecer Panelinə təhlükəsiz giriş edildi!', logoutToast: 'Sistemdən çıxış edildi.', cookieSaved: 'Kuki seçimləriniz yadda saxlanıldı.',
+        loginOkMgr: 'Menecer Panelinə təhlükəsiz giriş edildi!', logoutToast: 'Sistemdən çıxış edildi.', sessionExpired: 'Sessiya bitdi, yenidən daxil olun.', cookieSaved: 'Kuki seçimləriniz yadda saxlanıldı.',
         devTitle: 'İşçi Paneli (Developer View)', devSub: 'Canlı IDE metadata axını və fərdi re-engagement göstəriciləri',
         simBtn: 'Fasilə / Uzaqlaşmanı Simulyasiya Et', liveTitle: 'Canlı IDE Siqnalı (yalnız metadata)',
         file: 'Fayl', firstErr: 'İlk xəta', tests: 'Testlər', pr: 'Pull Request', line: 'sətir', errorsWord: 'xəta',
@@ -89,6 +90,7 @@ const I18N = {
         homeBadge: 'Metadata only · K-anonymous grouping (K=5)',
         homeTitle: 'Context recovery after breaks, visible team blockers',
         homeSub: 'The platform accepts IDE and pull request metadata: developers get a short reminder when they return, and managers see blockers only at team level.',
+        featuresHeadline: 'Context, without the noise.', featuresSub: 'Small signals. Clearer next steps. Team insights without turning individual activity into a scoreboard.', workflowKicker: 'A SIMPLE FLOW', workflowSub: 'From useful technical metadata to a practical next step.', closingKicker: 'GET BACK IN CONTEXT', closingTitle: 'Make the next step easier to see.', closingSub: 'Explore the separate developer and manager experiences.', platformKicker: 'THE PLATFORM', signalLive: 'SIGNAL ACTIVE', contextLabel: 'CONTEXT', contextReady: 'Recovery ready', teamView: 'TEAM VIEW', thresholdApplied: 'K-threshold applied', previewNote: 'Visual preview · illustrative signal, not live telemetry',
         devCardTitle: 'Employee Panel (Dev View)', devCardText: 'Live IDE telemetry view, away history and personal context recovery tools.',
         goDev: 'Open Employee Panel', loginDev: 'Log in as Employee (Password)',
         mgrCardTitle: 'Manager Panel', mgrCardText: 'A live team-level view of blockers, action notes and announcements. Groups are shown according to the K=5 threshold.',
@@ -96,7 +98,7 @@ const I18N = {
         loginTitleDev: 'Employee Panel Login', loginTitleMgr: 'Manager Panel Login', loginSub: 'Enter your company email and password',
         email: 'Company Email', password: 'Password', demoCreds: 'Demo Credentials:', cancel: 'Cancel', submit: 'Log In',
         loginErr: 'Wrong email or password!', loginOkDev: 'Signed in to the Employee Panel!',
-        loginOkMgr: 'Securely signed in to the Manager Panel!', logoutToast: 'You have been signed out.', cookieSaved: 'Your cookie preferences were saved.',
+        loginOkMgr: 'Securely signed in to the Manager Panel!', logoutToast: 'You have been signed out.', sessionExpired: 'Your session expired, please sign in again.', cookieSaved: 'Your cookie preferences were saved.',
         devTitle: 'Employee Panel (Developer View)', devSub: 'Live IDE metadata stream and personal re-engagement indicators',
         simBtn: 'Simulate Break / Away', liveTitle: 'Live IDE Signal (metadata only)',
         file: 'File', firstErr: 'First error', tests: 'Tests', pr: 'Pull Request', line: 'line', errorsWord: 'errors',
@@ -171,7 +173,7 @@ const NavCtx = React.createContext(() => {});
 // ============ MARŞRUTLAR (History API; hər yol serverdə index.html-ə düşür) ============
 const ROUTE_PATHS = { home: '', portal: 'portal', 'login-dev': 'developer-login', 'login-mgr': 'manager-login', 'dev-portal': 'developer', 'manager-portal': 'manager', privacy: 'privacy-policy', terms: 'terms-and-conditions', cookies: 'cookie-policy' };
 // Sayt kökü (alt yolda, məsələn GitLab Pages-də də işləsin deyə styles.css-in ünvanından götürülür)
-const BASE = new URL(document.querySelector('link[href$="styles.css"]').href).pathname.replace(/styles\.css$/, '');
+const BASE = new URL(document.querySelector('link[href*="styles.css"]').href).pathname.replace(/styles\.css$/, '');
 const pathFor = (route) => BASE + (ROUTE_PATHS[route] || '');
 function routeFromPath() {
     const rel = location.pathname.startsWith(BASE) ? location.pathname.slice(BASE.length).replace(/\/+$/, '') : '';
@@ -302,9 +304,18 @@ const REASONS = [
     { id: 'pr', cat: 'PR_REVIEW_WAIT' }, { id: 'ci', cat: 'CI_FLAKY' }, { id: 'meet', cat: 'MEETING_LOAD' },
     { id: 'req', cat: 'UNCLEAR_REQUIREMENTS' }, { id: 'tool', cat: 'TOOLING' }, { id: 'break', cat: null }
 ];
+// Giriş tokeni yalnız yaddaşda saxlanır (cookie/localStorage yoxdur); səhifə yenilənəndə silinir.
+let authToken = null;
 async function api(path, opts) {
-    const r = await fetch(path, opts);
-    if (!r.ok) throw new Error(path + ' ' + r.status);
+    const o = Object.assign({}, opts);
+    if (authToken) o.headers = Object.assign({}, o.headers, { Authorization: 'Bearer ' + authToken });
+    const r = await fetch(path, o);
+    if (!r.ok) {
+        if (r.status === 401 && authToken) window.dispatchEvent(new Event('cp-auth-expired'));
+        const err = new Error(path + ' ' + r.status);
+        err.status = r.status;
+        throw err;
+    }
     return r.json();
 }
 const postJson = (path, body) => api(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
@@ -553,7 +564,7 @@ function App() {
     useEffect(() => { if (isIdleModalOpen) loadReminder(lang); }, [lang]);
 
     // ---- Marşrutlaşdırma (History API) və rol ayrılığı ----
-    // Qeyd: rol yoxlaması bu versiyada yalnız interfeysdədir; server API-ləri hələ autentifikasiya olunmur.
+    // Rol yoxlaması həm interfeysdə, həm serverdədir: menecer API-ləri Bearer token tələb edir (oflayn demoda yalnız brauzerdə).
     const ownRoute = userRole === 'manager' ? 'manager-portal' : userRole === 'employee' ? 'dev-portal' : 'home';
     const route = guardRoute(currentRoute, userRole);
     const goRoute = (r, hash) => {
@@ -591,16 +602,37 @@ function App() {
     const handleLoginSubmit = (e) => {
         e.preventDefault();
         const mail = sanitizeInput(emailInput).trim(), pass = sanitizeInput(passwordInput).trim();
-        const okDev = loginRole === 'employee' && mail === 'dev@company.com' && pass === 'emp123';
-        const okMgr = loginRole === 'manager' && mail === 'manager@company.com' && pass === 'admin123';
-        if (okDev || okMgr) {
-            setUserRole(okMgr ? 'manager' : 'employee');
+        const finish = (role) => {
+            setUserRole(role);
             setLoginError(false); setEmailInput(''); setPasswordInput('');
-            goRoute(okMgr ? 'manager-portal' : 'dev-portal');
-            showToast(t(okMgr ? 'loginOkMgr' : 'loginOkDev'));
-        } else { setLoginError(true); }
+            goRoute(role === 'manager' ? 'manager-portal' : 'dev-portal');
+            showToast(t(role === 'manager' ? 'loginOkMgr' : 'loginOkDev'));
+        };
+        if (offline) {
+            // Backend yoxdur (məs. GitLab Pages): yalnız oflayn demo üçün brauzer yoxlaması
+            const okDev = loginRole === 'employee' && mail === 'dev@company.com' && pass === 'emp123';
+            const okMgr = loginRole === 'manager' && mail === 'manager@company.com' && pass === 'admin123';
+            if (okDev || okMgr) finish(okMgr ? 'manager' : 'employee'); else setLoginError(true);
+            return;
+        }
+        postJson('/api/auth/login', { email: mail, password: pass, role: loginRole })
+            .then((d) => { authToken = d.token; finish(d.role); })
+            .catch(() => setLoginError(true));
     };
-    const handleLogout = () => { setUserRole(null); setIsIdleModalOpen(false); goRoute('home'); showToast(t('logoutToast')); };
+    const handleLogout = () => {
+        const tk = authToken; authToken = null;
+        if (tk) fetch('/api/auth/logout', { method: 'POST', headers: { Authorization: 'Bearer ' + tk } }).catch(() => { /* server əlçatmazdır */ });
+        setUserRole(null); setIsIdleModalOpen(false); goRoute('home'); showToast(t('logoutToast'));
+    };
+    useEffect(() => {
+        // Server sessiyanı bitirəndə (məs. yenidən başladılıb) istifadəçi çıxışa yönləndirilir
+        const onExpired = () => {
+            authToken = null; setUserRole(null); setIsIdleModalOpen(false); goRoute('home');
+            showToast(translate(langRef.current, 'sessionExpired'));
+        };
+        window.addEventListener('cp-auth-expired', onExpired);
+        return () => window.removeEventListener('cp-auth-expired', onExpired);
+    }, []);
     const acceptCookies = () => { try { localStorage.setItem('cookieConsentGiven', 'true'); } catch (e) { /* yoxdur */ } setCookieConsent(true); showToast(t('cookieSaved')); };
     // Seçimlər yalnız istifadəçi hərəkət edəndə brauzer yaddaşına yazılır
     const changeLang = (l) => { setLang(l); try { localStorage.setItem('cp_lang', l); } catch (e) { /* yoxdur */ } };
@@ -820,36 +852,62 @@ function HomeView({ userRole }) {
     const { t } = useT();
     const own = userRole === 'manager' ? 'manager-portal' : 'dev-portal';
     return (
-        <div className="max-w-5xl mx-auto py-8 space-y-14">
-            <section className="text-center space-y-5 max-w-3xl mx-auto">
-                <span className="inline-block px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-700 dark:text-sky-300 text-xs font-mono">{t('homeBadge')}</span>
-                <h1 className="text-3xl sm:text-5xl font-bold text-slate-900 dark:text-white leading-tight">{t('homeTitle')}</h1>
-                <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 leading-relaxed">{t('homeSub')}</p>
-                <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-                    <Link route={userRole ? own : 'portal'} className="px-5 py-3 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-xl text-sm transition-colors">
-                        {userRole ? (userRole === 'manager' ? t('goMgr') : t('goDev')) : t('ctaPortal')}
-                    </Link>
-                    <Link route="privacy" className="px-5 py-3 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-900 font-semibold rounded-xl text-sm transition-colors">{t('ctaPolicy')}</Link>
+        <div className="home-view">
+            <section className="hero-shell">
+                <div className="hero-grid-noise" aria-hidden="true"></div>
+                <div className="hero-copy">
+                    <div className="hero-eyebrow"><span className="hero-eyebrow-dot"></span>{t('homeBadge')}</div>
+                    <h1>{t('homeTitle')}</h1>
+                    <p className="hero-description">{t('homeSub')}</p>
+                    <div className="hero-actions">
+                        <Link route={userRole ? own : 'portal'} className="hero-primary">
+                            {userRole ? (userRole === 'manager' ? t('goMgr') : t('goDev')) : t('ctaPortal')}
+                            <span aria-hidden="true">↗</span>
+                        </Link>
+                        <Link route="privacy" className="hero-secondary">{t('ctaPolicy')} <span aria-hidden="true">→</span></Link>
+                    </div>
+                    <div className="hero-trust-row">
+                        <span><i className="trust-check">✓</i> Metadata only</span>
+                        <span><i className="trust-check">✓</i> Team-level insights</span>
+                        <span><i className="trust-check">✓</i> K = 5 threshold</span>
+                    </div>
                 </div>
+                <div className="signal-console" aria-label="Illustrative ContextPulse signal visualization">
+                    <div className="console-top"><div className="console-brand"><span className="console-mark">CP</span><span><b>Context signal</b><small>LIVE CONTEXT STREAM</small></span></div><span className="console-live"><i></i> {t('signalLive')}</span></div>
+                    <div className="signal-chart-wrap">
+                        <div className="chart-label-row"><span>EVENT FLOW</span><span>IDE / PULL REQUEST</span></div>
+                        <svg className="signal-chart" viewBox="0 0 520 170" preserveAspectRatio="none" aria-hidden="true">
+                            <defs><linearGradient id="signalStroke" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#3b82f6" stopOpacity=".15"/><stop offset=".45" stopColor="#38bdf8"/><stop offset="1" stopColor="#a78bfa" stopOpacity=".45"/></linearGradient><linearGradient id="signalFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#38bdf8" stopOpacity=".2"/><stop offset="1" stopColor="#38bdf8" stopOpacity="0"/></linearGradient></defs>
+                            <path className="chart-area" d="M0 102 H70 L90 98 L106 105 L122 102 H166 L184 88 L198 119 L216 102 H272 L294 101 L310 35 L326 137 L344 102 H390 L410 91 L425 112 L440 102 H520 V170 H0Z"/>
+                            <path className="chart-path chart-path-glow" d="M0 102 H70 L90 98 L106 105 L122 102 H166 L184 88 L198 119 L216 102 H272 L294 101 L310 35 L326 137 L344 102 H390 L410 91 L425 112 L440 102 H520"/>
+                            <path className="chart-path chart-path-main" d="M0 102 H70 L90 98 L106 105 L122 102 H166 L184 88 L198 119 L216 102 H272 L294 101 L310 35 L326 137 L344 102 H390 L410 91 L425 112 L440 102 H520"/>
+                            <circle className="signal-node" cx="310" cy="35" r="4"/><circle className="signal-node-halo" cx="310" cy="35" r="11"/>
+                        </svg>
+                        <div className="chart-axis"><span>−30m</span><span>−20m</span><span>−10m</span><span>NOW</span></div>
+                    </div>
+                    <div className="console-stats">
+                        <div><span className="stat-icon stat-cyan">↗</span><span><small>{t('contextLabel')}</small><b>{t('contextReady')}</b></span></div>
+                        <div><span className="stat-icon stat-violet">◎</span><span><small>{t('teamView')}</small><b>{t('thresholdApplied')}</b></span></div>
+                    </div>
+                    <div className="console-foot"><span className="console-foot-dot"></span> {t('previewNote')}</div>
+                </div>
+                <div className="hero-bottom-line"><span>CONTEXT / CLARITY / CONTINUITY</span><span>BUILT FOR FOCUSED TEAMS <b>✳</b></span></div>
             </section>
-            <FeatureCards />
-            <section aria-labelledby="how-h">
-                <h2 id="how-h" className="text-xl font-semibold text-slate-900 dark:text-white">{t('howTitle')}</h2>
-                <ol className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                    {[['how1T', 'how1P'], ['how2T', 'how2P'], ['how3T', 'how3P']].map(([a, b]) => (
-                        <li key={a} className="glass-panel rounded-2xl p-5">
-                            <h3 className="text-sm font-semibold text-slate-900 dark:text-white">{t(a)}</h3>
-                            <p className="text-sm text-slate-600 dark:text-slate-400 mt-1.5 leading-relaxed">{t(b)}</p>
-                        </li>
+
+            <section className="home-section features-section" aria-labelledby="features-heading">
+                <div className="section-heading"><div><span className="section-kicker">{t('platformKicker')}</span><h2 id="features-heading">{t('featuresHeadline')}</h2></div><p>{t('featuresSub')}</p></div>
+                <FeatureCards />
+            </section>
+
+            <section className="workflow-section" aria-labelledby="workflow-heading">
+                <div className="workflow-intro"><span className="section-kicker">{t('workflowKicker')}</span><h2 id="workflow-heading">{t('howTitle')}</h2><p>{t('workflowSub')}</p></div>
+                <ol className="workflow-grid">
+                    {[['01', 'how1T', 'how1P'], ['02', 'how2T', 'how2P'], ['03', 'how3T', 'how3P']].map(([n, a, b]) => (
+                        <li key={a} className="workflow-card"><span className="workflow-number">{n}</span><div className="workflow-card-line"></div><h3>{t(a)}</h3><p>{t(b)}</p></li>
                     ))}
                 </ol>
             </section>
-            <section aria-labelledby="lim-h" className="glass-panel rounded-2xl p-6">
-                <h2 id="lim-h" className="text-xl font-semibold text-slate-900 dark:text-white">{t('limitsTitle')}</h2>
-                <ul className="mt-3 space-y-2 text-sm text-slate-600 dark:text-slate-400 list-disc pl-5 leading-relaxed">
-                    {['lim1', 'lim2', 'lim3', 'lim4'].map((k) => (<li key={k}>{t(k)}</li>))}
-                </ul>
-            </section>
+            <section className="closing-cta"><div className="closing-orbit" aria-hidden="true"></div><div><span className="section-kicker">{t('closingKicker')}</span><h2>{t('closingTitle')}</h2><p>{t('closingSub')}</p></div><Link route={userRole ? own : 'portal'} className="hero-primary">{t('ctaPortal')} <span aria-hidden="true">↗</span></Link></section>
         </div>
     );
 }

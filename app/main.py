@@ -23,13 +23,15 @@ _load_env()  # core və ai_engine import olunmazdan ƏVVƏL çağırılmalıdır
 
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from typing import Optional
+
+from fastapi import Depends, FastAPI, Header
 from fastapi.responses import FileResponse, StreamingResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from . import core
+from . import auth, core
 from .ai_engine import fallback_text, generate_reminder
-from .schemas import ActionIn, IdeEvent, MessageIn, ReminderIn, SurveyIn
+from .schemas import ActionIn, IdeEvent, LoginIn, MessageIn, ReminderIn, SurveyIn
 
 STATIC = Path(__file__).resolve().parent.parent / "static"
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(message)s", datefmt="%H:%M:%S")
@@ -86,6 +88,24 @@ async def publish(event: str, data: dict):
         q.put_nowait(msg)
 
 
+@app.post("/api/auth/login")
+async def auth_login(body: LoginIn):
+    """Rola görə giriş: səhv məlumat 401, rol uyğunsuzluğu 403. Cavabda Bearer token qaytarılır (cookie qoyulmur)."""
+    return auth.login(body.email, body.password, body.role)
+
+
+@app.get("/api/auth/session")
+async def auth_session(authorization: Optional[str] = Header(default=None)):
+    s = auth.session_of(authorization)
+    return {"authenticated": bool(s), "role": s["role"] if s else None}
+
+
+@app.post("/api/auth/logout")
+async def auth_logout(authorization: Optional[str] = Header(default=None)):
+    auth.logout(authorization)
+    return {"ok": True}
+
+
 @app.get("/api/health")
 async def health():
     return {"status": "ok", "subscribers": len(subscribers)}
@@ -137,7 +157,7 @@ async def reminder(body: ReminderIn):
 
 
 @app.post("/api/survey", status_code=201)
-async def survey(body: SurveyIn):
+async def survey(body: SurveyIn, _session=Depends(auth.reject_manager)):
     core.add_survey(body.developer_ref, body.reason_id, body.category)
     payload = core.team_payload()
     await publish("team", payload)
@@ -153,7 +173,7 @@ async def team():
 
 
 @app.put("/api/team/blockers/{category}/action")
-async def set_blocker_action(category: str, body: ActionIn):
+async def set_blocker_action(category: str, body: ActionIn, _session=Depends(auth.require_manager)):
     """Menecer görünən tıxanmaya status, məsul və qeyd yazır. K həddindən aşağı (gizli) qrup üçün rədd edilir."""
     if category not in core.META:
         return JSONResponse({"detail": "naməlum kateqoriya"}, status_code=404)
@@ -168,7 +188,7 @@ async def set_blocker_action(category: str, body: ActionIn):
 
 
 @app.post("/api/team/messages", status_code=201)
-async def post_team_message(body: MessageIn):
+async def post_team_message(body: MessageIn, _session=Depends(auth.require_manager)):
     """Menecerin bütün komandaya elanı (fərdi işçiyə ünvanlanmır). Mövzu seçilibsə, qrup görünən olmalıdır."""
     if body.category and body.category not in core.visible_categories():
         return JSONResponse({"detail": "qrup K həddindən azdır"}, status_code=409)

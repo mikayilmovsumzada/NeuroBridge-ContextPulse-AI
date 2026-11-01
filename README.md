@@ -32,7 +32,7 @@ Proqramçı toplantıdan və ya qısa fasilədən sonra harada qaldığını xat
 | Backend | Python, FastAPI, Uvicorn, Pydantic |
 | Verilənlər bazası | SQLite |
 | AI | Google Gemini (`google-genai`) |
-| Frontend | React 18 (CDN + Babel), Tailwind CSS (CDN), build addımı yoxdur |
+| Frontend | React 18 (CDN + Babel), Tailwind CSS (CDN), build addımı yoxdur; animasiyalı pulse vizuallaşdırması və yenilənmiş responsive interfeys |
 | Canlı axın | Server-Sent Events |
 | Test | pytest, httpx |
 | Deploy | Docker, GitLab CI/CD, GitLab Pages |
@@ -109,8 +109,10 @@ pip install -r requirements.txt
 ### Serveri başlat
 
 ```bash
-python -m uvicorn app.main:app --port 8000
+python -m uvicorn app.main:app --port 8000 --no-access-log
 ```
+
+Kod üzərində işləyərkən istəyə görə `--reload` əlavə edə bilərsiniz. `--no-access-log` standart HTTP access loglarını söndürür; tətbiqin `/api` və AI logları ayrıca qala bilər.
 
 Brauzerdə `http://localhost:8000` açın. İlk başlanğıcda sistem verilənlər bazasını yaradır və demo məlumatlarını (seed) yükləyir. Terminalda hər API sorğusu və AI mühərrikinin vəziyyəti yazılır.
 
@@ -121,7 +123,7 @@ Brauzerdə `http://localhost:8000` açın. İlk başlanğıcda sistem verilənl�
 | İşçi | `dev@company.com` | `emp123` |
 | Menecer | `manager@company.com` | `admin123` |
 
-Bunlar yalnız demo üçündür və giriş brauzer tərəflidir. Real autentifikasiya yol xəritəsindədir (aşağıya baxın).
+Bunlar yalnız demo üçündür. Giriş serverdə yoxlanılır (`/api/auth/login`); hesabları `.env`-də `DEMO_EMPLOYEE_*` və `DEMO_MANAGER_*` ilə dəyişmək olar. Backend olmadan işləyən oflayn demoda (GitLab Pages) yoxlama brauzerdə aparılır.
 
 ## Demo ssenarisi
 
@@ -179,10 +181,13 @@ docker run -p 8000:8000 --env-file .env contextpulse-ai
 | POST | `/api/events` | IDE metadata hadisəsi qəbulu (`202`) |
 | GET | `/api/snapshot/{developer_ref}` | İşçinin son hadisəsi |
 | POST | `/api/reminder` | AI xatırlatması (`lang`: `az` / `en`) |
-| POST | `/api/survey` | Anonim fasilə səbəbi cavabı |
+| POST | `/api/auth/login` | Giriş: `email`, `password`, `role` (`employee`/`manager`); səhv məlumat `401`, rol uyğunsuzluğu `403`; Bearer token qaytarır |
+| GET | `/api/auth/session` | Token üzrə sessiya vəziyyəti (`authenticated`, `role`) |
+| POST | `/api/auth/logout` | Sessiyanı bağlayır |
+| POST | `/api/survey` | Anonim fasilə səbəbi cavabı (menecer tokeni ilə `403`) |
 | GET | `/api/team/blockers` | K-anonim menecer məlumatı (tədbir qeydləri daxil) |
-| PUT | `/api/team/blockers/{category}/action` | Görünən tıxanma üzrə status, məsul və qeyd (gizli qrup üçün `409`) |
-| POST | `/api/team/messages` | Komandaya elan (`201`) |
+| PUT | `/api/team/blockers/{category}/action` | Görünən tıxanma üzrə status, məsul və qeyd (menecer tokeni tələb edir: tokensiz `401`, işçi tokeni `403`; gizli qrup üçün `409`) |
+| POST | `/api/team/messages` | Komandaya elan (`201`; menecer tokeni tələb edir) |
 | GET | `/api/announcements` | Son elanlar |
 | POST | `/api/demo/reset` | Demo məlumatını sıfırla |
 | GET | `/api/stream` | SSE canlı axını (`event`, `team`, `announcement`, `announcement_reset`) |
@@ -197,12 +202,12 @@ Swagger sənədləşməsi: `http://localhost:8000/docs`
 - K = 5-dən az cavabı olan qruplar gizlədilir, dəqiq sayı göstərilmir və onlar üzərində tədbir və ya elan mövzusu açmaq olmur.
 - AI-ya yalnız doğrulanmış metadata JSON-u göndərilir. `privacy` və `source` sahələri prompta daxil edilmir.
 
-## Məlum məhdudiyyətlər və yol xəritəsi
+## Cari demo davranışı
 
-- Giriş brauzer tərəflidir və API-lərin özü (menecer endpoint-ləri daxil) hələ qorunmur. Server tərəfdə autentifikasiya və rol yoxlaması növbəti addımdır.
-- IDE hadisələri hələlik simulyatordan gəlir. Növbəti addımlar: VS Code extension və GitHub PR inteqrasiyası.
+- Menecer endpoint-ləri (`PUT .../action`, `POST /api/team/messages`) serverdə menecer tokeni tələb edir. Sessiyalar proses yaddaşındadır (server yenidən başlayanda silinir). `/api/demo/reset`, `/api/events`, `/api/reminder` və `/api/survey` hələ də tokensiz işləyir (simulyator və IDE axını üçün).
+- IDE hadisələri bu demo versiyada `simulator.py` vasitəsilə yaradılır; IDE genişləndirməsi bu paketin əhatəsinə daxil deyil.
 - K-anonimlik zamana görə müşahidə hücumlarından tam qorumur.
-- Panellərə girişin yoxlanması brauzerdədir və paroller `static/app.js`-dədir; `PUT /api/team/...`, `POST /api/team/messages` kimi menecer endpoint-ləri serverdə hələ autentifikasiya olunmur. Bu versiyanı real şəxsi məlumatla açıq yerləşdirməyin.
+- Demo parolları sadədir və `static/app.js`-də yalnız oflayn rejim üçün saxlanılır. Bu versiyanı real şəxsi məlumatla açıq yerləşdirməyin.
 - SQLite demo üçündür. İstehsal üçün PostgreSQL və AI cavab keşinin bazada saxlanması planlaşdırılır.
 
 ## İlk prototip (Streamlit)

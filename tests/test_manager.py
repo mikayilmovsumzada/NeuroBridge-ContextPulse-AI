@@ -11,6 +11,15 @@ def setup_function(_):
     core.reset_demo()
 
 
+def _manager_client():
+    """Menecer kimi daxil olmuş test müştərisi (menecer endpoint-ləri Bearer token tələb edir)."""
+    c = TestClient(app)
+    r = c.post("/api/auth/login", json={"email": "manager@company.com", "password": "admin123", "role": "manager"})
+    assert r.status_code == 200
+    c.headers["Authorization"] = "Bearer " + r.json()["token"]
+    return c
+
+
 def _blocker(client, cat):
     for b in client.get("/api/team/blockers").json()["blockers"]:
         if b.get("category") == cat:
@@ -19,7 +28,7 @@ def _blocker(client, cat):
 
 
 def test_action_on_visible_group_is_saved_and_shown():
-    c = TestClient(app)
+    c = _manager_client()
     r = c.put("/api/team/blockers/CI_FLAKY/action", json={"status": "planned", "note": "Flaky testləri karantinə alırıq", "owner": "DevOps"})
     assert r.status_code == 200
     a = _blocker(c, "CI_FLAKY")["action"]
@@ -31,7 +40,7 @@ def test_action_on_visible_group_is_saved_and_shown():
 
 
 def test_action_on_hidden_group_is_rejected():
-    c = TestClient(app)
+    c = _manager_client()
     assert _blocker(c, "TOOLING") is None  # n=2 < K, gizlidir
     r = c.put("/api/team/blockers/TOOLING/action", json={"status": "investigating"})
     assert r.status_code == 409
@@ -41,7 +50,7 @@ def test_action_on_hidden_group_is_rejected():
 
 
 def test_action_validation():
-    c = TestClient(app)
+    c = _manager_client()
     assert c.put("/api/team/blockers/NOPE/action", json={"status": "planned"}).status_code == 404
     assert c.put("/api/team/blockers/CI_FLAKY/action", json={"status": "fired"}).status_code == 422
     assert c.put("/api/team/blockers/CI_FLAKY/action", json={"status": "planned", "developer_ref": "dev_a91f"}).status_code == 422
@@ -49,7 +58,7 @@ def test_action_validation():
 
 
 def test_team_message_flow():
-    c = TestClient(app)
+    c = _manager_client()
     r = c.post("/api/team/messages", json={"text": "  PR review üçün 24 saatlıq qayda  ", "category": "PR_REVIEW_WAIT"})
     assert r.status_code == 201 and r.json()["text"] == "PR review üçün 24 saatlıq qayda"
     assert c.get("/api/announcements").json()[0]["category"] == "PR_REVIEW_WAIT"
@@ -58,14 +67,14 @@ def test_team_message_flow():
 
 
 def test_team_message_validation():
-    c = TestClient(app)
+    c = _manager_client()
     assert c.post("/api/team/messages", json={"text": "   "}).status_code == 422
     assert c.post("/api/team/messages", json={"text": "x" * 281}).status_code == 422
     assert c.post("/api/team/messages", json={"text": "salam", "category": "TOOLING"}).status_code == 409  # gizli qrup
 
 
 def test_reset_clears_actions_and_messages():
-    c = TestClient(app)
+    c = _manager_client()
     c.put("/api/team/blockers/CI_FLAKY/action", json={"status": "planned"})
     c.post("/api/team/messages", json={"text": "salam"})
     c.post("/api/demo/reset")
@@ -74,7 +83,7 @@ def test_reset_clears_actions_and_messages():
 
 
 def test_changes_are_published_live():
-    c = TestClient(app)
+    c = _manager_client()
     q = asyncio.Queue()
     main.subscribers.add(q)
     try:
@@ -84,3 +93,12 @@ def test_changes_are_published_live():
         assert q.get_nowait().startswith("event: announcement")
     finally:
         main.subscribers.discard(q)
+
+
+def test_manager_endpoints_require_login():
+    c = TestClient(app)  # token yoxdur
+    assert c.put("/api/team/blockers/CI_FLAKY/action", json={"status": "planned"}).status_code == 401
+    assert c.post("/api/team/messages", json={"text": "salam"}).status_code == 401
+    bad = {"Authorization": "Bearer uydurma-token"}
+    assert c.put("/api/team/blockers/CI_FLAKY/action", json={"status": "planned"}, headers=bad).status_code == 401
+    assert _blocker(c, "CI_FLAKY")["action"] is None  # heç nə yazılmayıb
