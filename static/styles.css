@@ -229,7 +229,8 @@ html:not(.dark) .hero-eyebrow { color:#0369a1; border-color:rgba(2,132,199,.28);
 html:not(.dark) .hero-copy h1 { color:#0f172a!important; }
 html:not(.dark) .hero-description { color:#475569!important; }
 html:not(.dark) .hero-secondary { color:#334155!important; }
-html:not(.dark) .hero-secondary:hover { color:#0284c7!important; }
+html:not(.dark) .hero-secondary { background:rgba(255,255,255,.8); border-color:rgba(100,116,139,.35); }
+html:not(.dark) .hero-secondary:hover { color:#0284c7!important; background:#ffffff; border-color:rgba(2,132,199,.55); }
 html:not(.dark) .hero-trust-row { color:#475569; }
 html:not(.dark) .trust-check { color:#047857; background:rgba(16,185,129,.12); border-color:rgba(16,185,129,.3); }
 html:not(.dark) .signal-console { border-color:rgba(100,116,139,.25); background:linear-gradient(145deg,#ffffff,#f1f6fc); box-shadow:0 24px 60px rgba(15,23,42,.14),inset 0 1px rgba(255,255,255,.9); }
