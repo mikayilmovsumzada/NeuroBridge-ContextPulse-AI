@@ -30,7 +30,7 @@ from fastapi.responses import FileResponse, StreamingResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from . import auth, core
-from .ai_engine import fallback_text, generate_reminder
+from .ai_engine import active_providers, fallback_text, generate_reminder
 from .schemas import ActionIn, IdeEvent, LoginIn, MessageIn, ReminderIn, SurveyIn
 
 STATIC = Path(__file__).resolve().parent.parent / "static"
@@ -49,13 +49,12 @@ async def lifespan(app: FastAPI):
     log.info("Database hazırdır")
 
     # 2. AI mühərrikinin konfiqurasiyasını yoxla
-    import os
-
-    if os.getenv("GEMINI_API_KEY"):
-        log.info("AI engine: Gemini konfiqurasiya olunub")
+    providers = active_providers()
+    if providers:
+        log.info("AI engine: provayderlər (sıra ilə): %s", ", ".join(providers))
     else:
         log.warning(
-            "AI engine: GEMINI_API_KEY yoxdur; "
+            "AI engine: GEMINI_API_KEY və ANTHROPIC_API_KEY yoxdur; "
             "fallback cavablarından istifadə ediləcək"
         )
 
@@ -151,7 +150,7 @@ async def reminder(body: ReminderIn):
                "badge": "fallback (AI timeout)", "reason": "timeout"}
     log.info("[AI]     lang=%s source=%s validated=%s badge=%s%s", body.lang, res["source"], res["validated"], res["badge"],
              f" reason={res['reason']}" if res.get("reason") else "")
-    if res["source"] == "gemini":  # yalnız uğurlu AI cavabı keşlənir
+    if res["source"] != "fallback":  # yalnız uğurlu AI cavabı keşlənir
         _reminder_cache[key] = res
     return res
 

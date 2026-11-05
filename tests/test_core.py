@@ -2,6 +2,7 @@ import copy
 import os
 
 os.environ["DB_PATH"] = ":memory:"
+os.environ["ANTHROPIC_API_KEY"] = ""
 os.environ["GEMINI_API_KEY"] = ""  # testlər real Gemini-yə sorğu göndərməsin (.env üstündən yazmasın)
 
 from fastapi.testclient import TestClient  # noqa: E402

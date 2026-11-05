@@ -31,7 +31,7 @@ Proqramçı toplantıdan və ya qısa fasilədən sonra harada qaldığını xat
 |---|---|
 | Backend | Python, FastAPI, Uvicorn, Pydantic |
 | Verilənlər bazası | SQLite |
-| AI | Google Gemini (`google-genai`) |
+| AI | Google Gemini (`google-genai`), Anthropic Claude (`anthropic`) |
 | Frontend | React 18 (CDN + Babel), Tailwind CSS (CDN), build addımı yoxdur; animasiyalı pulse vizuallaşdırması və yenilənmiş responsive interfeys |
 | Canlı axın | Server-Sent Events |
 | Test | pytest, httpx |
@@ -44,7 +44,7 @@ Proqramçı toplantıdan və ya qısa fasilədən sonra harada qaldığını xat
 ├── app/
 │   ├── main.py            # API marşrutları, SSE axını, statik fayllar
 │   ├── core.py            # SQLite, seed data, K-anonim aqreqasiya, tədbir və elan saxlanması
-│   ├── ai_engine.py       # Gemini prompt, cavabın doğrulanması, fallback
+│   ├── ai_engine.py       # Gemini/Claude prompt, cavabın doğrulanması, fallback
 │   └── schemas.py         # Pydantic sxemləri (məxfilik yoxlaması daxil)
 ├── static/                # index.html, app.js, styles.css, favicon.*, fonts/ (lokal şriftlər)
 ├── tests/                 # pytest testləri (conftest.py testləri yaddaşdakı bazaya yönəldir)
@@ -101,10 +101,13 @@ pip install -r requirements.txt
 |---|---|---|---|
 | `GEMINI_API_KEY` | Xeyr | Gemini açarı. Yoxdursa hazır mətn (fallback) istifadə olunur | yoxdur |
 | `GEMINI_MODEL` | Xeyr | Gemini modeli. Vergüllə bir neçə ad yazmaq olar, biri uğursuz olarsa növbətisi sınanır | `gemini-3.5-flash,gemini-2.5-flash` |
+| `ANTHROPIC_API_KEY` | Xeyr | Claude açarı. Gemini ilə yanaşı və ya onun yerinə istifadə oluna bilər | yoxdur |
+| `CLAUDE_MODEL` | Xeyr | Claude modeli. Vergüllə bir neçə ad yazmaq olar, biri uğursuz olarsa növbətisi sınanır | `claude-opus-5-5,claude-sonnet-5-5,claude-haiku-5-5` |
+| `AI_PROVIDERS` | Xeyr | Provayderlərin sınanma sırası. Yalnız açarı olanlar istifadə olunur; biri tam uğursuz olarsa növbətisinə keçilir | `gemini,claude` |
 | `DB_PATH` | Xeyr | SQLite faylının yolu | `contextpulse.db` |
 | `PORT` | Xeyr | Yalnız Docker-də: server portu | `8000` |
 
-> **Diqqət:** `.env` faylını heç vaxt Git-ə əlavə etməyin və paylaşmayın. `.gitignore` onu istisna edir. Açarı səhvən paylaşmısınızsa, Google AI Studio-da yenisini yaradın. Mövcud model adlarını `python list_models.py` ilə yoxlaya bilərsiniz.
+> **Diqqət:** `.env` faylını heç vaxt Git-ə əlavə etməyin və paylaşmayın. `.gitignore` onu istisna edir. Açarı səhvən paylaşmısınızsa, Google AI Studio-da (Gemini) və ya Claude Console-da (Anthropic) yenisini yaradın. Mövcud model adlarını `python list_models.py` ilə yoxlaya bilərsiniz.
 
 ### Serveri başlat
 
@@ -153,7 +156,7 @@ Başqa ünvan üçün `--url http://host:port` əlavə edin. Mümkün kateqoriya
 python -m pytest -q
 ```
 
-Testlər K-anonimlik məntiqini, məxfilik yoxlamasını (`422` cavabları), AI cavabının doğrulanmasını, ehtiyat modelə keçidi, iki dildə xatırlatmanı, menecer tədbirləri və elanları yoxlayır. Testlər yaddaşdakı verilənlər bazası ilə işləyir və `GEMINI_API_KEY` tələb etmir.
+Testlər K-anonimlik məntiqini, məxfilik yoxlamasını (`422` cavabları), AI cavabının doğrulanmasını, ehtiyat modelə keçidi, iki dildə xatırlatmanı, menecer tədbirləri və elanları yoxlayır. Testlər yaddaşdakı verilənlər bazası ilə işləyir və `GEMINI_API_KEY` / `ANTHROPIC_API_KEY` tələb etmir.
 
 ## Docker ilə işə salma
 

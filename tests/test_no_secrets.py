@@ -3,14 +3,14 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-KEY_LIKE = re.compile(r"(AIza|AQ\.)[A-Za-z0-9_\-]{20,}")
+KEY_LIKE = re.compile(r"(AIza|AQ\.|sk-ant-)[A-Za-z0-9_\-]{20,}")
 SCANNED = {".py", ".md", ".js", ".html", ".yml", ".txt", ".json", ".example", ".toml", ".css"}
 
 
 def test_env_example_has_empty_key():
     """.env.example Git-də izlənir, ona görə açar sahəsi boş olmalıdır. Real açar yalnız .env-də olmalıdır."""
     for line in (ROOT / ".env.example").read_text(encoding="utf-8").splitlines():
-        if line.startswith("GEMINI_API_KEY="):
+        if line.startswith(("GEMINI_API_KEY=", "ANTHROPIC_API_KEY=")):
             assert line.split("=", 1)[1].strip() == "", ".env.example faylında açar var! Onu silin, açarı yalnız .env-də saxlayın."
 
 

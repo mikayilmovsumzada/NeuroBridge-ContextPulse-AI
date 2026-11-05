@@ -58,3 +58,66 @@ def test_uses_default_models_when_env_not_set(monkeypatch):
     res = ai_engine.generate_reminder(BASE_EVENT, "az")
     assert calls[0] == first and len(calls) >= 2
     assert res["source"] == "gemini" and res["model"] != first
+
+
+def _fake_anthropic(monkeypatch, fail_models, refuse_models=()):
+    import anthropic
+    calls = []
+
+    class FakeMessages:
+        def create(self, model, **kw):
+            calls.append(model)
+            if model in fail_models:
+                raise RuntimeError("529 overloaded")
+            if model in refuse_models:
+                return _t.SimpleNamespace(stop_reason="refusal", content=[])
+            return _t.SimpleNamespace(stop_reason="end_turn", content=[
+                _t.SimpleNamespace(type="thinking", thinking=""),
+                _t.SimpleNamespace(type="text", text=GOOD),
+            ])
+
+    class FakeClient:
+        def __init__(self, **kw):
+            self.messages = FakeMessages()
+
+    monkeypatch.setattr(anthropic, "Anthropic", FakeClient)
+    return calls
+
+
+def test_claude_only(monkeypatch):
+    monkeypatch.setenv("GEMINI_API_KEY", "")
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "x")
+    monkeypatch.setenv("CLAUDE_MODEL", "claude-a,claude-b")
+    calls = _fake_anthropic(monkeypatch, {"claude-a"})
+    res = ai_engine.generate_reminder(BASE_EVENT, "az")
+    assert calls == ["claude-a", "claude-b"]
+    assert res["source"] == "claude" and res["code"] == "claude" and res["model"] == "claude-b"
+
+
+def test_claude_refusal_tries_next_model(monkeypatch):
+    monkeypatch.setenv("GEMINI_API_KEY", "")
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "x")
+    monkeypatch.setenv("CLAUDE_MODEL", "claude-a,claude-b")
+    calls = _fake_anthropic(monkeypatch, set(), refuse_models={"claude-a"})
+    res = ai_engine.generate_reminder(BASE_EVENT, "az")
+    assert calls == ["claude-a", "claude-b"] and res["model"] == "claude-b"
+
+
+def test_gemini_down_falls_back_to_claude(monkeypatch):
+    monkeypatch.setenv("GEMINI_API_KEY", "x")
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "x")
+    monkeypatch.delenv("AI_PROVIDERS", raising=False)
+    _fake_genai(monkeypatch, set(ai_engine.DEFAULT_MODELS.split(",")))
+    _fake_anthropic(monkeypatch, set())
+    res = ai_engine.generate_reminder(BASE_EVENT, "az")
+    assert res["source"] == "claude" and res["validated"]
+
+
+def test_ai_providers_order(monkeypatch):
+    monkeypatch.setenv("GEMINI_API_KEY", "x")
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "x")
+    monkeypatch.setenv("AI_PROVIDERS", "claude,gemini")
+    gemini_calls = _fake_genai(monkeypatch, set())
+    _fake_anthropic(monkeypatch, set())
+    res = ai_engine.generate_reminder(BASE_EVENT, "az")
+    assert res["source"] == "claude" and gemini_calls == []

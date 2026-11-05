@@ -69,12 +69,12 @@ def main():
     if a.cmd == "reset":
         print("reset:", post(a.url, "/api/demo/reset"))
     elif a.cmd == "warm":
-        # Demodan əvvəl: AZ və EN Gemini cavablarını yaddaşa yazır (əvvəlcə reset edin!)
+        # Demodan əvvəl: AZ və EN AI (Gemini/Claude) cavablarını yaddaşa yazır (əvvəlcə reset edin!)
         for lang in ("az", "en"):
             try:
                 r = post_json(a.url, "/api/reminder", {"developer_ref": "dev_a91f", "lang": lang})
-                ok = r.get("source") == "gemini"
-                print(lang, "->", r.get("source"), "| model:", r.get("model", "-"), "| OK, keşləndi" if ok else "| Gemini cavab vermədi, bir az sonra təkrar edin")
+                ok = r.get("source") not in (None, "fallback")
+                print(lang, "->", r.get("source"), "| model:", r.get("model", "-"), "| OK, keşləndi" if ok else "| AI cavab vermədi, bir az sonra təkrar edin")
             except Exception as e:
                 print(lang, "-> xəta:", e)
     elif a.cmd == "answer":

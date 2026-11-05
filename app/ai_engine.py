@@ -1,4 +1,4 @@
-"""AI Copilot: prompt, Gemini çağırışı, cavabın proqramla doğrulanması, fallback."""
+"""AI Copilot: prompt, Gemini / Claude çağırışı, cavabın proqramla doğrulanması, fallback."""
 
 import json
 import logging
@@ -32,6 +32,10 @@ SON MƏNALI HƏRƏKƏT (JSON):
 """
 
 DEFAULT_MODELS = "gemini-3.6-flash,gemini-3.5-flash-lite,gemini-2.5-flash,gemini-2.5-flash-lite"
+CLAUDE_DEFAULT_MODELS = "claude-opus-5-5,claude-sonnet-5-5,claude-haiku-5-5"
+# AI_PROVIDERS sırası ilə sınanır; yalnız açarı olan provayderlər istifadə olunur.
+DEFAULT_PROVIDERS = "gemini,claude"
+PROVIDER_KEYS = {"gemini": "GEMINI_API_KEY", "claude": "ANTHROPIC_API_KEY"}
 LANGS = {
     "az": ("Azərbaycan", "Ən yaxın addım:"),
     "en": ("İngilis (English)", "Nearest next step:"),
@@ -147,38 +151,23 @@ def validate(text: str, ev: dict):
   return True, ""
 
 
-def _call_gemini(prompt: str):
-  """GEMINI_MODEL vergüllə ayrılmış siyahıdır; biri uğursuz olarsa (503, kvota, səhv ad) növbətisi sınanır.
+def _model_list(env_name: str, default: str) -> list:
+  """Env-dəki vergüllə ayrılmış siyahı + ehtiyat olaraq standart modellər (təkrarsız)."""
+  env_models = [m.strip() for m in os.getenv(env_name, default).split(",") if m.strip()]
+  fallback_models = [m.strip() for m in default.split(",") if m.strip()]
+  return list(dict.fromkeys(env_models + fallback_models))
+
+
+def _run_chain(models: list, call_one):
+  """Modelləri növbə ilə sınayır; biri uğursuz olarsa (503, kvota, səhv ad, imtina) növbətisi sınanır.
 
   (mətn, işlədilən_model) qaytarır.
   """
-  from google import genai
-  from google.genai import types
-
-  client = genai.Client(
-      api_key=os.environ["GEMINI_API_KEY"],
-      http_options=types.HttpOptions(timeout=12000),
-  )
-  env_models = [
-      m.strip()
-      for m in os.getenv("GEMINI_MODEL", DEFAULT_MODELS).split(",")
-      if m.strip()
-  ]
-  fallback_models = [m.strip() for m in DEFAULT_MODELS.split(",") if m.strip()]
-  models = list(dict.fromkeys(env_models + fallback_models))
-
   last = None
   for m in models:
     t0 = time.perf_counter()
     try:
-      resp = client.models.generate_content(
-          model=m,
-          contents=prompt,
-          config=types.GenerateContentConfig(
-              temperature=0.2, max_output_tokens=1024
-          ),
-      )
-      text = (resp.text or "").strip()
+      text = (call_one(m) or "").strip()
       if text:
         log.info(
             "[AI]     model=%s cavab verdi (%.0f ms)",
@@ -195,6 +184,61 @@ def _call_gemini(prompt: str):
   raise last or RuntimeError("bütün modellər uğursuz oldu")
 
 
+def _call_gemini(prompt: str):
+  """GEMINI_MODEL vergüllə ayrılmış siyahıdır. (mətn, işlədilən_model) qaytarır."""
+  from google import genai
+  from google.genai import types
+
+  client = genai.Client(
+      api_key=os.environ["GEMINI_API_KEY"],
+      http_options=types.HttpOptions(timeout=12000),
+  )
+
+  def call_one(m):
+    resp = client.models.generate_content(
+        model=m,
+        contents=prompt,
+        config=types.GenerateContentConfig(
+            temperature=0.2, max_output_tokens=1024
+        ),
+    )
+    return resp.text
+
+  return _run_chain(_model_list("GEMINI_MODEL", DEFAULT_MODELS), call_one)
+
+
+def _call_claude(prompt: str):
+  """CLAUDE_MODEL vergüllə ayrılmış siyahıdır. (mətn, işlədilən_model) qaytarır."""
+  import anthropic
+
+  # Təkrar cəhdləri model zənciri idarə edir, ona görə SDK-nın öz retry-ı söndürülür.
+  client = anthropic.Anthropic(
+      api_key=os.environ["ANTHROPIC_API_KEY"], timeout=12.0, max_retries=0
+  )
+
+  def call_one(m):
+    resp = client.messages.create(
+        model=m,
+        max_tokens=2048,
+        output_config={"effort": "low"},  # qısa xatırlatma: dərin düşünmə lazım deyil
+        messages=[{"role": "user", "content": prompt}],
+    )
+    if resp.stop_reason == "refusal":
+      raise RuntimeError("model sorğudan imtina etdi")
+    return "".join(b.text for b in resp.content if b.type == "text")
+
+  return _run_chain(_model_list("CLAUDE_MODEL", CLAUDE_DEFAULT_MODELS), call_one)
+
+
+CALLERS = {"gemini": _call_gemini, "claude": _call_claude}
+
+
+def active_providers() -> list:
+  """AI_PROVIDERS sırası ilə, açarı təyin olunmuş provayderlər."""
+  names = [p.strip().lower() for p in os.getenv("AI_PROVIDERS", DEFAULT_PROVIDERS).split(",")]
+  return [p for p in dict.fromkeys(names) if p in CALLERS and os.getenv(PROVIDER_KEYS[p])]
+
+
 def generate_reminder(ev: dict, lang: str = "az") -> dict:
   out = {
       "text": fallback_text(ev, lang),
@@ -204,18 +248,25 @@ def generate_reminder(ev: dict, lang: str = "az") -> dict:
       "badge": "fallback (no API key)",
       "reason": "",
   }
-  if not os.getenv("GEMINI_API_KEY"):
+  providers = active_providers()
+  if not providers:
     return out
-  try:
-    text, model = _call_gemini(build_prompt(ev, lang))
+  prompt = build_prompt(ev, lang)
+  err = None
+  for provider in providers:  # biri tam uğursuz olarsa növbəti provayder sınanır
+    try:
+      text, model = CALLERS[provider](prompt)
+    except Exception as e:  # şəbəkə, kvota, model adı və s.
+      err = e
+      continue
     ok, why = validate(text, ev)
     if ok:
       return {
           "text": text,
-          "source": "gemini",
-          "code": "gemini",
+          "source": provider,
+          "code": provider,
           "validated": True,
-          "badge": "gemini verified",
+          "badge": f"{provider} verified",
           "reason": "",
           "model": model,
       }
@@ -225,8 +276,8 @@ def generate_reminder(ev: dict, lang: str = "az") -> dict:
         reason=why,
         model=model,
     )
-  except Exception as e:  # şəbəkə, kvota, model adı və s.
-    out.update(
-        code="error", badge="fallback (AI unavailable)", reason=type(e).__name__
-    )
+    return out
+  out.update(
+      code="error", badge="fallback (AI unavailable)", reason=type(err).__name__
+  )
   return out
