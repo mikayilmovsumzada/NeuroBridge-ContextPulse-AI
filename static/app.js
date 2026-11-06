@@ -207,7 +207,7 @@ const LEGAL = {
                 { h: 'AI processing', p: ['If a Gemini or Anthropic API key is configured, the server sends the latest IDE event for the developer, without its privacy and source fields, to the Google Gemini API or the Anthropic Claude API to write the reminder. This includes the developer reference, repository and branch, file path, function name, error code, test name and pull request title. The reply is checked against the input and replaced with template text if it does not match. Without a key, or if the call fails, template text is used and nothing is sent. Google and Anthropic handle this data under their own terms: [[CONFIRM plan and data-use settings]].'] },
                 { h: 'Who can see what', ul: ['Managers see team-level groups only when at least 5 responses fall into a group (K = 5), plus the notes and announcements managers write.', 'Employees see their own latest IDE event, team announcements and the status of visible blockers.'],
                   p: ['K-anonymity here limits what the dashboard shows. It is not complete anonymisation: the database stores the developer reference next to each break response, so anyone with database or server access can link them, and changes in counts over time can reveal information.'] },
-                { h: 'Security and current limitations', ul: ['The demo sign-in is checked in the browser only; no account data is stored on the server.', 'Role separation is currently enforced in the user interface. The API endpoints are not yet authenticated on the server, so this version should not be exposed publicly with real personal data.', 'Secrets such as the Gemini and Anthropic API keys are read from server environment variables and are not sent to the browser.'] },
+                { h: 'Security and current limitations', ul: ['Sign-in is checked on the server with demo accounts; sessions are kept in server memory only, and in the offline demo the check runs in the browser.', 'Manager actions require a manager session, a developer can read and submit only their own data, and IDE events are accepted only with a server-side ingest key. The demo accounts and in-memory sessions are not suitable for real personal data, so this version should not be exposed publicly with it.', 'Secrets such as the Gemini and Anthropic API keys are read from server environment variables and are not sent to the browser.'] },
                 { h: 'Storage and retention', p: ['Data is stored in an SQLite file on the server (default contextpulse.db; in the provided Docker image under /tmp, which is cleared when the container restarts). No automated retention or deletion schedule is implemented. A demo reset endpoint deletes events, responses, actions and announcements. Retention period: [[PERIOD]].'] },
                 { h: 'Third parties and transfers', ul: ['Google (Gemini API), only if configured.', 'Anthropic (Claude API), only if configured.', 'Your browser loads scripts from cdn.tailwindcss.com and unpkg.com; their operators receive your IP address and request metadata. Fonts are served from this site.', 'Hosting provider: [[NAME AND LOCATION]].'], p: ['International transfers depend on the hosting location and the Google and Anthropic services: [[CONFIRM]].'] },
                 { h: 'Your rights', p: ['Depending on the law that applies to you, you may have rights to access, correct, delete, restrict or object to processing of your data, to data portability, to withdraw consent, and to complain to a supervisory authority. There is no self-service export or deletion tool in this version. Send requests to [[EMAIL]]; process and response time: [[PROCESS]].'] },
@@ -258,7 +258,7 @@ const LEGAL = {
                 { h: 'AI ilə emal', p: ['Gemini və ya Anthropic API açarı təyin olunubsa, server developerin son IDE hadisəsini (privacy və source sahələri çıxarılmaqla) xatırlatmanı yazdırmaq üçün Google Gemini API-yə və ya Anthropic Claude API-yə göndərir. Buraya developer istinadı, repozitoriya və branch, fayl yolu, funksiya adı, xəta kodu, test adı və Pull Request başlığı daxildir. Cavab giriş məlumatına qarşı yoxlanılır və uyğun gəlmirsə hazır mətnlə əvəz olunur. Açar yoxdursa və ya çağırış uğursuz olarsa, hazır mətn istifadə olunur və heç nə göndərilmir. Google və Anthropic bu məlumatı öz şərtlərinə əsasən emal edir: [[PLAN VƏ MƏLUMAT İSTİFADƏSİ AYARLARINI YOXLAYIN]].'] },
                 { h: 'Kim nəyi görür', ul: ['Menecerlər komanda səviyyəsində qrupları yalnız qrupda ən azı 5 cavab olduqda görür (K = 5), həmçinin menecerlərin yazdığı qeyd və elanları.', 'İşçilər öz son IDE hadisəsini, komanda elanlarını və görünən tıxanmaların statusunu görür.'],
                   p: ['Buradakı K-anonimlik panelin göstərdiyini məhdudlaşdırır. Bu, tam anonimləşdirmə deyil: verilənlər bazası hər fasilə cavabının yanında developer istinadını saxlayır, ona görə baza və ya serverə çıxışı olan şəxs onları əlaqələndirə bilər və saylarda zamanla dəyişmələr məlumat aça bilər.'] },
-                { h: 'Təhlükəsizlik və hazırkı məhdudiyyətlər', ul: ['Demo giriş yalnız brauzerdə yoxlanılır; serverdə hesab məlumatı saxlanılmır.', 'Rol ayrılığı hazırda istifadəçi interfeysində təmin olunur. API endpoint-ləri serverdə hələ autentifikasiya olunmur, ona görə bu versiyanı real şəxsi məlumatla açıq şəkildə yerləşdirmək olmaz.', 'Gemini və Anthropic API açarları kimi sirlər server mühit dəyişənlərindən oxunur və brauzerə göndərilmir.'] },
+                { h: 'Təhlükəsizlik və hazırkı məhdudiyyətlər', ul: ['Giriş demo hesablarla serverdə yoxlanılır; sessiyalar yalnız server yaddaşında saxlanılır, oflayn demoda isə yoxlama brauzerdə aparılır.', 'Menecer əməliyyatları menecer sessiyası tələb edir, developer yalnız öz məlumatını görə və göndərə bilər, IDE hadisələri isə yalnız serverdəki IDE açarı ilə qəbul olunur. Demo hesablar və yaddaşdakı sessiyalar real şəxsi məlumat üçün uyğun deyil, ona görə bu versiyanı real məlumatla açıq şəkildə yerləşdirmək olmaz.', 'Gemini və Anthropic API açarları kimi sirlər server mühit dəyişənlərindən oxunur və brauzerə göndərilmir.'] },
                 { h: 'Saxlama və müddət', p: ['Məlumat serverdəki SQLite faylında saxlanılır (standart contextpulse.db; verilmiş Docker image-də /tmp qovluğunda, konteyner yenidən başlayanda təmizlənir). Avtomatik saxlama müddəti və ya silmə cədvəli tətbiq olunmayıb. Demo sıfırlama endpoint-i hadisələri, cavabları, tədbirləri və elanları silir. Saxlama müddəti: [[MÜDDƏT]].'] },
                 { h: 'Üçüncü tərəflər və ötürmələr', ul: ['Google (Gemini API), yalnız təyin olunubsa.', 'Anthropic (Claude API), yalnız təyin olunubsa.', 'Brauzeriniz cdn.tailwindcss.com və unpkg.com saytlarından skript yükləyir; onların operatorları IP ünvanınızı və sorğu metadatasını alır. Şriftlər bu saytdan verilir.', 'Hosting təminatçısı: [[AD VƏ YER]].'], p: ['Beynəlxalq ötürmələr hosting yerindən, Google və Anthropic xidmətlərindən asılıdır: [[YOXLAYIN]].'] },
                 { h: 'Hüquqlarınız', p: ['Sizə şamil olunan qanunvericiliyə görə məlumatınıza çıxış, düzəliş, silmə, emalın məhdudlaşdırılması və ya ona etiraz, məlumatın daşınması, razılığı geri götürmə və nəzarət orqanına şikayət hüquqlarınız ola bilər. Bu versiyada özünəxidmət ixrac və ya silmə aləti yoxdur. Sorğuları [[E-POÇT]] ünvanına göndərin; proses və cavab müddəti: [[PROSES]].'] },
@@ -449,6 +449,7 @@ function App() {
 
     // Backend vəziyyəti
     const [ideEvent, setIdeEvent] = useState(null);
+    const [streamToken, setStreamToken] = useState(null);
     const [team, setTeam] = useState(null);
     const [live, setLive] = useState(false);
     const [offline, setOffline] = useState(false);
@@ -503,7 +504,6 @@ function App() {
     };
 
     useEffect(() => {
-        let es = null;
         api('/api/bootstrap')
             .then((d) => { setIdeEvent(d.event); teamRef.current = d.team; setTeam(d.team); setAnnouncements(d.announcements || []); })
             .catch(() => {
@@ -513,8 +513,13 @@ function App() {
                 teamRef.current = tm;
                 setTeam(tm);
             });
+    }, []);
+
+    // Canlı axın: tokensiz yalnız komanda məlumatı gəlir; işçinin öz IDE hadisələri üçün token ?token= ilə ötürülür
+    useEffect(() => {
+        let es = null;
         if (window.EventSource) {
-            es = new EventSource('/api/stream');
+            es = new EventSource('/api/stream' + (streamToken ? '?token=' + encodeURIComponent(streamToken) : ''));
             es.onopen = () => setLive(true);
             es.onerror = () => setLive(false);
             es.addEventListener('team', (m) => applyTeam(JSON.parse(m.data)));
@@ -526,7 +531,7 @@ function App() {
             });
         }
         return () => { if (es) es.close(); };
-    }, []);
+    }, [streamToken]);
 
     // ---- Menecer əməliyyatları: tədbir qeydi və komandaya elan ----
     const saveAction = (category, data) => {
@@ -616,18 +621,24 @@ function App() {
             return;
         }
         postJson('/api/auth/login', { email: mail, password: pass, role: loginRole })
-            .then((d) => { authToken = d.token; finish(d.role); })
+            .then((d) => {
+                authToken = d.token; setStreamToken(d.token); finish(d.role);
+                // IDE hadisəsi yalnız daxil olmuş işçiyə qaytarılır
+                if (d.role === 'employee') api('/api/bootstrap').then((b) => setIdeEvent(b.event)).catch(() => { /* server əlçatmazdır */ });
+            })
             .catch(() => setLoginError(true));
     };
     const handleLogout = () => {
         const tk = authToken; authToken = null;
         if (tk) fetch('/api/auth/logout', { method: 'POST', headers: { Authorization: 'Bearer ' + tk } }).catch(() => { /* server əlçatmazdır */ });
+        setStreamToken(null);
+        if (!offline) setIdeEvent(null);
         setUserRole(null); setIsIdleModalOpen(false); goRoute('home'); showToast(t('logoutToast'));
     };
     useEffect(() => {
         // Server sessiyanı bitirəndə (məs. yenidən başladılıb) istifadəçi çıxışa yönləndirilir
         const onExpired = () => {
-            authToken = null; setUserRole(null); setIsIdleModalOpen(false); goRoute('home');
+            authToken = null; setStreamToken(null); setIdeEvent(null); setUserRole(null); setIsIdleModalOpen(false); goRoute('home');
             showToast(translate(langRef.current, 'sessionExpired'));
         };
         window.addEventListener('cp-auth-expired', onExpired);

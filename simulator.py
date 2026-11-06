@@ -13,6 +13,25 @@ import time
 import urllib.request
 import uuid
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
+
+
+def _env(name):
+    """Dəyişəni əvvəlcə mühitdən, yoxdursa serverin oxuduğu .env faylından götürür."""
+    import os
+    if os.environ.get(name):
+        return os.environ[name]
+    f = Path(__file__).resolve().parent / ".env"
+    if f.exists():
+        for line in f.read_text(encoding="utf-8-sig").splitlines():
+            k, _, v = line.strip().partition("=")
+            if k.strip() == name:
+                return v.strip().strip('"').strip("'")
+    return ""
+
+
+# Server IDE/simulyator sorğularını yalnız bu açarla qəbul edir (.env-dəki INGEST_KEY)
+HEADERS = {"Content-Type": "application/json", "X-Ingest-Key": _env("INGEST_KEY")}
 
 BASE = {
     "schema": "contextpulse.ide_event.v1", "event_id": "", "source": {"client": "vscode-extension", "version": "0.4.2"},
@@ -30,8 +49,7 @@ CODES = ["TS2345", "TS2322", "TS2339"]
 
 
 def post(url, path, body=None):
-    req = urllib.request.Request(url + path, data=json.dumps(body or {}).encode(), method="POST",
-                                 headers={"Content-Type": "application/json"})
+    req = urllib.request.Request(url + path, data=json.dumps(body or {}).encode(), method="POST", headers=HEADERS)
     try:
         with urllib.request.urlopen(req, timeout=15) as r:
             return r.status
@@ -40,8 +58,7 @@ def post(url, path, body=None):
 
 
 def post_json(url, path, body):
-    req = urllib.request.Request(url + path, data=json.dumps(body).encode(), method="POST",
-                                 headers={"Content-Type": "application/json"})
+    req = urllib.request.Request(url + path, data=json.dumps(body).encode(), method="POST", headers=HEADERS)
     with urllib.request.urlopen(req, timeout=60) as r:
         return json.loads(r.read().decode())
 
@@ -66,6 +83,8 @@ def main():
     p.add_argument("--url", default="http://localhost:8000")
     p.add_argument("--interval", type=float, default=5)
     a = p.parse_args()
+    if not HEADERS["X-Ingest-Key"]:
+        print("Xəbərdarlıq: INGEST_KEY tapılmadı (.env). Server sorğuları 401 ilə rədd edəcək.")
     if a.cmd == "reset":
         print("reset:", post(a.url, "/api/demo/reset"))
     elif a.cmd == "warm":

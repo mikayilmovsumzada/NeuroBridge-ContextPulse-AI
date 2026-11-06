@@ -104,6 +104,8 @@ pip install -r requirements.txt
 | `ANTHROPIC_API_KEY` | Xeyr | Claude açarı. Gemini ilə yanaşı və ya onun yerinə istifadə oluna bilər | yoxdur |
 | `CLAUDE_MODEL` | Xeyr | Claude modeli. Vergüllə bir neçə ad yazmaq olar, biri uğursuz olarsa növbətisi sınanır | `claude-opus-5-5,claude-sonnet-5-5,claude-haiku-5-5` |
 | `AI_PROVIDERS` | Xeyr | Provayderlərin sınanma sırası. Yalnız açarı olanlar istifadə olunur; biri tam uğursuz olarsa növbətisinə keçilir | `gemini,claude` |
+| `INGEST_KEY` | Bəli (IDE/simulyator üçün) | IDE genişləndirməsi və `simulator.py` bu açarla (`X-Ingest-Key` başlığı) hadisə və sorğu göndərir. Yoxdursa `/api/events` rədd edilir | yoxdur |
+| `DEMO_EMPLOYEE_REF` | Xeyr | Demo işçi hesabının IDE hadisələrindəki `developer_ref`-i | `dev_a91f` |
 | `DB_PATH` | Xeyr | SQLite faylının yolu | `contextpulse.db` |
 | `PORT` | Xeyr | Yalnız Docker-də: server portu | `8000` |
 
@@ -139,13 +141,13 @@ Bunlar yalnız demo üçündür. Giriş serverdə yoxlanılır (`/api/auth/login
 
 ## IDE simulyatoru
 
-Backend işləyərkən ikinci terminalda (eyni virtual mühitdə):
+Backend işləyərkən ikinci terminalda (eyni virtual mühitdə). Simulyator `INGEST_KEY`-i `.env`-dən oxuyur, ona görə əvvəlcə orada açar təyin edin:
 
 ```bash
 python simulator.py events --interval 5      # IDE hadisə axını, işçi paneli canlı yenilənir
 python simulator.py answer MEETING_LOAD      # menecer panelinə 1 anonim cavab
 python simulator.py reset                    # demo məlumatını sıfırlayır (tədbir və elanlar da silinir)
-python simulator.py warm                     # AZ və EN Gemini cavablarını əvvəlcədən hazırlayır
+python simulator.py warm                     # AZ və EN AI cavablarını əvvəlcədən hazırlayır
 ```
 
 Başqa ünvan üçün `--url http://host:port` əlavə edin. Mümkün kateqoriyalar: `PR_REVIEW_WAIT`, `CI_FLAKY`, `MEETING_LOAD`, `UNCLEAR_REQUIREMENTS`, `TOOLING`.
@@ -180,20 +182,20 @@ docker run -p 8000:8000 --env-file .env contextpulse-ai
 | Metod | Yol | Təsvir |
 |---|---|---|
 | GET | `/api/health` | Server vəziyyəti |
-| GET | `/api/bootstrap` | İşçinin son hadisəsi, komanda məlumatı və son elanlar |
-| POST | `/api/events` | IDE metadata hadisəsi qəbulu (`202`) |
-| GET | `/api/snapshot/{developer_ref}` | İşçinin son hadisəsi |
-| POST | `/api/reminder` | AI xatırlatması (`lang`: `az` / `en`) |
+| GET | `/api/bootstrap` | Komanda məlumatı və son elanlar; işçi tokeni ilə həm də işçinin öz son hadisəsi |
+| POST | `/api/events` | IDE metadata hadisəsi qəbulu (`202`; `X-Ingest-Key` tələb edir, əks halda `401`) |
+| GET | `/api/snapshot/{developer_ref}` | İşçinin son hadisəsi (yalnız həmin işçinin tokeni və ya `X-Ingest-Key` ilə) |
+| POST | `/api/reminder` | AI xatırlatması (`lang`: `az` / `en`; işçi tokeni ilə öz hadisəsi üçün, və ya `X-Ingest-Key`) |
 | POST | `/api/auth/login` | Giriş: `email`, `password`, `role` (`employee`/`manager`); səhv məlumat `401`, rol uyğunsuzluğu `403`; Bearer token qaytarır |
 | GET | `/api/auth/session` | Token üzrə sessiya vəziyyəti (`authenticated`, `role`) |
 | POST | `/api/auth/logout` | Sessiyanı bağlayır |
-| POST | `/api/survey` | Anonim fasilə səbəbi cavabı (menecer tokeni ilə `403`) |
+| POST | `/api/survey` | Anonim fasilə səbəbi cavabı (işçi tokeni və ya `X-Ingest-Key`; hər developerin yalnız son cavabı sayılır; menecer tokeni ilə `403`) |
 | GET | `/api/team/blockers` | K-anonim menecer məlumatı (tədbir qeydləri daxil) |
 | PUT | `/api/team/blockers/{category}/action` | Görünən tıxanma üzrə status, məsul və qeyd (menecer tokeni tələb edir: tokensiz `401`, işçi tokeni `403`; gizli qrup üçün `409`) |
 | POST | `/api/team/messages` | Komandaya elan (`201`; menecer tokeni tələb edir) |
 | GET | `/api/announcements` | Son elanlar |
-| POST | `/api/demo/reset` | Demo məlumatını sıfırla |
-| GET | `/api/stream` | SSE canlı axını (`event`, `team`, `announcement`, `announcement_reset`) |
+| POST | `/api/demo/reset` | Demo məlumatını sıfırla (menecer tokeni və ya `X-Ingest-Key`) |
+| GET | `/api/stream` | SSE canlı axını (`team`, `announcement`, `announcement_reset`; `?token=` işçi tokeni ilə həm də işçinin öz `event`-ləri) |
 
 Swagger sənədləşməsi: `http://localhost:8000/docs`
 
@@ -202,12 +204,12 @@ Swagger sənədləşməsi: `http://localhost:8000/docs`
 - Yalnız IDE və PR metadatası toplanır. Hadisədəki `privacy` sahələrinin hamısı `false` olmalıdır, əks halda sorğu rədd edilir.
 - Sxemdə olmayan sahələr (məsələn kod məzmunu) qəbul edilmir.
 - Menecer məlumatında fərdi identifikator yoxdur. Menecerin yazdığı qeyd və elanlar komanda səviyyəsindədir və fərdi işçiyə bağlanmır.
-- K = 5-dən az cavabı olan qruplar gizlədilir, dəqiq sayı göstərilmir və onlar üzərində tədbir və ya elan mövzusu açmaq olmur.
+- K = 5-dən az cavabı olan qruplar gizlədilir, dəqiq sayı göstərilmir və onlar üzərində tədbir və ya elan mövzusu açmaq olmur. Hər developerin yalnız bir (son) cavabı sayılır, təkrar cavabla həddi aşmaq olmur.
 - AI-ya yalnız doğrulanmış metadata JSON-u göndərilir. `privacy` və `source` sahələri prompta daxil edilmir.
 
 ## Cari demo davranışı
 
-- Menecer endpoint-ləri (`PUT .../action`, `POST /api/team/messages`) serverdə menecer tokeni tələb edir. Sessiyalar proses yaddaşındadır (server yenidən başlayanda silinir). `/api/demo/reset`, `/api/events`, `/api/reminder` və `/api/survey` hələ də tokensiz işləyir (simulyator və IDE axını üçün).
+- Menecer endpoint-ləri (`PUT .../action`, `POST /api/team/messages`) serverdə menecer tokeni tələb edir. Sessiyalar proses yaddaşındadır (server yenidən başlayanda silinir). IDE hadisələri yalnız `INGEST_KEY` ilə qəbul olunur. İşçi yalnız öz hadisəsini, xatırlatmasını və canlı axınını görür, sorğuda hər developerin bir cavabı sayılır. `/api/team/blockers` və `/api/announcements` komanda səviyyəsində olduğu üçün tokensiz oxunur.
 - IDE hadisələri bu demo versiyada `simulator.py` vasitəsilə yaradılır; IDE genişləndirməsi bu paketin əhatəsinə daxil deyil.
 - K-anonimlik zamana görə müşahidə hücumlarından tam qorumur.
 - Demo parolları sadədir və `static/app.js`-də yalnız oflayn rejim üçün saxlanılır. Bu versiyanı real şəxsi məlumatla açıq yerləşdirməyin.

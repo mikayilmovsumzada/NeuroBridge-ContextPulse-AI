@@ -5,6 +5,8 @@ import os
 os.environ["DB_PATH"] = ":memory:"
 os.environ["GEMINI_API_KEY"] = ""
 os.environ["ANTHROPIC_API_KEY"] = ""
+# IDE/simulyator açarı: testlər .env-dəkindən asılı olmasın
+os.environ["INGEST_KEY"] = "test-ingest-key"
 # Testlər .env-dəki hesablardan asılı olmasın: demo hesabları sabitləyirik.
 os.environ["DEMO_EMPLOYEE_EMAIL"] = "dev@company.com"
 os.environ["DEMO_EMPLOYEE_PASSWORD"] = "emp123"

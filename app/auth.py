@@ -2,6 +2,7 @@
 
 Qeyd: sessiyalar proses yaddaşındadır (server yenidən başlayanda silinir, bir proses üçündür).
 Hesablar .env-dən dəyişdirilə bilər (DEMO_EMPLOYEE_*, DEMO_MANAGER_*); verilməyibsə README-dəki demo dəyərlər işləyir.
+IDE genişləndirməsi və simulyator işçi kimi deyil, INGEST_KEY gizli açarı (X-Ingest-Key başlığı) ilə daxil olur.
 """
 import hmac
 import os
@@ -22,6 +23,11 @@ def _accounts() -> dict:
         "manager": (os.environ.get("DEMO_MANAGER_EMAIL", "manager@company.com"),
                     os.environ.get("DEMO_MANAGER_PASSWORD", "admin123")),
     }
+
+
+def employee_ref() -> str:
+    """Demo işçi hesabının IDE hadisələrindəki təxəllüslü istinadı."""
+    return os.environ.get("DEMO_EMPLOYEE_REF", "dev_a91f")
 
 
 def _same(a: str, b: str) -> bool:
@@ -48,7 +54,8 @@ def login(email: str, password: str, role: Optional[str]) -> dict:
         raise HTTPException(403, "bu hesab həmin panelə aid deyil")
     _purge()
     token = secrets.token_urlsafe(32)
-    _sessions[token] = {"role": found[0], "email": found[1], "exp": time.time() + TOKEN_TTL}
+    _sessions[token] = {"role": found[0], "email": found[1], "exp": time.time() + TOKEN_TTL,
+                        "developer_ref": employee_ref() if found[0] == "employee" else None}
     return {"token": token, "role": found[0], "email": found[1]}
 
 
@@ -86,8 +93,42 @@ def require_manager(session: Optional[dict] = Depends(optional_session)) -> dict
     return session
 
 
-def reject_manager(session: Optional[dict] = Depends(optional_session)) -> Optional[dict]:
-    """Sorğu menecer sessiyası ilə gəlirsə rədd edir (anonim IDE/işçi sorğuları keçir)."""
-    if session and session["role"] == "manager":
-        raise HTTPException(403, "menecer bu əməliyyatı edə bilməz")
-    return session
+def has_ingest_key(value: Optional[str]) -> bool:
+    """INGEST_KEY təyin olunmayıbsa heç bir açar qəbul edilmir (fail-closed)."""
+    key = os.environ.get("INGEST_KEY", "")
+    return bool(key and value and _same(value, key))
+
+
+def require_ingest(x_ingest_key: Optional[str] = Header(default=None)) -> None:
+    if not has_ingest_key(x_ingest_key):
+        raise HTTPException(401, "IDE açarı (X-Ingest-Key) tələb olunur")
+
+
+def caller(session: Optional[dict] = Depends(optional_session),
+           x_ingest_key: Optional[str] = Header(default=None)) -> dict:
+    return {"ingest": has_ingest_key(x_ingest_key), "session": session}
+
+
+def developer_ref(c: dict, requested: Optional[str]) -> str:
+    """Sorğunun kimin adından olduğunu müəyyən edir.
+
+    IDE açarı ilə gələn sorğu istənilən developer_ref göstərə bilər; işçi isə yalnız öz sessiyasındakı ref ilə işləyir.
+    """
+    if c["ingest"]:
+        if not requested:
+            raise HTTPException(422, "developer_ref tələb olunur")
+        return requested
+    s = c["session"]
+    if not s:
+        raise HTTPException(401, "giriş tələb olunur", headers={"WWW-Authenticate": "Bearer"})
+    if s["role"] != "employee":
+        raise HTTPException(403, "bu əməliyyat yalnız işçi üçündür")
+    if requested and requested != s["developer_ref"]:
+        raise HTTPException(403, "başqa developerin məlumatına giriş yoxdur")
+    return s["developer_ref"]
+
+
+def require_manager_or_ingest(c: dict = Depends(caller)) -> dict:
+    if c["ingest"]:
+        return c
+    return require_manager(c["session"])

@@ -85,14 +85,14 @@ def test_reset_clears_actions_and_messages():
 def test_changes_are_published_live():
     c = _manager_client()
     q = asyncio.Queue()
-    main.subscribers.add(q)
+    main.subscribers[q] = None
     try:
         c.put("/api/team/blockers/CI_FLAKY/action", json={"status": "investigating"})
         assert q.get_nowait().startswith("event: team")
         c.post("/api/team/messages", json={"text": "salam"})
         assert q.get_nowait().startswith("event: announcement")
     finally:
-        main.subscribers.discard(q)
+        main.subscribers.pop(q, None)
 
 
 def test_manager_endpoints_require_login():

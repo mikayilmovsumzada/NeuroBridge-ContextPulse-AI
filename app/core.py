@@ -88,8 +88,10 @@ def latest_event(developer_ref: str):
 
 
 def add_survey(developer_ref: str, reason_id: str, category):
+    """Hər developerin yalnız bir (son) cavabı sayılır, əks halda təkrar cavablarla K həddini aşmaq olar."""
     with _lock:
         c = _db()
+        c.execute("DELETE FROM survey_responses WHERE developer_ref=?", (developer_ref,))
         c.execute(
             "INSERT INTO survey_responses(developer_ref, reason_id, category, created_at) VALUES (?,?,?,?)",
             (developer_ref, reason_id, category, _now()),

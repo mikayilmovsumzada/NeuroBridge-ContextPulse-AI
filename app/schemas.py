@@ -2,6 +2,10 @@ from typing import Annotated, Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 
+def Text(n: int):
+    return Annotated[str, StringConstraints(max_length=n)]
+
+
 Category = Literal["PR_REVIEW_WAIT", "CI_FLAKY", "MEETING_LOAD", "UNCLEAR_REQUIREMENTS", "TOOLING"]
 
 
@@ -11,33 +15,33 @@ class Strict(BaseModel):
 
 
 class Source(Strict):
-    client: str
-    version: str
+    client: Text(64)
+    version: Text(32)
 
 
 class Session(Strict):
-    state: str
-    last_activity_at: str
+    state: Text(32)
+    last_activity_at: Text(40)
     idle_duration_sec: int = Field(ge=0)
 
 
 class Workspace(Strict):
-    repo: str
-    branch: str
+    repo: Text(200)
+    branch: Text(200)
 
 
 class Action(Strict):
-    type: str
-    file: str
-    symbol: str
+    type: Text(40)
+    file: Text(300)
+    symbol: Text(200)
     line_range: list[int] = Field(min_length=2, max_length=2)
     lines_added: int = Field(ge=0)
     lines_removed: int = Field(ge=0)
-    language: str
+    language: Text(40)
 
 
 class FirstError(Strict):
-    code: str
+    code: Text(32)
     line: int
 
 
@@ -48,16 +52,16 @@ class Diagnostics(Strict):
 
 
 class TestState(Strict):
-    runner: str
+    runner: Text(40)
     passed: int = Field(ge=0)
     failed: int = Field(ge=0)
-    failing_test: str
+    failing_test: Text(200)
 
 
 class PullRequest(Strict):
     id: int
-    title: str
-    status: str
+    title: Text(200)
+    status: Text(40)
     unresolved_comments: int = Field(ge=0)
 
 
@@ -69,11 +73,11 @@ class Privacy(Strict):
 
 
 class IdeEvent(Strict):
-    schema_id: str = Field(alias="schema")
-    event_id: str
+    schema_id: Text(64) = Field(alias="schema")
+    event_id: Text(64)
     source: Source
     developer_ref: str = Field(min_length=3, max_length=64)
-    emitted_at: str
+    emitted_at: Text(40)
     session: Session
     workspace: Workspace
     last_meaningful_action: Action
@@ -84,13 +88,14 @@ class IdeEvent(Strict):
 
 
 class SurveyIn(Strict):
-    developer_ref: str = Field(min_length=3, max_length=64)
+    # İşçi üçün sessiyadan götürülür; yalnız IDE açarı ilə gələn sorğuda nəzərə alınır
+    developer_ref: Optional[str] = Field(default=None, min_length=3, max_length=64)
     reason_id: str = Field(max_length=20)
     category: Optional[Category] = None
 
 
 class ReminderIn(Strict):
-    developer_ref: str = Field(min_length=3, max_length=64)
+    developer_ref: Optional[str] = Field(default=None, min_length=3, max_length=64)
     lang: Literal["az", "en"] = "az"
 
 

@@ -11,6 +11,8 @@ from app import core  # noqa: E402
 from app.ai_engine import fallback_text, validate  # noqa: E402
 from app.main import app  # noqa: E402
 
+INGEST = {"X-Ingest-Key": os.environ["INGEST_KEY"]}
+
 
 def setup_function(_):
     core.init_db()
@@ -41,7 +43,7 @@ def test_visible_count_increases_live():
 
 
 def test_event_rejects_privacy_violation_and_unknown_fields():
-    c = TestClient(app)
+    c = TestClient(app, headers=INGEST)
     ev = copy.deepcopy(core.BASE_EVENT)
     assert c.post("/api/events", json=ev).status_code == 202
     bad = copy.deepcopy(ev)
@@ -53,14 +55,14 @@ def test_event_rejects_privacy_violation_and_unknown_fields():
 
 
 def test_survey_and_team_endpoints():
-    c = TestClient(app)
+    c = TestClient(app, headers=INGEST)
     assert c.post("/api/survey", json={"developer_ref": "dev_zzz", "reason_id": "ci", "category": "CI_FLAKY"}).status_code == 201
     assert c.post("/api/survey", json={"developer_ref": "dev_zzz", "reason_id": "x", "category": "HACK"}).status_code == 422
     assert c.get("/api/team/blockers").json()["population"]["respondents"] == 27
 
 
 def test_reminder_fallback_is_valid():
-    c = TestClient(app)
+    c = TestClient(app, headers=INGEST)
     r = c.post("/api/reminder", json={"developer_ref": "dev_a91f"}).json()
     assert r["source"] == "fallback" and "`processRefund`" in r["text"]
     ok, _ = validate(fallback_text(core.BASE_EVENT), core.BASE_EVENT)
@@ -75,7 +77,7 @@ def test_validator_rejects_hallucination():
 
 
 def test_reminder_language():
-    c = TestClient(app)
+    c = TestClient(app, headers=INGEST)
     en = c.post("/api/reminder", json={"developer_ref": "dev_a91f", "lang": "en"}).json()
     az = c.post("/api/reminder", json={"developer_ref": "dev_a91f", "lang": "az"}).json()
     assert "Nearest next step" in en["text"] and "Ən yaxın addım" in az["text"]

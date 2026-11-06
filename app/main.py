@@ -36,7 +36,8 @@ from .schemas import ActionIn, IdeEvent, LoginIn, MessageIn, ReminderIn, SurveyI
 STATIC = Path(__file__).resolve().parent.parent / "static"
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(message)s", datefmt="%H:%M:%S")
 log = logging.getLogger("contextpulse")
-subscribers: set = set()
+subscribers: dict = {}  # SSE növbəsi -> giriş tokeni (anonimdirsə None)
+MAX_SUBSCRIBERS = int(os.getenv("MAX_SSE_SUBSCRIBERS", "200"))
 _reminder_cache: dict = {}
 
 
@@ -57,6 +58,9 @@ async def lifespan(app: FastAPI):
             "AI engine: GEMINI_API_KEY və ANTHROPIC_API_KEY yoxdur; "
             "fallback cavablarından istifadə ediləcək"
         )
+
+    if not os.getenv("INGEST_KEY"):
+        log.warning("INGEST_KEY yoxdur; IDE hadisələri (/api/events) və simulyator sorğuları rədd ediləcək")
 
     # 3. Tətbiq sorğuları qəbul etməyə hazırdır
     log.info("ContextPulse startup tamamlandı")
@@ -81,10 +85,17 @@ async def api_log(request, call_next):
     return resp
 
 
-async def publish(event: str, data: dict):
+def _stream_ref(token: Optional[str]) -> Optional[str]:
+    s = auth.session_of("Bearer " + token) if token else None
+    return s.get("developer_ref") if s else None
+
+
+async def publish(event: str, data: dict, developer_ref: Optional[str] = None):
+    """developer_ref verilibsə (şəxsi IDE hadisəsi) mesaj yalnız həmin işçinin açıq pəncərələrinə gedir."""
     msg = f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
-    for q in list(subscribers):
-        q.put_nowait(msg)
+    for q, token in list(subscribers.items()):
+        if developer_ref is None or _stream_ref(token) == developer_ref:
+            q.put_nowait(msg)
 
 
 @app.post("/api/auth/login")
@@ -111,16 +122,19 @@ async def health():
 
 
 @app.get("/api/bootstrap")
-async def bootstrap(developer_ref: str = "dev_a91f"):
-    ev = core.latest_event(developer_ref) or core.BASE_EVENT
+async def bootstrap(session=Depends(auth.optional_session)):
+    """IDE hadisəsi şəxsi məlumatdır: yalnız daxil olmuş işçiyə və yalnız onun özününkü qaytarılır."""
+    ev = None
+    if session and session["role"] == "employee":
+        ev = core.latest_event(session["developer_ref"])
     return {"event": ev, "team": core.team_payload(), "announcements": core.latest_messages()}
 
 
-@app.post("/api/events", status_code=202)
+@app.post("/api/events", status_code=202, dependencies=[Depends(auth.require_ingest)])
 async def ingest(event: IdeEvent):
     payload = event.model_dump(by_alias=True)
     core.add_event(payload)
-    await publish("event", payload)
+    await publish("event", payload, developer_ref=payload["developer_ref"])
     log.info("[EVENT]  dev=%s file=%s errors=%d failed_tests=%d pr=#%d -> %d brauzer", payload["developer_ref"],
              payload["last_meaningful_action"]["file"].split("/")[-1], payload["diagnostics"]["errors"],
              payload["test_state"]["failed"], payload["pull_request"]["id"], len(subscribers))
@@ -128,16 +142,16 @@ async def ingest(event: IdeEvent):
 
 
 @app.get("/api/snapshot/{developer_ref}")
-async def snapshot(developer_ref: str):
-    ev = core.latest_event(developer_ref)
+async def snapshot(developer_ref: str, c=Depends(auth.caller)):
+    ev = core.latest_event(auth.developer_ref(c, developer_ref))
     if not ev:
         return JSONResponse({"detail": "hadisə tapılmadı"}, status_code=404)
     return ev
 
 
 @app.post("/api/reminder")
-async def reminder(body: ReminderIn):
-    ev = core.latest_event(body.developer_ref)
+async def reminder(body: ReminderIn, c=Depends(auth.caller)):
+    ev = core.latest_event(auth.developer_ref(c, body.developer_ref))
     if not ev:
         return JSONResponse({"detail": "hadisə tapılmadı"}, status_code=404)
     key = (ev["event_id"], body.lang)
@@ -156,8 +170,8 @@ async def reminder(body: ReminderIn):
 
 
 @app.post("/api/survey", status_code=201)
-async def survey(body: SurveyIn, _session=Depends(auth.reject_manager)):
-    core.add_survey(body.developer_ref, body.reason_id, body.category)
+async def survey(body: SurveyIn, c=Depends(auth.caller)):
+    core.add_survey(auth.developer_ref(c, body.developer_ref), body.reason_id, body.category)
     payload = core.team_payload()
     await publish("team", payload)
     log.info("[SURVEY] category=%s -> respondents=%d, gorunen qrup=%d, gizli qrup=%d, brauzer=%d", body.category,
@@ -202,20 +216,23 @@ async def announcements():
     return core.latest_messages()
 
 
-@app.post("/api/demo/reset")
+@app.post("/api/demo/reset", dependencies=[Depends(auth.require_manager_or_ingest)])
 async def reset():
     core.reset_demo()
     _reminder_cache.clear()
     await publish("team", core.team_payload())
-    await publish("event", core.BASE_EVENT)
+    await publish("event", core.BASE_EVENT, developer_ref=core.BASE_EVENT["developer_ref"])
     await publish("announcement_reset", {})
     return {"reset": True}
 
 
 @app.get("/api/stream")
-async def stream():
+async def stream(token: Optional[str] = None):
+    """EventSource başlıq göndərə bilmədiyi üçün işçi tokeni ?token= ilə gəlir; tokensiz yalnız komanda məlumatı alınır."""
+    if len(subscribers) >= MAX_SUBSCRIBERS:
+        return JSONResponse({"detail": "çox sayda açıq bağlantı"}, status_code=503)
     q: asyncio.Queue = asyncio.Queue()
-    subscribers.add(q)
+    subscribers[q] = token
 
     async def gen():
         try:
@@ -226,7 +243,7 @@ async def stream():
                 except asyncio.TimeoutError:
                     yield ": ping\n\n"
         finally:
-            subscribers.discard(q)
+            subscribers.pop(q, None)
 
     return StreamingResponse(gen(), media_type="text/event-stream",
                              headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
