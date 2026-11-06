@@ -97,6 +97,12 @@ pip install -r requirements.txt
 
 `.env.example` faylını `.env` adı ilə kopyalayıb doldurun. Server `.env` faylını repo kökündən özü oxuyur (terminalda əvvəlcədən təyin edilmiş dəyişənin üstündən yazmır).
 
+IDE simulyatorunu işlətmək üçün `INGEST_KEY` lazımdır. Öz təsadüfi açarınızı yaradın və çıxan sətri `.env`-də `INGEST_KEY=` qarşısına yazın (açarı başqası ilə paylaşmayın):
+
+```bash
+python -c "import secrets; print(secrets.token_urlsafe(32))"
+```
+
 | Dəyişən | Məcburi | Təsvir | Standart |
 |---|---|---|---|
 | `GEMINI_API_KEY` | Xeyr | Gemini açarı. Yoxdursa hazır mətn (fallback) istifadə olunur | yoxdur |
