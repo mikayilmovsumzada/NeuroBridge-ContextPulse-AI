@@ -121,3 +121,34 @@ def test_ai_providers_order(monkeypatch):
     _fake_anthropic(monkeypatch, set())
     res = ai_engine.generate_reminder(BASE_EVENT, "az")
     assert res["source"] == "claude" and gemini_calls == []
+
+
+def test_warm_up_imports_only_active_sdks_without_calling_ai(monkeypatch):
+    """İlk xatırlatmanın gecikməməsi üçün SDK-lar startup-da import olunur, amma heç bir model çağırılmır."""
+    import importlib
+    monkeypatch.setenv("GEMINI_API_KEY", "")
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "x")
+    monkeypatch.delenv("AI_PROVIDERS", raising=False)
+    imported = []
+    real = importlib.import_module
+    monkeypatch.setattr(importlib, "import_module", lambda name, *a: imported.append(name) or real(name, *a))
+    calls = _fake_anthropic(monkeypatch, set())
+    assert ai_engine.warm_up() == ["claude"]
+    assert imported == ["anthropic"] and calls == []
+
+
+def test_warm_up_without_keys_does_nothing(monkeypatch):
+    monkeypatch.setenv("GEMINI_API_KEY", "")
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "")
+    assert ai_engine.warm_up() == []
+
+
+def test_startup_runs_warm_up_when_a_provider_is_active(monkeypatch):
+    from fastapi.testclient import TestClient
+    from app import main
+    ran = []
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "x")
+    monkeypatch.setattr(main, "warm_up", lambda: ran.append(True) or [])
+    with TestClient(main.app) as c:
+        assert c.get("/api/health").status_code == 200
+    assert ran == [True]

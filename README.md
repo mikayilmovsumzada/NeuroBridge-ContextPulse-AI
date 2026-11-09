@@ -40,7 +40,11 @@ Proqramçı toplantıdan və ya qısa fasilədən sonra harada qaldığını xat
 ├── app/
 │   ├── main.py            # API marşrutları, SSE axını, statik fayllar
 │   ├── core.py            # SQLite, seed data, K-anonim aqreqasiya, tədbir və elan saxlanması
-│   ├── ai_engine.py       # Gemini/Claude prompt, cavabın doğrulanması, fallback
+│   ├── ai_engine.py       # Gemini/Claude prompt, cavabın doğrulanması, fallback, gündəlik AI limiti
+│   ├── demo.py            # İctimai demo rejimi: şablonlar, avtomatik sıfırlama intervalı
+│   ├── ratelimit.py       # IP üzrə sorğu limiti, etibarlı proxy (X-Forwarded-For)
+│   ├── security.py        # Təhlükəsizlik başlıqları (CSP və s.), /docs-un söndürülməsi
+│   ├── config.py          # Mühit dəyişənlərini oxuma köməkçiləri
 │   └── schemas.py         # Pydantic sxemləri (məxfilik yoxlaması daxil)
 ├── static/                # index.html, app.js, styles.css, favicon.*, fonts/ (lokal şriftlər)
 ├── tests/                 # pytest testləri (conftest.py testləri yaddaşdakı bazaya yönəldir)
@@ -67,7 +71,7 @@ Frontend tək səhifəli tətbiqdir (React, build addımı yoxdur). Hər yol ser
 
 Giriş naviqasiyadakı "Daxil ol" menyusundan və ya `/portal` səhifəsindən açılır. Hüquqi səhifələrdəki `[[YER TUTUCULAR]]` operator tərəfindən doldurulmalıdır (şirkət adı, ünvan, əlaqə, saxlama müddəti, yurisdiksiya və s.). Bu mətnlər hüquqi məsləhət deyil.
 
-**Brauzer yaddaşı:** tətbiq HTTP cookie qoymur (testlə yoxlanılır). Dil, tema və bildiriş seçimləri `localStorage`-də yalnız istifadəçi dəyişəndə yazılır (`cp_lang`, `cp_theme`, `cookieConsentGiven`). Analitika və ya izləmə aləti yoxdur. Şriftlər (Inter, JetBrains Mono, SIL OFL lisenziyası, `static/fonts/`) lokal verilir; Tailwind, React və Babel hələ CDN-dən (`cdn.tailwindcss.com`, `unpkg.com`) yüklənir. Favicon: `static/favicon.ico`, `favicon.svg`, `apple-touch-icon.png`.
+**Brauzer yaddaşı:** tətbiq HTTP cookie qoymur (testlə yoxlanılır). Dil, tema və bildiriş seçimləri `localStorage`-də yalnız istifadəçi dəyişəndə yazılır (`cp_lang`, `cp_theme`, `cookieConsentGiven`). Analitika və ya izləmə aləti yoxdur. Şriftlər (Inter, JetBrains Mono, SIL OFL lisenziyası, `static/fonts/`) lokal verilir; Tailwind, React və Babel hələ CDN-dən (`cdn.tailwindcss.com`, `unpkg.com`) dəqiq versiya ilə yüklənir: Tailwind `3.4.17`, React və ReactDOM `18.3.1`, `@babel/standalone` `7.26.10`. Versiyanı dəyişəndə `static/index.html`-də yeni dəqiq versiya yazın (`@18` kimi aralıq yox). Favicon: `static/favicon.ico`, `favicon.svg`, `apple-touch-icon.png`.
 
 ## Quraşdırma və işə salma
 
@@ -109,7 +113,27 @@ python -c "import secrets; print(secrets.token_urlsafe(32))"
 | `INGEST_KEY` | Bəli (IDE/simulyator üçün) | IDE genişləndirməsi və `simulator.py` bu açarla (`X-Ingest-Key` başlığı) hadisə və sorğu göndərir. Yoxdursa `/api/events` rədd edilir | yoxdur |
 | `DEMO_EMPLOYEE_REF` | Xeyr | Demo işçi hesabının IDE hadisələrindəki `developer_ref`-i | `dev_a91f` |
 | `DB_PATH` | Xeyr | SQLite faylının yolu | `contextpulse.db` |
+| `SIMULATOR_URL` | Xeyr | `simulator.py`-ın qoşulduğu server ünvanı (`--url` verilməyəndə) | `localhost:8000`, sonra `8001` axtarılır |
 | `PORT` | Xeyr | Yalnız Docker-də: server portu | `8000` |
+| `DEMO_MODE` | Xeyr | `1`: ictimai demo rejimi. Elan, tədbir qeydi və məsul yalnız hazır şablonlardan seçilir, demo məlumatı avtomatik sıfırlanır | `0` |
+| `DEMO_RESET_MINUTES` | Xeyr | Demo məlumatının avtomatik sıfırlanma intervalı (dəqiqə). Yalnız `DEMO_MODE=1` olanda; `0` söndürür | `30` |
+| `RATE_LIMIT_ENABLED` | Xeyr | IP üzrə sorğu limiti. Limit keçiləndə `429` və `Retry-After` qaytarılır | `1` |
+| `RATE_LIMIT_LOGIN` | Xeyr | `/api/auth/login` limiti, `sorğu/saniyə` formatında | `10/60` |
+| `RATE_LIMIT_REMINDER` | Xeyr | `/api/reminder` limiti | `20/60` |
+| `RATE_LIMIT_SURVEY` | Xeyr | `/api/survey` limiti | `20/60` |
+| `RATE_LIMIT_MESSAGES` | Xeyr | `/api/team/messages` limiti | `10/60` |
+| `RATE_LIMIT_ACTION` | Xeyr | `/api/team/blockers/*/action` limiti | `30/60` |
+| `RATE_LIMIT_STREAM` | Xeyr | `/api/stream` (yeni SSE bağlantısı) limiti | `30/60` |
+| `RATE_LIMIT_RESET` | Xeyr | `/api/demo/reset` limiti | `3/60` |
+| `TRUSTED_PROXY` | Xeyr | `0`: `X-Forwarded-For` nəzərə alınmır. `1` (və ya `N`): server N etibarlı reverse proxy arxasındadır, müştəri IP-si başlığın sondan N-ci elementidir. Uvicorn birbaşa internetə açıqdırsa aktiv etməyin | `0` |
+| `MAX_SSE_SUBSCRIBERS` | Xeyr | Eyni anda açıq SSE bağlantılarının ümumi sayı (aşılanda `503`) | `200` |
+| `MAX_SSE_PER_IP` | Xeyr | Bir IP-dən eyni anda açıq SSE bağlantıları (aşılanda `429`; `RATE_LIMIT_ENABLED=0` olanda yoxlanmır) | `10` |
+| `AI_DAILY_LIMIT` | Xeyr | Gündə (UTC) ən çox model çağırışı; ehtiyat modellərə keçid də sayılır. Bitəndə hazır mətn qaytarılır. `0`: AI heç çağırılmır | `300` |
+| `AI_FAILURE_COOLDOWN_SEC` | Xeyr | Uğursuz (fallback) cavab bu müddət keşlənir, AI-ya dərhal təkrar sorğu getmir. `0` söndürür | `300` |
+| `DISABLE_DOCS` | Xeyr | `1`: `/docs`, `/redoc` və `/openapi.json` bağlanır | `0` |
+| `SECURITY_HEADERS` | Xeyr | CSP, `X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options`, `Permissions-Policy` başlıqları | `1` |
+| `CSP_FRAME_ANCESTORS` | Xeyr | Saytı iframe-də göstərə bilən mənbələr (məs. `https://nexusweb.az`). Boşdursa `'none'` | yoxdur |
+| `HSTS_MAX_AGE` | Xeyr | `Strict-Transport-Security` müddəti (saniyə). Yalnız HTTPS arxasında, məs. `31536000` | `0` |
 
 > **Diqqət:** `.env` faylını heç vaxt Git-ə əlavə etməyin və paylaşmayın. `.gitignore` onu istisna edir. Açarı səhvən paylaşmısınızsa, Google AI Studio-da (Gemini) və ya Claude Console-da (Anthropic) yenisini yaradın. Mövcud model adlarını `python list_models.py` ilə yoxlaya bilərsiniz.
 
@@ -152,7 +176,7 @@ python simulator.py reset                    # demo məlumatını sıfırlayır 
 python simulator.py warm                     # AZ və EN AI cavablarını əvvəlcədən hazırlayır
 ```
 
-Başqa ünvan üçün `--url http://host:port` əlavə edin. Mümkün kateqoriyalar: `PR_REVIEW_WAIT`, `CI_FLAKY`, `MEETING_LOAD`, `UNCLEAR_REQUIREMENTS`, `TOOLING`.
+Simulyator serveri özü tapır: əvvəlcə `SIMULATOR_URL` (mühit və ya `.env`), yoxdursa `localhost:8000`, sonra `localhost:8001` yoxlanılır. Başqa ünvan üçün `--url http://host:port` əlavə edin. Server tapılmasa simulyator bunu yazıb dayanır. Mümkün kateqoriyalar: `PR_REVIEW_WAIT`, `CI_FLAKY`, `MEETING_LOAD`, `UNCLEAR_REQUIREMENTS`, `TOOLING`.
 
 ## Testlər
 
@@ -160,7 +184,7 @@ Başqa ünvan üçün `--url http://host:port` əlavə edin. Mümkün kateqoriya
 python -m pytest -q
 ```
 
-Testlər K-anonimlik məntiqini, məxfilik yoxlamasını (`422` cavabları), AI cavabının doğrulanmasını, ehtiyat modelə keçidi, iki dildə xatırlatmanı, menecer tədbirləri və elanları yoxlayır. Testlər yaddaşdakı verilənlər bazası ilə işləyir və `GEMINI_API_KEY` / `ANTHROPIC_API_KEY` tələb etmir.
+Testlər K-anonimlik məntiqini, məxfilik yoxlamasını (`422` cavabları), AI cavabının doğrulanmasını, ehtiyat modelə keçidi, iki dildə xatırlatmanı, menecer tədbirləri və elanları yoxlayır. `tests/test_public_demo.py` ictimai demo qorumalarını yoxlayır: demo rejimində şablonlar, sorğu limiti və `X-Forwarded-For`, AI gündəlik limiti və uğursuzluq keşi, təhlükəsizlik başlıqları, `/docs`-un bağlanması, CDN versiyalarının dəqiqliyi. Mövcud testlər bir ünvandan çox giriş etdiyi üçün `tests/conftest.py` sorğu limitini standart olaraq söndürür, limit testləri onu ayrıca yandırır. Testlər yaddaşdakı verilənlər bazası ilə işləyir və `GEMINI_API_KEY` / `ANTHROPIC_API_KEY` tələb etmir.
 
 ## Docker ilə işə salma
 
@@ -169,7 +193,7 @@ docker build -t contextpulse-ai .
 docker run -p 8000:8000 --env-file .env contextpulse-ai
 ```
 
-`.env` faylı yoxdursa `--env-file .env` hissəsini silin, sistem hazır mətnlə işləyəcək. Konteyner `PORT` dəyişənini qəbul edir, verilənlər bazası konteynerin `/tmp` qovluğundadır (yenidən başlayanda sıfırlanır).
+`.env` faylı yoxdursa `--env-file .env` hissəsini silin, sistem hazır mətnlə işləyəcək. Konteyner `PORT` dəyişənini qəbul edir, verilənlər bazası konteynerin `/tmp` qovluğundadır (yenidən başlayanda sıfırlanır). Konteyner tək uvicorn worker ilə və HTTP access logu olmadan (IP ünvanları loga yazılmır) işləyir.
 
 ## CI/CD (GitLab)
 
@@ -188,7 +212,7 @@ docker run -p 8000:8000 --env-file .env contextpulse-ai
 | POST | `/api/events` | IDE metadata hadisəsi qəbulu (`202`; `X-Ingest-Key` tələb edir, əks halda `401`) |
 | GET | `/api/snapshot/{developer_ref}` | İşçinin son hadisəsi (yalnız həmin işçinin tokeni və ya `X-Ingest-Key` ilə) |
 | POST | `/api/reminder` | AI xatırlatması (`lang`: `az` / `en`; işçi tokeni ilə öz hadisəsi üçün, və ya `X-Ingest-Key`) |
-| POST | `/api/auth/login` | Giriş: `email`, `password`, `role` (`employee`/`manager`); səhv məlumat `401`, rol uyğunsuzluğu `403`; Bearer token qaytarır |
+| POST | `/api/auth/login` | Giriş (IP üzrə limitli, aşılanda `429`): `email`, `password`, `role` (`employee`/`manager`); səhv məlumat `401`, rol uyğunsuzluğu `403`; Bearer token qaytarır |
 | GET | `/api/auth/session` | Token üzrə sessiya vəziyyəti (`authenticated`, `role`) |
 | POST | `/api/auth/logout` | Sessiyanı bağlayır |
 | POST | `/api/survey` | Anonim fasilə səbəbi cavabı (işçi tokeni və ya `X-Ingest-Key`; hər developerin yalnız son cavabı sayılır; menecer tokeni ilə `403`) |
@@ -199,7 +223,7 @@ docker run -p 8000:8000 --env-file .env contextpulse-ai
 | POST | `/api/demo/reset` | Demo məlumatını sıfırla (menecer tokeni və ya `X-Ingest-Key`) |
 | GET | `/api/stream` | SSE canlı axını (`team`, `announcement`, `announcement_reset`; `?token=` işçi tokeni ilə həm də işçinin öz `event`-ləri) |
 
-Swagger sənədləşməsi: `http://localhost:8000/docs`
+Swagger sənədləşməsi: `http://localhost:8000/docs` (`DISABLE_DOCS=1` olanda bağlıdır). `/api/auth/login`, `/api/reminder`, `/api/survey`, `/api/team/messages`, `/api/team/blockers/*/action`, `/api/demo/reset` və `/api/stream` IP üzrə limitlidir: limit keçiləndə `429` və `Retry-After` başlığı qaytarılır. `DEMO_MODE=1` olanda `/api/bootstrap` cavabında `demo` sahəsi (şablonlar və sıfırlama intervalı) var, şablondan kənar elan və ya qeyd `422` ilə rədd edilir.
 
 ## Məxfilik prinsipləri
 
@@ -216,6 +240,90 @@ Swagger sənədləşməsi: `http://localhost:8000/docs`
 - K-anonimlik zamana görə müşahidə hücumlarından tam qorumur.
 - Demo parolları sadədir və `static/app.js`-də yalnız oflayn rejim üçün saxlanılır. Bu versiyanı real şəxsi məlumatla açıq yerləşdirməyin.
 - SQLite demo üçündür. İstehsal üçün PostgreSQL və AI cavab keşinin bazada saxlanması planlaşdırılır.
+- Sessiyalar, sorğu limiti sayğacları, AI gündəlik sayğacı, cavab keşi və SSE bağlantıları proses yaddaşındadır. Ona görə server **yalnız bir uvicorn worker** ilə işləməlidir; bir neçə worker və ya replika üçün bunlar ortaq yaddaşa (məs. Redis) köçürülməlidir.
+
+## İctimai demo yerləşdirmə (public demo)
+
+Hədəf: `https://contextpulse.nexusweb.az`. Ən risksiz ilk addım backend-siz **Oflayn demo**dur (`static/` qovluğunu istənilən statik hostinqə qoymaq kifayətdir: AI açarı, baza və sessiya yoxdur). Canlı backend ilə demo üçün aşağıdakı qorumalar əlavə olunub.
+
+### Ziyarətçilərin bir-birindən təsirlənməsi: seçilmiş yanaşma
+
+Bütün ziyarətçilər eyni demo işçi (`dev_a91f`), eyni demo menecer və eyni SQLite bazasını paylaşır. İki variant nəzərdən keçirildi:
+
+| Variant | Üstünlük | Çatışmazlıq |
+|---|---|---|
+| Hər brauzerə ayrıca "sandbox" vəziyyəti | Ziyarətçilər bir-birini heç görmür | `core.py`-dəki hər funksiyaya, SSE axınına və sessiyalara sandbox identifikatoru əlavə etmək lazımdır; menecer və işçi pəncərələrini eyni sandboxa bağlamaq üçün brauzerdə identifikator (cookie və ya `localStorage`) saxlamaq lazımdır, bu isə "HTTP cookie yoxdur" siyasətini və testləri dəyişir; yaddaş ziyarətçi sayı ilə böyüyür |
+| **`DEMO_MODE=1`: hazır şablonlar + avtomatik sıfırlama (seçildi)** | Az dəyişiklik; "bir pəncərədə menecer, digərində işçi, dəyişiklik canlı görünür" demosu olduğu kimi qalır; əsas sui-istifadə yolu bağlanır: heç kim başqalarının ekranına öz mətnini yaya bilmir | Eyni vaxtda daxil olan ziyarətçilər bir-birinin kliklərini (şablon elanlar, status dəyişikliyi) görür; sıfırlama kiminsə demosunun ortasına düşə bilər |
+
+`DEMO_MODE=1` olanda:
+
+- `POST /api/team/messages` yalnız şablon elanları qəbul edir, tədbir qeydinin `note` və `owner` sahələri yalnız şablonlardan (və ya boş) ola bilər; əks halda `422`. Şablonlar `app/demo.py`-dədir, AZ və EN variantı var, interfeys mətn sahəsi əvəzinə seçim siyahısı göstərir və saxlanmış şablonu oxuyanın dilində göstərir.
+- Demo məlumatı hər `DEMO_RESET_MINUTES` dəqiqədən bir `core.reset_demo()` ilə başlanğıca qaytarılır və açıq pəncərələrə canlı göndərilir.
+- `/api/events` əvvəlki kimi yalnız `INGEST_KEY` ilə işləyir; ictimai serverdə simulyatoru internetdən istifadə etməyin.
+
+### Sorğu limiti və AI xərci
+
+- IP üzrə sürüşən pəncərəli limit (`app/ratelimit.py`, əlavə asılılıq yoxdur, IP-lər yalnız yaddaşda və loga yazılmadan saxlanır). Server reverse proxy arxasındadırsa `TRUSTED_PROXY=1` qoyun, əks halda bütün ziyarətçilər proxy-nin IP-si ilə bir limitə düşər. Uvicorn birbaşa internetə açıqdırsa `TRUSTED_PROXY=0` saxlayın, çünki `X-Forwarded-For`-u müştəri özü yaza bilər.
+- Uğurlu AI cavabı əvvəlki kimi daimi keşlənir; uğursuz cavab (fallback) `AI_FAILURE_COOLDOWN_SEC` müddətinə keşlənir. Eyni hadisə üçün eyni anda gələn sorğular AI-ya bir dəfə gedir.
+- `AI_DAILY_LIMIT` bütün server üçün gündəlik model çağırışı limitidir; bitəndə hazır mətn ("günlük AI limiti doldu") göstərilir. Provayder tərəfində də (Google AI Studio, Claude Console) xərc limiti qoyun.
+- API açarları yalnız serverin mühit dəyişənlərindədir; `static/` qovluğunda açar və ya açar adı yoxdur (testlə yoxlanılır), `.env` Docker image-ə kopyalanmır.
+
+### HTTPS reverse proxy və tək worker
+
+Uvicorn-u yalnız lokal ünvanda, **bir worker** ilə işə salın və HTTPS-i reverse proxy (nginx, Caddy və s.) üzərindən verin:
+
+```bash
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1 --no-access-log
+```
+
+Nümunə nginx bloku (sertifikat, məs. Let's Encrypt, ayrıca qurulur):
+
+```nginx
+server {
+    listen 443 ssl http2;
+    server_name contextpulse.nexusweb.az;
+    # ssl_certificate ...; ssl_certificate_key ...;
+
+    location / {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+    location /api/stream {               # SSE: buferləmə və qısa timeout olmasın
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        proxy_buffering off;
+        proxy_read_timeout 1h;
+    }
+}
+```
+
+Proxy qarşısında başqa proxy (məs. Cloudflare) varsa `TRUSTED_PROXY=2` qoyun. CORS lazım deyil: frontend və API eyni domendədir.
+
+### CDN skriptləri və Tailwind
+
+React, ReactDOM, Babel və Tailwind dəqiq versiyalarla bağlanıb (yuxarıda). Content-Security-Policy yalnız `cdn.tailwindcss.com` və `unpkg.com` skriptlərinə icazə verir, lakin brauzerdə Babel ilə JSX çevrildiyi və Tailwind Play CDN üslubları runtime-da yaratdığı üçün `'unsafe-inline'` və `'unsafe-eval'` hələ lazımdır. **Tailwind Play CDN (`cdn.tailwindcss.com`) istehsal üçün nəzərdə tutulmayıb.** Növbəti addım (follow-up):
+
+1. Tailwind CLI ilə əvvəlcədən yığılmış CSS (`static/tailwind.css`) yaratmaq və CDN skriptini silmək.
+2. `app.js`-i (JSX) əvvəlcədən JavaScript-ə çevirmək (esbuild və ya Babel CLI), React və ReactDOM-u lokal fayl kimi vermək.
+3. Bundan sonra CSP-dən CDN ünvanlarını, `'unsafe-inline'` və `'unsafe-eval'`-ı çıxarmaq (və ya xarici skriptlərə SRI `integrity` hash-i əlavə etmək).
+
+### Yerləşdirmə yoxlama siyahısı
+
+- [ ] Əvvəlcə oflayn demo (`static/`) kifayətdirsə, backend-siz yerləşdirin.
+- [ ] `DEMO_MODE=1`, `DEMO_RESET_MINUTES` (məs. `30`).
+- [ ] `DISABLE_DOCS=1`.
+- [ ] `RATE_LIMIT_ENABLED=1`; proxy arxasında `TRUSTED_PROXY=1` (və uvicorn yalnız `127.0.0.1`-də).
+- [ ] `AI_DAILY_LIMIT` (məs. `200`) və `AI_FAILURE_COOLDOWN_SEC`; provayder hesabında da xərc limiti.
+- [ ] API açarları yalnız serverin mühit dəyişənlərində və ya `.env`-də; `.env` Git-də və Docker image-də yoxdur.
+- [ ] `INGEST_KEY` uzun təsadüfi dəyər və ya boş (ictimai serverdə simulyator lazım deyil).
+- [ ] HTTPS reverse proxy; `HSTS_MAX_AGE=31536000` yalnız HTTPS işlədikdən sonra.
+- [ ] `--workers 1` (sessiyalar və sayğaclar yaddaşdadır).
+- [ ] Hüquqi səhifələrdəki `[[YER TUTUCULAR]]` doldurulub; real şəxsi məlumat daxil edilmir.
+- [ ] Yerləşdirmədən sonra: `/docs` `404`, cavablarda `Content-Security-Policy` var, brauzer konsolunda CSP xətası yoxdur, `python -m pytest -q` yaşıldır.
 
 ## İlk prototip (Streamlit)
 

@@ -35,7 +35,8 @@ const I18N = {
         serverFail: 'Server cavab vermədi, cavab qeyd olunmadı.',
         badge_gemini: 'Gemini · faktlara qarşı doğrulanıb', badge_claude: 'Claude · faktlara qarşı doğrulanıb', badge_no_key: 'hazır mətn (API açarı yoxdur)',
         badge_invalid: 'hazır mətn (AI cavabı doğrulamadan keçmədi)', badge_error: 'hazır mətn (AI əlçatmaz)',
-        badge_timeout: 'hazır mətn (AI gec cavab verdi)', badge_offline: 'oflayn demo · hazır mətn', badge_srvfail: 'hazır mətn (server cavab vermədi)',
+        badge_timeout: 'hazır mətn (AI gec cavab verdi)', badge_offline: 'oflayn demo · hazır mətn', badge_srvfail: 'hazır mətn (server cavab vermədi)', badge_daily_limit: 'hazır mətn (günlük AI limiti doldu)',
+        demoTplHint: (m) => 'İctimai demo: mətn hazır şablonlardan seçilir' + (m ? `, məlumat ${m} dəqiqədən bir sıfırlanır.` : '.'), tplPick: 'Şablon seçin', tplNone: '(boş)',
         mgrTitle: 'Menecer Analitika Paneli',
         mgrSub: (k) => `K-Anonimlik (K=${k}) çərçivəsində komanda səviyyəsində tıxanmalar. Fərdi işçi məlumatı bu paneldə yoxdur.`,
         teamSize: 'Komanda ölçüsü', last7: 'son 7 gün', responses: 'Cavablar', anonAnswers: 'qeydə alınmış cavablar',
@@ -111,7 +112,8 @@ const I18N = {
         serverFail: 'The server did not respond, your answer was not recorded.',
         badge_gemini: 'Gemini · verified against the facts', badge_claude: 'Claude · verified against the facts', badge_no_key: 'template text (no API key)',
         badge_invalid: 'template text (AI answer failed verification)', badge_error: 'template text (AI unavailable)',
-        badge_timeout: 'template text (AI responded too slowly)', badge_offline: 'offline demo · template text', badge_srvfail: 'template text (server did not respond)',
+        badge_timeout: 'template text (AI responded too slowly)', badge_offline: 'offline demo · template text', badge_srvfail: 'template text (server did not respond)', badge_daily_limit: 'template text (daily AI limit reached)',
+        demoTplHint: (m) => 'Public demo: text is chosen from ready-made templates' + (m ? ` and the data resets every ${m} minutes.` : '.'), tplPick: 'Choose a template', tplNone: '(empty)',
         mgrTitle: 'Manager Analytics Panel',
         mgrSub: (k) => `Team-level blockers under K-anonymity (K=${k}). No individual employee data appears in this panel.`,
         teamSize: 'Team size', last7: 'last 7 days', responses: 'Responses', anonAnswers: 'recorded responses',
@@ -165,7 +167,13 @@ function translate(lang, key, ...args) {
     const v = (I18N[lang] && I18N[lang][key] !== undefined) ? I18N[lang][key] : I18N.az[key];
     return typeof v === 'function' ? v(...args) : v;
 }
-const LangCtx = React.createContext({ lang: 'az', t: (k) => k });
+const LangCtx = React.createContext({ lang: 'az', t: (k) => k, demo: { enabled: false } });
+// İctimai demo şablonları AZ/EN cütlüyüdür: saxlanmış mətn oxuyanın dilində göstərilir
+const tplText = (demo, kind, text, lang) => {
+    const list = demo && demo.enabled ? demo[kind] || [] : [];
+    const hit = list.find((x) => x.az === text || x.en === text);
+    return hit ? hit[lang] || text : text;
+};
 const useT = () => React.useContext(LangCtx);
 
 const NavCtx = React.createContext(() => {});
@@ -456,6 +464,7 @@ function App() {
     const [reminder, setReminder] = useState(null);
     const [bumps, setBumps] = useState({});
     const [announcements, setAnnouncements] = useState([]);
+    const [demoCfg, setDemoCfg] = useState({ enabled: false });
     const teamRef = useRef(null);
     const langRef = useRef(lang);
     langRef.current = lang;
@@ -464,7 +473,7 @@ function App() {
     const offlineState = useRef({ counts: { PR_REVIEW_WAIT: 8, CI_FLAKY: 6, MEETING_LOAD: 5, UNCLEAR_REQUIREMENTS: 5, TOOLING: 2 }, respondents: 26, actions: {} });
 
     const t = (key, ...args) => translate(lang, key, ...args);
-    const ctx = { lang, t };
+    const ctx = { lang, t, demo: demoCfg };
 
     useEffect(() => { document.documentElement.classList.toggle('dark', theme === 'dark'); }, [theme]);
     // Dil seçimi yalnız istifadəçi dəyişəndə yaddaşa yazılır (changeLang); burada yalnız <html lang> yenilənir
@@ -505,7 +514,7 @@ function App() {
 
     useEffect(() => {
         api('/api/bootstrap')
-            .then((d) => { setIdeEvent(d.event); teamRef.current = d.team; setTeam(d.team); setAnnouncements(d.announcements || []); })
+            .then((d) => { setIdeEvent(d.event); teamRef.current = d.team; setTeam(d.team); setAnnouncements(d.announcements || []); setDemoCfg(d.demo || { enabled: false }); })
             .catch(() => {
                 setOffline(true);
                 setIdeEvent(SEED_EVENT);
@@ -1059,7 +1068,7 @@ function StatusBadge({ status }) {
 
 // Görünən (K həddini keçmiş) tıxanma kartı + menecerin tədbir qeydi
 function BlockerCard({ b, max, bump, onSave }) {
-    const { t, lang } = useT();
+    const { t, lang, demo } = useT();
     const saved = b.action;
     const [status, setStatus] = useState(saved ? saved.status : 'investigating');
     const [owner, setOwner] = useState(saved ? saved.owner : '');
@@ -1092,7 +1101,7 @@ function BlockerCard({ b, max, bump, onSave }) {
                 </div>
                 {saved && (saved.owner || saved.note) && (
                     <p className="text-[11px] text-slate-600 dark:text-slate-300 break-words">
-                        {saved.owner ? <b>{t('ownerShort')}: {saved.owner}. </b> : null}{saved.note}
+                        {saved.owner ? <b>{t('ownerShort')}: {tplText(demo, 'owners', saved.owner, lang)}. </b> : null}{tplText(demo, 'notes', saved.note, lang)}
                         <span className="text-slate-400 font-mono"> · {t('updatedAt')} {fmtTime(saved.updated_at, lang)}</span>
                     </p>
                 )}
@@ -1105,8 +1114,17 @@ function BlockerCard({ b, max, bump, onSave }) {
                     ))}
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                    <input value={owner} maxLength={40} onChange={(e) => setOwner(e.target.value)} placeholder={t('ownerPh')} aria-label={t('ownerLabel')} className={inputCls} />
-                    <input value={note} maxLength={200} onChange={(e) => setNote(e.target.value)} placeholder={t('notePh')} aria-label={t('noteLabel')} className={inputCls + ' sm:col-span-2'} />
+                    {demo.enabled ? (
+                        <>
+                            <TplSelect items={demo.owners} value={owner} onChange={setOwner} label={t('ownerLabel')} className={inputCls} />
+                            <TplSelect items={demo.notes} value={note} onChange={setNote} label={t('noteLabel')} className={inputCls + ' sm:col-span-2'} />
+                        </>
+                    ) : (
+                        <>
+                            <input value={owner} maxLength={40} onChange={(e) => setOwner(e.target.value)} placeholder={t('ownerPh')} aria-label={t('ownerLabel')} className={inputCls} />
+                            <input value={note} maxLength={200} onChange={(e) => setNote(e.target.value)} placeholder={t('notePh')} aria-label={t('noteLabel')} className={inputCls + ' sm:col-span-2'} />
+                        </>
+                    )}
                 </div>
                 <div className="flex justify-end">
                     <button type="button" onClick={save} disabled={busy} className="px-4 py-2 bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white rounded-xl text-xs font-bold">{t('saveAction')}</button>
@@ -1116,9 +1134,21 @@ function BlockerCard({ b, max, bump, onSave }) {
     );
 }
 
+// İctimai demo rejimində sərbəst mətn əvəzinə şablon seçimi (server də yalnız şablonları qəbul edir)
+function TplSelect({ items, value, onChange, label, className, required }) {
+    const { t, lang } = useT();
+    const current = (items || []).find((x) => x.az === value || x.en === value);
+    return (
+        <select value={current ? current[lang] : ''} onChange={(e) => onChange(e.target.value)} aria-label={label} className={className}>
+            <option value="">{required ? t('tplPick') : t('tplNone')}</option>
+            {(items || []).map((x) => (<option key={x.en} value={x[lang]}>{x[lang]}</option>))}
+        </select>
+    );
+}
+
 // Komandaya elan (yalnız menecer göndərir; bütün işçilərin panelində canlı görünür)
 function AnnounceBox({ visible, announcements, onSend }) {
-    const { t, lang } = useT();
+    const { t, lang, demo } = useT();
     const [text, setText] = useState('');
     const [category, setCategory] = useState('');
     const [busy, setBusy] = useState(false);
@@ -1131,7 +1161,14 @@ function AnnounceBox({ visible, announcements, onSend }) {
         <div className="glass-panel p-6 rounded-3xl">
             <h3 className="text-base font-bold text-slate-900 dark:text-white">{t('announceTitle')}</h3>
             <p className="text-[11px] text-slate-500 dark:text-slate-400 mb-4">{t('announceSub')}</p>
-            <textarea value={text} maxLength={280} rows={2} onChange={(e) => setText(e.target.value)} placeholder={t('announcePh')} aria-label={t('announceTitle')} className={inputCls} />
+            {demo.enabled ? (
+                <>
+                    <p className="text-[11px] text-amber-600 dark:text-amber-400 mb-2">{t('demoTplHint', demo.reset_minutes)}</p>
+                    <TplSelect items={demo.announcements} value={text} onChange={setText} label={t('announceTitle')} className={inputCls} required />
+                </>
+            ) : (
+                <textarea value={text} maxLength={280} rows={2} onChange={(e) => setText(e.target.value)} placeholder={t('announcePh')} aria-label={t('announceTitle')} className={inputCls} />
+            )}
             <div className="flex flex-wrap items-center justify-between gap-3 mt-2">
                 <label className="flex items-center gap-2 text-[11px] text-slate-500 dark:text-slate-400">
                     {t('announceTo')}:
@@ -1152,7 +1189,7 @@ function AnnounceBox({ visible, announcements, onSend }) {
                         <li key={a.id} className="text-xs text-slate-700 dark:text-slate-300 break-words">
                             <span className="font-mono text-slate-400">{fmtTime(a.created_at, lang)}</span>
                             {a.category ? <span className="ml-2 px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-600 dark:text-sky-400 text-[10px]">{t('cat_' + a.category)}</span> : null}
-                            <span className="ml-2">{a.text}</span>
+                            <span className="ml-2">{tplText(demo, 'announcements', a.text, lang)}</span>
                         </li>
                     ))}
                 </ul>
@@ -1163,7 +1200,7 @@ function AnnounceBox({ visible, announcements, onSend }) {
 
 // İşçi panelində: menecerin elanları və tıxanmalar üzrə görülən tədbirlər (komanda səviyyəsində)
 function TeamNews({ team, announcements }) {
-    const { t, lang } = useT();
+    const { t, lang, demo } = useT();
     const acted = team ? team.blockers.filter((b) => !b.suppressed && b.action) : [];
     return (
         <div className="glass-panel p-6 rounded-3xl space-y-5">
@@ -1175,7 +1212,7 @@ function TeamNews({ team, announcements }) {
                             <li key={a.id} className="p-3 bg-slate-50 dark:bg-slate-900/80 rounded-2xl border border-slate-200 dark:border-slate-800 text-sm text-slate-800 dark:text-slate-200 break-words">
                                 <span className="font-mono text-[10px] text-slate-400">{fmtTime(a.created_at, lang)}</span>
                                 {a.category ? <span className="ml-2 px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-600 dark:text-sky-400 text-[10px]">{t('cat_' + a.category)}</span> : null}
-                                <p className="mt-1">{a.text}</p>
+                                <p className="mt-1">{tplText(demo, 'announcements', a.text, lang)}</p>
                             </li>
                         ))}
                     </ul>
@@ -1189,8 +1226,8 @@ function TeamNews({ team, announcements }) {
                             <li key={b.category} className="p-3 bg-slate-50 dark:bg-slate-900/80 rounded-2xl border border-slate-200 dark:border-slate-800 flex items-start justify-between gap-3">
                                 <div className="text-xs text-slate-700 dark:text-slate-300 break-words">
                                     <b>{t('cat_' + b.category)}</b>
-                                    {b.action.owner ? <span className="text-slate-500 dark:text-slate-400"> · {t('ownerShort')}: {b.action.owner}</span> : null}
-                                    {b.action.note ? <p className="mt-0.5">{b.action.note}</p> : null}
+                                    {b.action.owner ? <span className="text-slate-500 dark:text-slate-400"> · {t('ownerShort')}: {tplText(demo, 'owners', b.action.owner, lang)}</span> : null}
+                                    {b.action.note ? <p className="mt-0.5">{tplText(demo, 'notes', b.action.note, lang)}</p> : null}
                                 </div>
                                 <StatusBadge status={b.action.status} />
                             </li>

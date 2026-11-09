@@ -4,7 +4,9 @@ import json
 import logging
 import os
 import re
+import threading
 import time
+from datetime import datetime, timezone
 
 try:
   from dotenv import load_dotenv
@@ -155,6 +157,50 @@ def validate(text: str, ev: dict):
   return True, ""
 
 
+class BudgetExceeded(RuntimeError):
+  """AI_DAILY_LIMIT bitib: bu gün daha AI sorğusu göndərilmir."""
+
+
+_budget = {"day": None, "used": 0}
+_budget_lock = threading.Lock()
+
+
+def daily_limit() -> int:
+  """Gündə (UTC) ən çox neçə model çağırışı. 0: AI ümumiyyətlə çağırılmır."""
+  raw = os.getenv("AI_DAILY_LIMIT", "").strip()
+  try:
+    return max(0, int(raw)) if raw else 300
+  except ValueError:
+    return 300
+
+
+def _today() -> str:
+  return datetime.now(timezone.utc).date().isoformat()
+
+
+def budget_remaining() -> int:
+  with _budget_lock:
+    used = _budget["used"] if _budget["day"] == _today() else 0
+  return max(0, daily_limit() - used)
+
+
+def take_budget() -> bool:
+  """Bir model çağırışı üçün limitdən 1 vahid götürür; limit bitibsə False."""
+  with _budget_lock:
+    day = _today()
+    if _budget["day"] != day:
+      _budget.update(day=day, used=0)
+    if _budget["used"] >= daily_limit():
+      return False
+    _budget["used"] += 1
+    return True
+
+
+def reset_budget() -> None:
+  with _budget_lock:
+    _budget.update(day=None, used=0)
+
+
 def _model_list(env_name: str, default: str) -> list:
   """Env-dəki vergüllə ayrılmış siyahı + ehtiyat olaraq standart modellər (təkrarsız)."""
   env_models = [m.strip() for m in os.getenv(env_name, default).split(",") if m.strip()]
@@ -169,6 +215,8 @@ def _run_chain(models: list, call_one):
   """
   last = None
   for m in models:
+    if not take_budget():  # hər model cəhdi ayrıca sayılır (ehtiyat modellər də xərcdir)
+      raise BudgetExceeded("AI_DAILY_LIMIT")
     t0 = time.perf_counter()
     try:
       text = (call_one(m) or "").strip()
@@ -243,6 +291,29 @@ def active_providers() -> list:
   return [p for p in dict.fromkeys(names) if p in CALLERS and os.getenv(PROVIDER_KEYS[p])]
 
 
+SDK_MODULES = {"gemini": "google.genai", "claude": "anthropic"}
+
+
+def warm_up() -> list:
+  """Aktiv provayderlərin SDK-larını əvvəlcədən import edir.
+
+  İlk import (xüsusən Windows-da) 10+ saniyə çəkə bilər; server başlayanda fonda edilməsə,
+  bu gecikmə ilk ziyarətçinin xatırlatmasına düşür. Heç bir AI sorğusu göndərilmir.
+  """
+  import importlib
+
+  loaded = []
+  for provider in active_providers():
+    t0 = time.perf_counter()
+    try:
+      importlib.import_module(SDK_MODULES[provider])
+      loaded.append(provider)
+      log.info("[AI]     %s SDK hazırdır (%.0f ms)", provider, (time.perf_counter() - t0) * 1000)
+    except Exception as e:  # SDK yoxdursa sorğu zamanı fallback işləyəcək
+      log.warning("[AI]     %s SDK yüklənmədi: %s", provider, type(e).__name__)
+  return loaded
+
+
 def generate_reminder(ev: dict, lang: str = "az") -> dict:
   out = {
       "text": fallback_text(ev, lang),
@@ -255,11 +326,18 @@ def generate_reminder(ev: dict, lang: str = "az") -> dict:
   providers = active_providers()
   if not providers:
     return out
+  limited = dict(code="daily_limit", badge="fallback (daily AI limit reached)", reason="daily_limit")
+  if budget_remaining() <= 0:
+    out.update(limited)
+    return out
   prompt = build_prompt(ev, lang)
   err = None
   for provider in providers:  # biri tam uğursuz olarsa növbəti provayder sınanır
     try:
       text, model = CALLERS[provider](prompt)
+    except BudgetExceeded:
+      out.update(limited)
+      return out
     except Exception as e:  # şəbəkə, kvota, model adı və s.
       err = e
       continue

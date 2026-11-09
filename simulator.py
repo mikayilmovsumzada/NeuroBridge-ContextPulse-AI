@@ -4,11 +4,14 @@
   python simulator.py answer MEETING_LOAD [--url URL]      # menecer panelinə 1 anonim cavab
   python simulator.py reset   [--url URL]                  # demo məlumatını sıfırla
   python simulator.py warm    [--url URL]                  # AZ+EN Gemini cavablarını əvvəlcədən hazırla
+--url verilməsə: SIMULATOR_URL (mühit və ya .env), yoxdursa localhost:8000, sonra localhost:8001.
 """
 import argparse
 import copy
 import json
 import random
+import socket
+import sys
 import time
 import urllib.request
 import uuid
@@ -28,6 +31,31 @@ def _env(name):
             if k.strip() == name:
                 return v.strip().strip('"').strip("'")
     return ""
+
+
+# --url verilməyəndə: SIMULATOR_URL (mühit və ya .env), yoxdursa bu portlarda işləyən server axtarılır
+CANDIDATE_URLS = ("http://localhost:8000", "http://localhost:8001")
+
+
+def _listening(url, timeout=0.3):
+    """Ünvandakı host:port bağlantı qəbul edirmi (HTTP sorğusu göndərmir)."""
+    from urllib.parse import urlsplit
+    u = urlsplit(url)
+    try:
+        with socket.create_connection((u.hostname or "localhost", u.port or 80), timeout=timeout):
+            return True
+    except OSError:
+        return False
+
+
+def default_url():
+    configured = _env("SIMULATOR_URL")
+    if configured:
+        return configured.rstrip("/")
+    for url in CANDIDATE_URLS:
+        if _listening(url):
+            return url
+    return CANDIDATE_URLS[0]
 
 
 # Server IDE/simulyator sorğularını yalnız bu açarla qəbul edir (.env-dəki INGEST_KEY)
@@ -80,9 +108,20 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("cmd", choices=["events", "answer", "reset", "warm"])
     p.add_argument("category", nargs="?", default="MEETING_LOAD")
-    p.add_argument("--url", default="http://localhost:8000")
+    p.add_argument("--url", default=None, help="server ünvanı (default: SIMULATOR_URL və ya 8000/8001-də tapılan server)")
     p.add_argument("--interval", type=float, default=5)
     a = p.parse_args()
+    # Konsol UTF-8 deyilsə (məs. Windows cp1252 boru) Azərbaycan hərfləri xəta verməsin
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(errors="replace")
+        except (AttributeError, ValueError):
+            pass
+    a.url = (a.url or default_url()).rstrip("/")
+    if not _listening(a.url, timeout=1):
+        print(f"Server tapılmadı: {a.url}. Backend-i işə salın və ya ünvanı göstərin: --url http://localhost:PORT (və ya .env-də SIMULATOR_URL)")
+        raise SystemExit(1)
+    print("server:", a.url)
     if not HEADERS["X-Ingest-Key"]:
         print("Xəbərdarlıq: INGEST_KEY tapılmadı (.env). Server sorğuları 401 ilə rədd edəcək.")
     if a.cmd == "reset":

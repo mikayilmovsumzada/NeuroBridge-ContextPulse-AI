@@ -22,9 +22,9 @@
         })();
     </script>
     <link rel="preload" href="fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="styles.css?v=2.1">
-    <!-- Tailwind (CDN) -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css?v=2.2">
+    <!-- Tailwind (Play CDN, dəqiq versiya). Qeyd: Play CDN istehsal üçün deyil; növbəti addım əvvəlcədən yığılmış CSS-dir (README) -->
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -42,14 +42,14 @@
             }
         }
     </script>
-    <!-- React, ReactDOM və Babel (unpkg CDN) -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- React, ReactDOM və Babel (unpkg CDN, dəqiq versiyalar: CDN-dəki yeni buraxılış saytı gözlənilmədən dəyişməsin) -->
+    <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone@7.26.10/babel.min.js" crossorigin></script>
 </head>
 <body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen selection:bg-sky-500 selection:text-white">
     <noscript>ContextPulse AI JavaScript tələb edir. / ContextPulse AI requires JavaScript.</noscript>
     <div id="root"></div>
-    <script type="text/babel" src="app.js?v=2.1"></script>
+    <script type="text/babel" src="app.js?v=2.2"></script>
 </body>
 </html>
