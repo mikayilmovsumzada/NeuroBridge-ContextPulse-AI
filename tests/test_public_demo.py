@@ -401,13 +401,13 @@ def test_cdn_scripts_are_pinned_to_exact_versions():
     assert any("react@18." in s for s in srcs) and any("react-dom@18." in s for s in srcs)
 
 
-def test_env_example_and_readme_document_new_variables():
+def test_env_example_documents_new_variables():
+    """Ayarlar .env.example-da izah olunur (README istifadəçilər üçündür və ora yönləndirir)."""
     names = ["DEMO_MODE", "DEMO_RESET_MINUTES", "RATE_LIMIT_ENABLED", "RATE_LIMIT_LOGIN", "RATE_LIMIT_REMINDER",
              "RATE_LIMIT_SURVEY", "RATE_LIMIT_MESSAGES", "RATE_LIMIT_ACTION", "RATE_LIMIT_STREAM", "RATE_LIMIT_RESET",
              "TRUSTED_PROXY", "MAX_SSE_PER_IP", "MAX_SSE_SUBSCRIBERS", "AI_DAILY_LIMIT", "AI_FAILURE_COOLDOWN_SEC",
              "DISABLE_DOCS", "SECURITY_HEADERS", "CSP_FRAME_ANCESTORS", "HSTS_MAX_AGE"]
     env = (ROOT / ".env.example").read_text(encoding="utf-8")
-    readme = (ROOT / "README.md").read_text(encoding="utf-8")
     for n in names:
         assert n in env, f".env.example: {n}"
-        assert f"`{n}`" in readme, f"README: {n}"
+    assert ".env.example" in (ROOT / "README.md").read_text(encoding="utf-8")
