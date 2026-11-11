@@ -121,6 +121,10 @@ python simulator.py reset                    # demo məlumatını sıfırlayır
 - Bu versiya demo üçündür. Real şəxsi məlumatla istifadə etməyin.
 - K-anonimlik zamanla aparılan müşahidələrə qarşı tam qoruma vermir.
 
+## Lisenziya
+
+© 2026 Mikayıl Mövsümzadə. Mənbə kodu [GNU Affero General Public License v3.0](LICENSE) (AGPL-3.0) lisenziyası ilə paylanır. Kodu dəyişib şəbəkə üzərindən xidmət kimi təqdim etsəniz, dəyişdirilmiş mənbə kodunu da həmin şərtlərlə istifadəçilərə açmalısınız. Lisenziya ContextPulse AI və NexusWeb adlarından istifadə hüququ vermir.
+
 ## Əlaqə
 
 Sual və təkliflər üçün: [movsumzademikayil@gmail.com](mailto:movsumzademikayil@gmail.com) və ya bu repoda [issue](https://github.com/mikayilmovsumzada/ContextPulse-AI/issues) açın.
