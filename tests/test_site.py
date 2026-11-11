@@ -23,6 +23,18 @@ def test_unknown_path_is_404():
     assert c.get("/does-not-exist").status_code == 404
 
 
+def test_unknown_page_in_browser_shows_app_404_page():
+    r = c.get("/does-not-exist", headers={"Accept": "text/html"})
+    assert r.status_code == 404
+    assert '<div id="root">' in r.text
+
+
+def test_unknown_api_path_stays_json():
+    r = c.get("/api/does-not-exist", headers={"Accept": "text/html"})
+    assert r.status_code == 404
+    assert r.json() == {"detail": "Not Found"}
+
+
 def test_favicon_assets_are_served():
     ico = c.get("/favicon.ico")
     assert ico.status_code == 200 and "icon" in ico.headers["content-type"]

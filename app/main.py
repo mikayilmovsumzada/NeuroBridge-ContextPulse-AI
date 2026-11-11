@@ -28,6 +28,8 @@ from typing import Optional
 from fastapi import Depends, FastAPI, Header, Request
 from fastapi.responses import FileResponse, StreamingResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.exception_handlers import http_exception_handler
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from . import auth, core, demo, ratelimit, security
 from .ai_engine import active_providers, daily_limit, fallback_text, generate_reminder, warm_up
@@ -352,6 +354,17 @@ async def _spa_index():
 
 for _path in SPA_PATHS:
     app.add_api_route(_path, _spa_index, methods=["GET"], include_in_schema=False)
+
+
+@app.exception_handler(StarletteHTTPException)
+async def _not_found_page(request: Request, exc: StarletteHTTPException):
+    # Brauzerdə naməlum səhifə açılanda xam JSON əvəzinə tətbiqin öz 404 səhifəsi göstərilir (status yenə 404).
+    # API sorğuları və digər xətalar əvvəlki kimi JSON qaytarır.
+    if (exc.status_code == 404 and request.method == "GET"
+            and not request.url.path.startswith("/api/")
+            and "text/html" in request.headers.get("accept", "")):
+        return FileResponse(STATIC / "index.html", media_type="text/html", status_code=404)
+    return await http_exception_handler(request, exc)
 
 
 # API marşrutlarından SONRA qoşulur: /, /app.js, /styles.css

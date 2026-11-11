@@ -1006,7 +1006,7 @@ function DevPortalView({ awayHistory, event, live, offline, team, announcements,
                     <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{t('devTitle')}</h1>
                     <p className="text-xs text-slate-500 dark:text-slate-400">{t('devSub')}</p>
                 </div>
-                <button onClick={onTriggerIdle} className="px-5 py-3 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/20 font-bold rounded-2xl text-xs transition-all cursor-pointer flex items-center space-x-2">
+                <button onClick={onTriggerIdle} className="w-full sm:w-auto justify-center text-center px-5 py-3 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/20 font-bold rounded-2xl text-xs transition-all cursor-pointer flex items-center space-x-2">
                     <IconClock className="w-4 h-4" /><span>{t('simBtn')}</span>
                 </button>
             </div>
